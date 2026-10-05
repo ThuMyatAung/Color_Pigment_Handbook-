@@ -9,14 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Padauk:wght@400;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-body: #0b0c10;
-      --bg-surface: #12141a;
-      --bg-card: #181b24;
-      --bg-card-hover: #1f232f;
-      --border: #262a38;
-      --border-focus: #3d4358;
+      --bg-body: #0b0d13;
+      --bg-surface: #131620;
+      --bg-card: #1a1e2b;
+      --bg-card-hover: #222738;
+      --border: #282e40;
+      --border-focus: #444c66;
       --text-main: #f3f5fa;
-      --text-muted: #969eb2;
+      --text-muted: #959eb5;
       --accent-warm: #e07a38;
       --accent-lake: #d9466f;
       --accent-blue: #388bfd;
@@ -109,7 +109,7 @@
     .section-title { font-size: 1.35rem; font-weight: 700; color: #fff; }
     .section-subtitle { color: var(--text-muted); font-size: 0.88rem; margin-top: 4px; }
 
-    /* Filter & Chips */
+    /* Filter Chips */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
@@ -151,7 +151,7 @@
       border-color: var(--border-focus);
     }
 
-    /* Color Swatch Display */
+    /* Swatches & Sliders */
     .swatch-band {
       display: flex;
       height: 40px;
@@ -162,9 +162,9 @@
     }
     .swatch-band div { flex: 1; transition: transform 0.2s; }
 
-    /* Code & Technical Data Blocks */
+    /* Code & Technical Blocks */
     .code-box {
-      background: #0f1015;
+      background: #0f1118;
       border: 1px solid var(--border);
       border-left: 3px solid var(--accent-warm);
       padding: 12px 14px;
@@ -176,7 +176,6 @@
       line-height: 1.6;
     }
 
-    /* Steps List */
     .step-list {
       list-style: none;
       counter-reset: p-counter;
@@ -208,7 +207,7 @@
       font-weight: 700;
     }
 
-    /* Properties Chart Table */
+    /* Properties Table */
     .prop-table {
       width: 100%;
       border-collapse: collapse;
@@ -225,10 +224,10 @@
     .prop-table td:first-child { color: var(--text-muted); width: 40%; }
     .prop-table td:last-child { color: #fff; font-weight: 500; text-align: right; }
 
-    /* Interactive Color Wheel Section */
+    /* Color Wheel & Mixer Layouts */
     .wheel-layout {
       display: grid;
-      grid-template-columns: 340px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 28px;
       align-items: center;
     }
@@ -240,7 +239,6 @@
       background: #000;
     }
 
-    /* Interactive Mixer */
     .mixer-workspace {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -248,7 +246,7 @@
     }
     @media(max-width: 850px) { .mixer-workspace { grid-template-columns: 1fr; } }
 
-    /* Palette Extractor Workspace */
+    /* Palette Extractor Layout */
     .extractor-layout {
       display: grid;
       grid-template-columns: 1fr 340px;
@@ -311,7 +309,7 @@
   <header>
     <div class="header-inner">
       <div class="brand-title">
-        <span>●</span> Color Theory & Pigment Alchemy Lab
+        <span>●</span> Color Theory, Pigment Lab & Studio
       </div>
       <nav>
         <button class="nav-btn active" onclick="switchTab('wheel')">၁။ Color Wheel</button>
@@ -328,11 +326,11 @@
 
   <div class="container">
 
-    <!-- ==================== TAB 1: COLOR WHEEL & HARMONIES ==================== -->
+    <!-- ==================== TAB 1: COLOR WHEEL ==================== -->
     <div id="tab-wheel" class="tab-pane active">
       <div class="title-row">
         <h1 class="section-title">၁။ Interactive Color Wheel & Harmony Systems</h1>
-        <p class="section-subtitle">အပြန်အလှန် လေ့လာနိုင်သော ၁၂ ရောင် Color Wheel နှင့် ဂန္ထဝင် အရောင်တွဲဖက်ညီညွတ်မှု ဖော်မြူလာများ</p>
+        <p class="section-subtitle">အပြန်အလှန် လေ့လာနိုင်သော ၁၂ ရောင် Color Wheel နှင့် ဂန္ထဝင် အရောင်တွဲဖက်ညီညွတ်မှု စနစ်များ</p>
       </div>
 
       <div class="card" style="margin-bottom: 24px;">
@@ -347,7 +345,7 @@
               <div id="wheel-hue-swatch" style="width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border); background: #ff4500;"></div>
             </div>
 
-            <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 14px;">Harmony Type ကို ရွေးချယ်ပြီး ဆက်စပ်အရောင်တွဲများကို လေ့လာပါ:</p>
+            <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 14px;">Harmony Type ကို ရွေးချယ်ပြီး အရောင်တွဲဖက်မှုများကို စစ်ဆေးပါ:</p>
             <div class="filter-bar" style="margin-bottom: 16px;">
               <button class="chip active" onclick="setHarmony('comp')">Complementary (ဆန့်ကျင်ဘက်)</button>
               <button class="chip" onclick="setHarmony('split')">Split-Complementary</button>
@@ -356,11 +354,9 @@
               <button class="chip" onclick="setHarmony('tetrad')">Tetradic (စတုဂံ ၄ ရောင်)</button>
             </div>
 
-            <div id="harmony-swatches" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px;">
-              <!-- Generated via JS -->
-            </div>
+            <div id="harmony-swatches" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 14px;"></div>
             <div class="code-box" id="harmony-desc">
-              <strong>Complementary:</strong> မျက်နှာချင်းဆိုင် တည်ရှိသော အရောင် ၂ ခု။ အမြင့်ဆုံး Contrast နှင့် တောက်ပမှုကို ပေးစွမ်းနိုင်ပြီး ဆေးစပ်ရာတွင် Neutral Grey / Chromatic Dark ရရှိစေသည်။
+              <strong>Complementary:</strong> Wheel တွင် မျက်နှာချင်းဆိုင် တည်ရှိသော အရောင် ၂ ခု။ အမြင့်ဆုံး Contrast ကို ပေးစွမ်းနိုင်ပြီး ဆေးစပ်ရာတွင် သဘာဝကျသော Chromatic Dark ရရှိစေသည်။
             </div>
           </div>
         </div>
@@ -374,7 +370,6 @@
         <p class="section-subtitle">တန်ဖိုး (Value) ၉ ဆင့် လမ်းညွှန်၊ Tonal Keys နှင့် အပြန်အလှန် စမ်းသပ်နိုင်သော Tint, Tone, Shade ဇယား</p>
       </div>
 
-      <!-- 9-Step Munsell / Ross Value Scale -->
       <div class="card" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.1rem; margin-bottom: 6px;">၉ ဆင့် Value Scale (Denman Ross / Munsell System)</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">အဖြူစင်စစ် (Step 1) မှ ကတ္တရာနက် (Step 9) အထိ အလင်းရောင်ပြန်နိုင်မှု စွမ်းအားအဆင့်များ</p>
@@ -399,23 +394,21 @@
         </div>
       </div>
 
-      <!-- Tonal Keys Overview -->
       <div class="grid-cards" style="margin-bottom: 24px;">
         <div class="card">
           <h4 style="color: var(--accent-warm); margin-bottom: 6px;">High-Key Painting (အလင်းအားကြီး)</h4>
-          <p style="font-size: 0.88rem; color: #cbd5e1;">တန်ဖိုးအဆင့် ၁ မှ ၄ အထိကို အဓိကထား အသုံးပြုသည်။ နူးညံ့ခြင်း၊ မနက်ခင်းဆည်းဆာ၊ မြူခိုးဆိုင်းသော ရာသီဥတုနှင့် ပျော်ရွှင်ကြည်လင်သော စိတ်ခံစားမှုကို ဖော်ဆောင်သည်။</p>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">တန်ဖိုးအဆင့် ၁ မှ ၄ အထိကို အဓိကထား အသုံးပြုသည်။ နူးညံ့ခြင်း၊ မနက်ခင်းဆည်းဆာနှင့် ကြည်လင်သော စိတ်ခံစားမှုကို ဖော်ဆောင်သည်။</p>
         </div>
         <div class="card">
           <h4 style="color: var(--accent-blue); margin-bottom: 6px;">Low-Key Painting (အမှောင်အားကြီး)</h4>
-          <p style="font-size: 0.88rem; color: #cbd5e1;">တန်ဖိုးအဆင့် ၆ မှ ၉ အထိကို အဓိကထား အသုံးပြုသည်။ လျှို့ဝှက်ဆန်းကြယ်ခြင်း၊ ညဉ့်နက်သန်းခေါင်၊ အန္တရာယ်နှင့် လေးနက်သော ဒရမ်မာဆန်သည့် အခိုက်အတန့်ကို ရည်ညွှန်းသည်။</p>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">တန်ဖိုးအဆင့် ၆ မှ ၉ အထိကို အဓိကထား အသုံးပြုသည်။ လျှို့ဝှက်ဆန်းကြယ်ခြင်း၊ ညဉ့်နက်သန်းခေါင်နှင့် လေးနက်သော ဒရမ်မာဆန်သည့် အခိုက်အတန့်ကို ရည်ညွှန်းသည်။</p>
         </div>
         <div class="card">
           <h4 style="color: var(--accent-lake); margin-bottom: 6px;">Full Contrast / Broad Range</h4>
-          <p style="font-size: 0.88rem; color: #cbd5e1;">အဆင့် ၁ (Pure White) မှ အဆင့် ၉ (Deep Black) အထိ အပြည့်ပါဝင်သည်။ ရုပ်လုံးထုထည် (Volume) အလွန်ခိုင်မာပြီး မျက်စိကို တိုက်ရိုက်ဆွဲဆောင်သည့် Visual Punch ကို ပေးသည်။</p>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">အဆင့် ၁ (Pure White) မှ အဆင့် ၉ (Deep Black) အထိ အပြည့်ပါဝင်သည်။ ရုပ်လုံးထုထည် (Volume) အလွန်ခိုင်မာပြီး မျက်စိကို တိုက်ရိုက်ဆွဲဆောင်သည်။</p>
         </div>
       </div>
 
-      <!-- Interactive Tint/Tone/Shade Generator -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <div>
@@ -447,7 +440,6 @@
         <p class="section-subtitle">ဂန္ထဝင်မှသည် ခေတ်ပေါ်အနုပညာအထိ ဆေးရေးဆွဲရာတွင် မရှိမဖြစ်သိထားရမည့် Optical နှင့် Spatial သဘောတရားများ</p>
       </div>
 
-      <!-- Simultaneous Contrast Interactive Demo -->
       <div class="card" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; margin-bottom: 6px;">၁။ Simultaneous Contrast (Chevreul's Law - ပြိုင်တူရောင်ပြန် သက်ရောက်မှု)</h3>
         <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 14px;">
@@ -455,29 +447,27 @@
         </p>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; margin-bottom: 12px;">
-          <div id="sim-box-1" style="background: #111827; height: 160px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+          <div style="background: #111827; height: 160px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
             <div style="width: 50px; height: 50px; background: #888888; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" title="Identical 50% Grey"></div>
           </div>
-          <div id="sim-box-2" style="background: #facc15; height: 160px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+          <div style="background: #facc15; height: 160px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
             <div style="width: 50px; height: 50px; background: #888888; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" title="Identical 50% Grey"></div>
           </div>
         </div>
         <p style="font-size: 0.82rem; color: var(--text-muted); text-align: center;">
-          * အလယ်ရှိ မီးခိုးရောင်အကွက်ငယ် ၂ ခုသည် အရောင်တန်ဖိုး အတိအကျတူညီကြပါသည် (#888888)။ သို့သော် အနက်ရောင်ခံပေါ်တွင် ပိုမိုလင်းလက်ပြီး အဝါရောင်ခံပေါ်တွင် ခရမ်းမည်းသန်းကာ မှောင်သွားသယောင် မြင်ရပါသည်။
+          * အလယ်ရှိ မီးခိုးရောင်အကွက်ငယ် ၂ ခုသည် တန်ဖိုးတူညီကြပါသည် (#888888)။ သို့သော် အနက်ရောင်ခံပေါ်တွင် ပိုမိုလင်းလက်ပြီး အဝါရောင်ခံပေါ်တွင် ခရမ်းမည်းသန်းကာ မှောင်သွားသယောင် မြင်ရပါသည်။
         </p>
       </div>
 
       <div class="grid-cards">
-        <!-- Optical Mixing -->
         <div class="card">
           <h3 style="color: var(--accent-warm); margin-bottom: 8px;">၂။ Optical Mixing (Pointillism / Divisionism)</h3>
           <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 10px;">
-            Palette ပေါ်တွင် ဆေးသားများကို ရောမွှေမပစ်ဘဲ သန့်စင်သော အရောင်စက်ငယ်များကို ကင်းဗတ်ပေါ် ကပ်လျက်ချမှတ်ခြင်းဖြင့် ကြည့်ရှုသူ၏ မျက်စိမြင်လွှာ (Retina) တွင်မှ အလိုအလျောက် ပေါင်းစပ်မြင်စေသည့် နည်းစနစ် (Seurat, Signac)။
+            ဆေးသားများကို ရောမွှေမပစ်ဘဲ သန့်စင်သော အရောင်စက်ငယ်များကို ကင်းဗတ်ပေါ် ကပ်လျက်ချမှတ်ခြင်းဖြင့် ကြည့်ရှုသူ၏ မျက်စိမြင်လွှာ (Retina) တွင်မှ အလိုအလျောက် ပေါင်းစပ်မြင်စေသည့် နည်းစနစ် (Seurat, Signac)။
           </p>
           <div class="code-box">ဥပမာ - အဝါစက်နှင့် အပြာစက်များကို ကပ်တင်ထားပါက အဝေးမှကြည့်လျှင် ပိုမိုတောက်ပသော အစိမ်းရောင်အဖြစ် မျက်စိက ပေါင်းစပ်ဖတ်ယူသည်။</div>
         </div>
 
-        <!-- Chiaroscuro & Sfumato -->
         <div class="card">
           <h3 style="color: var(--accent-blue); margin-bottom: 8px;">၃။ Chiaroscuro & Sfumato</h3>
           <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 10px;">
@@ -486,7 +476,6 @@
           </p>
         </div>
 
-        <!-- Atmospheric Perspective -->
         <div class="card">
           <h3 style="color: var(--accent-lake); margin-bottom: 8px;">၄။ Atmospheric Perspective (လေထုအကွာအဝေး)</h3>
           <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 10px;">
@@ -494,7 +483,6 @@
           </p>
         </div>
 
-        <!-- Gamut Masking -->
         <div class="card">
           <h3 style="color: var(--accent-green); margin-bottom: 8px;">၅။ Gamut Masking (James Gurney System)</h3>
           <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 10px;">
@@ -504,7 +492,7 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 4: INTERACTIVE PIGMENT MIXER ==================== -->
+    <!-- ==================== TAB 4: PIGMENT MIXER ==================== -->
     <div id="tab-mixer" class="tab-pane">
       <div class="title-row">
         <h1 class="section-title">၄။ Interactive Pigment Mixer Studio (ဆေးရောင်စပ် ဓာတ်ခွဲခန်း)</h1>
@@ -513,7 +501,6 @@
 
       <div class="card" style="margin-bottom: 24px;">
         <div class="mixer-workspace">
-          <!-- Controls -->
           <div>
             <h3 style="font-size: 1.1rem; margin-bottom: 14px;">Select Pigments & Mix Ratio</h3>
 
@@ -556,7 +543,6 @@
             </div>
           </div>
 
-          <!-- Live Preview Matrix -->
           <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
             <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: #fff;">ရောစပ်ရရှိသော အရောင်လက္ခဏာများ (Mixing Results)</h4>
             
@@ -611,7 +597,7 @@
             <span class="badge">PY43</span>
           </div>
           <p style="font-size: 0.85rem; color: #cbd5e1; margin: 10px 0;">
-            <strong>သမိုင်းကြောင်း:</strong> ကျောက်ခေတ်ဂူနံရံပန်းချီများ (Lascaux, Altamira) ကတည်းက နှစ်ပေါင်း ၃၀,၀၀၀ ကျော် မပြတ်သုံးစွဲခဲ့သော သမိုင်းအရှည်ဆုံး သဘာဝဆေးရောင်။ Limonite မြေသားမှ ဖြစ်ပေါ်သည်။
+            <strong>သမိုင်းကြောင်း:</strong> ကျောက်ခေတ်ဂူနံရံပန်းချီများ (Lascaux, Altamira) ကတည်းက နှစ်ပေါင်း ၃၀,၀၀၀ ကျော် မပြတ်သုံးစွဲခဲ့သော သမိုင်းအရှည်ဆုံး သဘာဝဆေးရောင်။ Limonite/Goethite မြေသားမှ ဖြစ်ပေါ်သည်။
           </p>
           <table class="prop-table">
             <tr><td>Chemical:</td><td>$\text{FeO(OH)} \cdot n\text{H}_2\text{O}$</td></tr>
@@ -776,14 +762,13 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 6: PIGMENT MAKING LAB ==================== -->
+    <!-- ==================== TAB 6: PIGMENT MAKING ==================== -->
     <div id="tab-making" class="tab-pane">
       <div class="title-row">
         <h1 class="section-title">၆။ Pigment Making Lab & Protocols (လက်တွေ့ဖော်စပ်နည်းစဉ်)</h1>
         <p class="section-subtitle">ခေတ်အလိုက် သမိုင်းစဉ်၊ Calcination နည်း ၄ မျိုး၊ Standard Laking နှင့် သီးသန့် အသေးစိတ် ဖော်မြူလာများ</p>
       </div>
 
-      <!-- Historical Evolution -->
       <div class="card" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; margin-bottom: 10px;">ခေတ်အလိုက် ဆေးဖော်စပ်မှု သမိုင်းစဉ် (Historical Evolution)</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
@@ -802,7 +787,7 @@
         </div>
       </div>
 
-      <!-- General Calcination 4 Ways -->
+      <!-- General Calcination -->
       <div class="card" id="rec-calcination" style="margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
           <div>
@@ -837,7 +822,7 @@
         </div>
       </div>
 
-      <!-- Standard Laking Procedure -->
+      <!-- Standard Laking -->
       <div class="card" id="rec-laking" style="margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
           <div>
@@ -859,8 +844,6 @@
       </div>
 
       <!-- Specific Recipes -->
-      
-      <!-- 1. Lapis to Ultramarine -->
       <div class="card" id="rec-lapis" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၁။ Lapis Lazuli မှ Ultramarine ထုတ်ယူနည်း (Cennini's Pastiglia Method)</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">၁၅ ရာစု Cennino Cennini ၏ သမိုင်းဝင် ဖယောင်းမုန့်နှစ်စနစ်</p>
@@ -871,7 +854,6 @@
         </ol>
       </div>
 
-      <!-- 2. Synthetic French Ultramarine -->
       <div class="card" id="rec-syn-ultra" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၂။ Synthetic French Ultramarine ပြုလုပ်နည်း (Guimet's 1828 Process)</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">အပူပေးပေါင်းစပ်ဓာတုနည်းစဉ် (Crucible Synthesis)</p>
@@ -882,7 +864,6 @@
         </ol>
       </div>
 
-      <!-- 3. Azurite Levigation -->
       <div class="card" id="rec-azurite" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၃။ Azurite (အဇူရိုက် ကြေးပြာကျောက်) သန့်စင်နည်း</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">သိပ်သည်းဆ ကွာခြားချက်အခြေခံ သန့်စင်ခြင်း</p>
@@ -892,7 +873,6 @@
         </ol>
       </div>
 
-      <!-- 4. Verditer -->
       <div class="card" id="rec-verditer" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၄။ Blue & Green Verditer ပြုလုပ်နည်း</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">ကြေးနီနိုက်ထရိတ်မှ အပူချိန်အလိုက် အပြာနှင့် အစိမ်း ခွဲထုတ်နည်း</p>
@@ -903,7 +883,6 @@
         </ol>
       </div>
 
-      <!-- 5. Verdigris -->
       <div class="card" id="rec-verdigris" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၅။ Verdigris (ကြေးညှိစိမ်း) နည်းလမ်းမျိုးစုံ ပြုလုပ်နည်း</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">Basic Verdigris နှင့် Crystal Distilled Verdigris</p>
@@ -913,7 +892,6 @@
         </ol>
       </div>
 
-      <!-- 6. Oak Gall Ink -->
       <div class="card" id="rec-oakgall" style="margin-bottom: 24px;">
         <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">၆။ Oak Gall Ink (သပိတ်သီး သံမှင်ရည် စစ်စစ် ဖော်စပ်နည်း)</h3>
         <p style="font-size: 0.82rem; color: var(--accent-warm); margin-bottom: 12px;">Tannic Acid + Green Vitriol ဓာတ်ပေါင်းမှင်</p>
@@ -956,7 +934,6 @@
         </div>
       </div>
 
-      <!-- Binders & Mediums Formulation -->
       <div class="card">
         <h3 style="font-size: 1.15rem; margin-bottom: 12px;">အနုပညာသုံး ကော်ရည်များ ဖော်စပ်နည်း (Art Binders Formulation)</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
@@ -968,7 +945,7 @@
           </div>
           <div class="code-box">
             <strong>၂။ Oil Paint Medium (ဆီဆေးဖော်စပ်နည်း):</strong><br>
-            • Cold-Pressed Linseed Oil (သန့်စင်ပြီး စက်နှိပ်သီဟိုဠ်/နှမ်းကြတ်ဆီ)<br>
+            • Cold-Pressed Linseed Oil (သန့်စင်ပြီး စက်နှိပ်နှမ်းကြတ်ဆီ)<br>
             • အမှုန့် ၁၀၀ ဂရမ်လျှင် ဆီ ၃၀ မှ ၆၀ ဂရမ်ခန့် ဖြည်းဖြည်းချင်း ထည့်ကာ ဖန်လက်ရိုက်ဖြင့် ထောပတ်မုန့်နှစ်ကဲ့သို့ ဖြစ်သည်အထိ ကြိတ်စပ်ပါ။
           </div>
           <div class="code-box">
@@ -1002,9 +979,7 @@
           <h3 style="font-size: 1.05rem; margin-bottom: 8px;">ဆွဲထုတ်ရရှိသော အရောင်များ (Dominant Palette)</h3>
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">အရောင်ကွက်ကို နှိပ်၍ Hex Code ကူးယူနိုင်သည်</p>
 
-          <div id="dominant-palette-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-            <!-- Generated via JS -->
-          </div>
+          <div id="dominant-palette-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;"></div>
 
           <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
             <h4 style="font-size: 0.9rem; margin-bottom: 6px;">Eyedropper Analysis (စစ်ဆေးထားသော အရောင်)</h4>
@@ -1066,10 +1041,10 @@
       });
     }
 
-    // ==================== TAB 1: COLOR WHEEL LOGIC ====================
+    // Color Wheel Logic
     const wheelCanvas = document.getElementById('wheel-canvas');
     const wCtx = wheelCanvas.getContext('2d');
-    let currentHueAngle = 15; // default Red-Orange
+    let currentHueAngle = 15;
     let currentHarmony = 'comp';
 
     function drawColorWheel() {
@@ -1089,13 +1064,13 @@
         wCtx.fill();
       }
 
-      // Center cutout for donut wheel
+      // Center Cutout
       wCtx.beginPath();
       wCtx.arc(cx, cy, radius * 0.45, 0, Math.PI * 2);
-      wCtx.fillStyle = '#0b0c10';
+      wCtx.fillStyle = '#0b0d13';
       wCtx.fill();
 
-      // Draw Selected Indicator Pointer
+      // Selected Indicator Pointer
       const pRad = currentHueAngle * Math.PI / 180;
       const px = cx + Math.cos(pRad) * (radius * 0.75);
       const py = cy + Math.sin(pRad) * (radius * 0.75);
@@ -1168,7 +1143,7 @@
       });
     }
 
-    // ==================== TAB 2: TONAL MATRIX LOGIC ====================
+    // Tonal Matrix Logic
     function updateTonalMatrix(hexColor) {
       const tints = document.getElementById('band-tints');
       const tones = document.getElementById('band-tones');
@@ -1177,11 +1152,10 @@
 
       const rgb = hexToRgb(hexColor);
 
-      // 5 Steps for each
       for (let i = 0; i < 5; i++) {
-        const factor = i / 4; // 0 to 1
+        const factor = i / 4;
         
-        // Tint: Mix with White (255, 255, 255)
+        // Tint
         const tR = Math.round(rgb.r + (255 - rgb.r) * factor);
         const tG = Math.round(rgb.g + (255 - rgb.g) * factor);
         const tB = Math.round(rgb.b + (255 - rgb.b) * factor);
@@ -1190,7 +1164,7 @@
         tDiv.title = `Tint ${Math.round(factor*100)}% White`;
         tints.appendChild(tDiv);
 
-        // Tone: Mix with 50% Grey (128, 128, 128)
+        // Tone
         const toR = Math.round(rgb.r + (128 - rgb.r) * factor);
         const toG = Math.round(rgb.g + (128 - rgb.g) * factor);
         const toB = Math.round(rgb.b + (128 - rgb.b) * factor);
@@ -1199,7 +1173,7 @@
         toDiv.title = `Tone ${Math.round(factor*100)}% Grey`;
         tones.appendChild(toDiv);
 
-        // Shade: Mix with Black (0, 0, 0)
+        // Shade
         const sR = Math.round(rgb.r * (1 - factor));
         const sG = Math.round(rgb.g * (1 - factor));
         const sB = Math.round(rgb.b * (1 - factor));
@@ -1210,7 +1184,7 @@
       }
     }
 
-    // ==================== TAB 4: INTERACTIVE MIXER LOGIC ====================
+    // Pigment Mixer Logic
     function applyPigmentPreset(which, colorHex) {
       if (which === 'a') {
         document.getElementById('mixer-color-a').value = colorHex;
@@ -1231,7 +1205,7 @@
       const rgbA = hexToRgb(colorA);
       const rgbB = hexToRgb(colorB);
 
-      // Realistic Subtractive Blend Simulation via CMY Space
+      // Subtractive Simulation via CMY Space
       const c1 = 1 - (rgbA.r / 255), m1 = 1 - (rgbA.g / 255), y1 = 1 - (rgbA.b / 255);
       const c2 = 1 - (rgbB.r / 255), m2 = 1 - (rgbB.g / 255), y2 = 1 - (rgbB.b / 255);
 
@@ -1245,23 +1219,20 @@
 
       const hexMixed = rgbToHex(finalR, finalG, finalB);
 
-      // Mass Tone
       document.getElementById('preview-mass-tone').style.backgroundColor = hexMixed;
 
-      // Undertone (Simulated Dilution over pure white)
       const uR = Math.round(finalR * 0.3 + 255 * 0.7);
       const uG = Math.round(finalG * 0.3 + 255 * 0.7);
       const uB = Math.round(finalB * 0.3 + 255 * 0.7);
       document.getElementById('preview-undertone').style.backgroundColor = `rgb(${uR},${uG},${uB})`;
 
-      // Tint with 50% White
       const tR = Math.round(finalR * 0.5 + 255 * 0.5);
       const tG = Math.round(finalG * 0.5 + 255 * 0.5);
       const tB = Math.round(finalB * 0.5 + 255 * 0.5);
       document.getElementById('preview-tint-tone').style.backgroundColor = `rgb(${tR},${tG},${tB})`;
     }
 
-    // ==================== TAB 8: PALETTE EXTRACTOR LOGIC ====================
+    // Palette Extractor Logic
     const fileInput = document.getElementById('image-file-input');
     const imgCanvas = document.getElementById('image-canvas');
     const imgCtx = imgCanvas.getContext('2d');
@@ -1339,7 +1310,6 @@
       dropInfo.innerHTML = `HEX: <strong>${hex}</strong> | RGB: (${p[0]}, ${p[1]}, ${p[2]})`;
     });
 
-    // Helper functions
     function hexToRgb(hex) {
       const bigint = parseInt(hex.replace('#',''), 16);
       return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
@@ -1348,7 +1318,6 @@
       return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     }
 
-    // Initialize components on load
     window.addEventListener('DOMContentLoaded', () => {
       drawColorWheel();
       updateHarmonyUI();
