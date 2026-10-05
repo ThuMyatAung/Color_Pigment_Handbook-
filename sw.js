@@ -1,5 +1,5 @@
 // Chroma Studio — offline service worker (network-first for the page, cache-first for assets)
-const CACHE = 'chroma-studio-v1';
+const CACHE = 'chroma-studio-v2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
