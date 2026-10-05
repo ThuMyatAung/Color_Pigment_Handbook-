@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pigment Studio & Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #111215;
+      --bg-surface: #181a20;
+      --bg-card: #20232c;
+      --bg-card-hover: #262a35;
+      --border-color: #2e3342;
+      --text-main: #f0f2f7;
+      --text-muted: #9ba1b4;
+      --accent-warm: #d97736;
+      --accent-lake: #c24168;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --font-stack: 'Plus Jakarta Sans', 'Padauk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    /* Header & Navigation */
+    header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 24px;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title span {
+      color: var(--accent-warm);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background-color: var(--border-color);
+    }
+
+    .nav-btn.active {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    /* Container & Layout */
+    .main-container {
+      max-width: 1200px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Filter Chips */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .filter-chip {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .filter-chip:hover, .filter-chip.active {
+      color: #fff;
+      border-color: var(--accent-warm);
+      background-color: rgba(217, 119, 54, 0.15);
+    }
+
+    .filter-chip.lake.active {
+      border-color: var(--accent-lake);
+      background-color: rgba(194, 65, 104, 0.15);
+    }
+
+    /* Pigment Archive Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .card:hover {
+      background-color: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-swatch {
+      height: 70px;
+      position: relative;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: flex-end;
+      padding: 10px 16px;
+    }
+
+    .category-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .pigment-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .color-index {
+      font-size: 0.8rem;
+      color: var(--accent-warm);
+      font-weight: 600;
+      background: rgba(217, 119, 54, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .pigment-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+    }
+
+    .meta-row:last-child {
+      border-bottom: none;
+    }
+
+    .action-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 8px 12px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .action-btn:hover {
+      background-color: var(--border-color);
+      border-color: var(--text-muted);
+    }
+
+    /* Recipe Step List */
+    .recipe-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .step-list {
+      list-style: none;
+      counter-reset: step-counter;
+      margin-top: 12px;
+    }
+
+    .step-list li {
+      position: relative;
+      padding-left: 36px;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .step-list li::before {
+      counter-increment: step-counter;
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--border-color);
+      color: var(--accent-warm);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* Tone & Mixing Matrix */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .matrix-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 18px;
+      border-radius: 10px;
+    }
+
+    .matrix-badge {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .recipe-block {
+      background: #14161b;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-warm);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="brand-title">
+        <span>●</span> Pigment Archive & Studio Lab
+      </div>
+      <nav>
+        <button class="nav-btn active" onclick="switchTab('archive')">Archive (မှတ်တမ်း)</button>
+        <button class="nav-btn" onclick="switchTab('recipes')">Making & Recipes (ပြုလုပ်နည်း)</button>
+        <button class="nav-btn" onclick="switchTab('equipment')">Studio Tools (ကိရိယာများ)</button>
+        <button class="nav-btn" onclick="switchTab('tone-mixing')">Tone & Mixing (အရောင်စပ်နည်း)</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- TAB 1: ARCHIVE -->
+    <div id="tab-archive" class="tab-view active">
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterArchive('all')">အားလုံး (All)</button>
+        <button class="filter-chip" onclick="filterArchive('earth')">မြေသားနှင့် တွင်းထွက် (Earth & Mineral)</button>
+        <button class="filter-chip lake" onclick="filterArchive('lake')">အပင်ထွက်အရောင်များ (Botanical & Lake)</button>
+      </div>
+
+      <div class="grid" id="pigment-grid">
+        <!-- Earth Pigment 1 -->
+        <div class="card" data-category="earth">
+          <div class="card-swatch" style="background: #c36228;">
+            <span class="category-badge">Earth & Mineral</span>
+          </div>
+          <div class="card-body">
+            <div class="card-header-row">
+              <span class="pigment-title">Yellow / Red Ochre</span>
+              <span class="color-index">PY43 / PR102</span>
+            </div>
+            <p class="pigment-meta" style="color: #c9a47d; font-size: 0.85rem;">မြေဝါနု / မြေနီရောင်ခြယ်ပစ္စည်း</p>
+            <div class="pigment-meta">
+              <div class="meta-row"><span>Chemical:</span> <span>Fe₂O₃ · H₂O / Fe₂O₃</span></div>
+              <div class="meta-row"><span>Lightfastness:</span> <span>အဆင့် ၁ (Excellent)</span></div>
+              <div class="meta-row"><span>Toxicity:</span> <span>Non-toxic (အဆိပ်မရှိ)</span></div>
+            </div>
+            <button class="action-btn" onclick="goToRecipe('recipe-ochre')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+          </div>
+        </div>
+
+        <!-- Botanical Pigment 1 -->
+        <div class="card" data-category="lake">
+          <div class="card-swatch" style="background: #a32244;">
+            <span class="category-badge" style="background: rgba(194,65,104,0.85);">Botanical & Lake</span>
+          </div>
+          <div class="card-body">
+            <div class="card-header-row">
+              <span class="pigment-title">Madder Lake (ရိုးစွဲနီ)</span>
+              <span class="color-index">NR9 (Natural Red)</span>
+            </div>
+            <p class="pigment-meta" style="color: #e28fa7; font-size: 0.85rem;">Rubia Tinctorum (မဲဒါအမြစ်မှထုတ်ယူ)</p>
+            <div class="pigment-meta">
+              <div class="meta-row"><span>Dye Base:</span> <span>Alizarin & Purpurin</span></div>
+              <div class="meta-row"><span>Fixative:</span> <span>Alum (ကျောက်ချဉ်) + Soda Ash</span></div>
+              <div class="meta-row"><span>Lightfastness:</span> <span>အလယ်အလတ် (Moderate)</span></div>
+            </div>
+            <button class="action-btn" onclick="goToRecipe('recipe-madder')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+          </div>
+        </div>
+
+        <!-- Earth Pigment 2 -->
+        <div class="card" data-category="earth">
+          <div class="card-swatch" style="background: #3e3228;">
+            <span class="category-badge">Earth & Mineral</span>
+          </div>
+          <div class="card-body">
+            <div class="card-header-row">
+              <span class="pigment-title">Raw & Burnt Umber</span>
+              <span class="color-index">PBr7</span>
+            </div>
+            <p class="pigment-meta" style="color: #c9a47d; font-size: 0.85rem;">သဘာဝ သံနှင့် မန်းဂနိစ်မြေညို</p>
+            <div class="pigment-meta">
+              <div class="meta-row"><span>Chemical:</span> <span>Fe₂O₃ + MnO₂</span></div>
+              <div class="meta-row"><span>Drying Rate:</span> <span>အလွန်မြန် (ဆီခြောက်လွယ်)</span></div>
+              <div class="meta-row"><span>Undertone:</span> <span>အစိမ်း/အဝါသန်းသော မြေညို</span></div>
+            </div>
+            <button class="action-btn" onclick="goToRecipe('recipe-ochre')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+          </div>
+        </div>
+
+        <!-- Botanical Pigment 2 -->
+        <div class="card" data-category="lake">
+          <div class="card-swatch" style="background: #1e3f66;">
+            <span class="category-badge" style="background: rgba(194,65,104,0.85);">Botanical Extract</span>
+          </div>
+          <div class="card-body">
+            <div class="card-header-row">
+              <span class="pigment-title">Natural Indigo (မဲနယ်)</span>
+              <span class="color-index">NB1 (Natural Blue)</span>
+            </div>
+            <p class="pigment-meta" style="color: #9cb8da; font-size: 0.85rem;">Indigofera Tinctorum အရွက်မှအချဉ်ဖောက်ထုတ်ယူ</p>
+            <div class="pigment-meta">
+              <div class="meta-row"><span>Active Agent:</span> <span>Indigotin (အောက်ဆီဂျင်ဓာတ်ပြု)</span></div>
+              <div class="meta-row"><span>Solubility:</span> <span>ရေတွင် မပျော်ဝင် (Insoluble)</span></div>
+              <div class="meta-row"><span>Lightfastness:</span> <span>အဆင့် ၃ (Fair to Good)</span></div>
+            </div>
+            <button class="action-btn" onclick="goToRecipe('recipe-lake-general')">Lake ပြုလုပ်နည်းကြည့်ရန် →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: RECIPES -->
+    <div id="tab-recipes" class="tab-view">
+      
+      <!-- Earth Recipe -->
+      <div class="recipe-card" id="recipe-ochre">
+        <div class="recipe-header">
+          <div>
+            <h2 style="font-size: 1.25rem;">မြေသားပစ်ဂမန့် အဆင့်ဆင့်သန့်စင်နည်း (Earth Levigation & Calcination)</h2>
+            <span style="color: var(--accent-warm); font-size: 0.85rem;">Ochre, Umber, Sienna ကဲ့သို့ မြေသားများနှင့် သက်ဆိုင်သည်</span>
+          </div>
+          <span class="category-badge">Earth Protocol</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+          <strong>လိုအပ်သော ကိရိယာ:</strong> ကျောက်ဆုံ၊ ရေစစ်ဆန်ခါ (100-200 Mesh sieve)၊ ဖန်ပုလင်းရှည် (Levigation jars)၊ အပူပေးဖို (မီးဖုတ်ရန်)။
+        </p>
+        <ol class="step-list">
+          <li><strong>Crushing (ကြိတ်ခွဲခြင်း):</strong> ကောက်ယူရရှိသော မြေစိုင်/ကျောက်စရစ်ရိုင်းများကို နေခြောက်လှန်းပြီးနောက် သံ/ကျောက်ဆုံထဲတွင် အမှုန့်ကြမ်းရသည်အထိ ထုထောင်းပါ။</li>
+          <li><strong>Levigation (ရေဆေး အနည်ထိုင်နည်းစနစ်):</strong> အမှုန့်များကို ရေဖလားရှည်ထဲထည့်၍ မွှေပါ။ ၁၀ စက္ကန့်ခန့် စောင့်ဆိုင်းပြီး သဲကြမ်းများ အောက်ခြေကျသွားချိန်တွင် အပေါ်ယံ ရေနောက်ကို နောက်ထပ် ဖန်ဘူးတစ်လုံးထဲသို့ ညင်သာစွာ ပြောင်းငှဲ့ပါ။</li>
+          <li><strong>Settling & Drying (အနည်ထိုင်ခြင်းနှင့် အခြောက်ခံခြင်း):</strong> ဒုတိယဖန်ဘူးရှိ အနုစား ရွှံ့မှုန့်များကို ၂၄ နာရီ ငြိမ်သက်စွာ ထား၍ ရေကြည်ကို အပေါ်မှ ခပ်ထုတ်ပါ။ အောက်ခြေကျန်သော ရွှံ့နုကို ပိတ်စပေါ်တင်၍ အခြောက်ခံပါ။</li>
+          <li><strong>Calcination (မီးဖုတ်နည်း - ရွေးချယ်နိုင်သည်):</strong> Yellow Ochre မှ နီညိုရောင် Burnt Ochre လိုချင်ပါက ရရှိလာသောအမှုန့်ခြောက်ကို ဒယ်ပြားပေါ်တင်၍ 200°C - 300°C တွင် အပူပေးလျှင် ဓာတုဓာတ်ပေါင်းပြောင်းလဲကာ နီမြန်းသောအရောင် ရရှိပါမည်။</li>
+        </ol>
+      </div>
+
+      <!-- Lake Recipe -->
+      <div class="recipe-card" id="recipe-madder">
+        <div class="recipe-header">
+          <div>
+            <h2 style="font-size: 1.25rem;">အပင်ထွက်ဆေးဆိုးရည်ကို ဆေးမှုန့်ဖြစ်စေနည်း (Botanical Lake Pigment Precipitation)</h2>
+            <span style="color: var(--accent-lake); font-size: 0.85rem;">Madder, Marigold, သစ်ခေါက်၊ ပန်းပွင့်အရောင်များမှ အမှုန့်ထုတ်ယူခြင်း</span>
+          </div>
+          <span class="category-badge" style="background: rgba(194,65,104,0.85);">Lake Protocol</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+          <strong>လိုအပ်သော ဓာတုပစ္စည်းများ:</strong> Potassium Alum (ကျောက်ချဉ်မှုန့် - $KAl(SO_4)_2$)၊ Washing Soda / Soda Ash (ဆိုဒါမှုန့် - $Na_2CO_3$)၊ စစ်စက္ကူ (Coffee filter)။
+        </p>
+        <ol class="step-list">
+          <li><strong>Dye Extraction (အရောင်ထုတ်ယူခြင်း):</strong> သစ်ဥ/ပန်းပွင့်များကို ကြိတ်ပြီး ရေနွေးနွေး (60°C ခန့်) တွင် ၁ နာရီကြာ နှပ်ထားကာ ပြင်းအားမြင့် ဆေးဆိုးရည်ကို အဝတ်ပါးဖြင့် စစ်ယူပါ။</li>
+          <li><strong>Alum Bath (ချည်နှောင်ပစ္စည်း ထည့်ခြင်း):</strong> ထွက်လာသော အရောင်ရည်ထဲသို့ ကျောက်ချဉ်ရည်ပျော်ရည် (Alum solution) ကို ရောထည့်ပြီး သမအောင် မွှေပေးပါ။</li>
+          <li><strong>Precipitation (အနည်ကျစေခြင်း):</strong> Soda Ash အရည်ကို အစက်ချ ဖြည်းညင်းစွာ ထည့်ပါ။ ဓာတ်ငွေ့ပူဖောင်းများ ထွက်လာပြီး Alumina Hydrate နှင့် ဆေးရောင်ဓာတ်ပေါင်းစပ်ကာ အမှုန့်အနည်အဖြစ် အောက်ခြေသို့ ထိုင်ဆင်းသွားပါမည် (pH 6.5 - 7 တွင် ရပ်ပါ)။</li>
+          <li><strong>Washing & Filtering:</strong> အနည်ထိုင်ပြီးသော Lake pigment ကို filter စက္ကူဖြင့် စစ်ယူပြီး ဆားဓာတ်များပြောင်စေရန် ရေစင်စစ်ဖြင့် ၂ ကြိမ် ဆေးကြောကာ အရိပ်ထဲတွင် အခြောက်ခံပါ။</li>
+        </ol>
+      </div>
+
+    </div>
+
+    <!-- TAB 3: STUDIO & TOOLS -->
+    <div id="tab-equipment" class="tab-view">
+      <div class="grid">
+        <div class="card">
+          <div class="card-body">
+            <h3 style="color: var(--accent-warm); margin-bottom: 6px;">Glass Muller & Slab</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">ဖန်လက်ရိုက်နှင့် မှန်ကြိတ်ပြား</p>
+            <p style="font-size: 0.9rem;">
+              ခြောက်သွေ့နေသော ပစ်ဂမန့်အမှုန့်ကို Gum Arabic (ဝါတာကာလာအတွက်) သို့မဟုတ် Cold-pressed Linseed Oil (ဆီဆေးအတွက်) ဖြင့် အမှုန့်တစ်မှုန့်ချင်းစီ အညီအမျှ ပျံ့နှံ့ရောစပ်စေရန် အဝိုင်းပုံသဏ္ဌာန် ဖိကြိတ်ရသည့် အဓိကကိရိယာ ဖြစ်သည်။
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h3 style="color: var(--accent-warm); margin-bottom: 6px;">Porcelain Mortar & Pestle</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">ကြွေကျောက်ဆုံနှင့် လက်ရိုက်</p>
+            <p style="font-size: 0.9rem;">
+              အပင်ထွက် အမှုန့်ခြောက်များ၊ Lake pigment အခဲဖတ်များနှင့် မြေစိုင်အလတ်စားများကို ကနဦး ကြိတ်ခွဲမှုန့်ညက်စေရန် သုံးသည်။ သတ္တုကြိတ်ဆုံများထက် ဓာတုဓာတ်မပြုသော ကြွေသားကို ရွေးချယ်သင့်သည်။
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h3 style="color: var(--accent-lake); margin-bottom: 6px;">Chemical Safety & Masks</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">N95 / FFP3 မျက်နှာဖုံးနှင့် လက်အိတ်</p>
+            <p style="font-size: 0.9rem;">
+              ပစ်ဂမန့်အမှုန့်များသည် အလွန်သေးငယ်သည့်အတွက် ကြိတ်ခွဲချိန်နှင့် မွှေချိန်တွင် အဆုတ်တွင်းသို့ မဝင်ရောက်စေရန် N95 Respirator တပ်ဆင်ရန် မဖြစ်မနေ လိုအပ်ပါသည်။
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: TONE & COLOR MIXING -->
+    <div id="tab-tone-mixing" class="tab-view">
+      
+      <h2 style="font-size: 1.25rem; margin-bottom: 16px;">၁။ အရောင်ဂုဏ်သတ္တိများ ခွဲခြားဖတ်ရှုမှု (Tone Terminology)</h2>
+      
+      <div class="matrix-grid">
+        <div class="matrix-box">
+          <span class="matrix-badge" style="background: #2563eb; color: #fff;">Hue</span>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">အရောင်စင်စစ် အမည်</p>
+          <p style="font-size: 0.9rem; margin-top: 6px;">အဖြူ၊ အမည်း ရောစပ်မထားသော သဘာဝအရောင်လှိုင်း မူရင်းအခြေအနေ (ဥပမာ - မူရင်းအနီ၊ အပြာစစ်စစ်)။</p>
+        </div>
+
+        <div class="matrix-box">
+          <span class="matrix-badge" style="background: #e2e8f0; color: #000;">Tint</span>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + White (အဖြူစပ်အရောင်)</p>
+          <p style="font-size: 0.9rem; margin-top: 6px;">အရောင်၏ Value (အလင်းတန်ဖိုး) ကို မြှင့်တင်ပေးပြီး နုပျိုကြည်လင်သောအရောင်အဖြစ် ပြောင်းလဲစေသည်။</p>
+        </div>
+
+        <div class="matrix-box">
+          <span class="matrix-badge" style="background: #0f172a; color: #cbd5e1; border: 1px solid #334155;">Shade</span>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + Black (အနက်စပ်အရောင်)</p>
+          <p style="font-size: 0.9rem; margin-top: 6px;">အရောင်၏ Value ကို လျှော့ချပြီး မှောင်နက်သွားစေကာ လေးလံသော အရိပ်အရောင်ကို ရရှိစေသည်။</p>
+        </div>
+
+        <div class="matrix-box">
+          <span class="matrix-badge" style="background: #64748b; color: #fff;">Tone</span>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + Grey (မီးခိုးစပ်အရောင်)</p>
+          <p style="font-size: 0.9rem; margin-top: 6px;">စူးရှတောက်ပမှု (Saturation/Chroma) ကို လျှော့ချထားပြီး သဘာဝပတ်ဝန်းကျင်နှင့် လိုက်ဖက်သော ငြိမ်သက်သည့်အရောင်။</p>
+        </div>
+      </div>
+
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px; margin-top: 28px;">၂။ Mass Tone နှင့် Undertone နားလည်ခြင်း</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ဝေါဟာရ</th>
+              <th>အဓိပ္ပာယ်ဖော်ပြချက်</th>
+              <th>လက်တွေ့ စမ်းသပ်နည်း</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Mass Tone</strong></td>
+              <td>ဆေးသားကို ကင်းဗတ်ပေါ် အထူသုတ်ထားချိန်တွင် မျက်စိဖြင့်မြင်ရသည့် နက်ရှိုင်းသောအရောင်။</td>
+              <td>Palette ဓားဖြင့် ဆေးသားအပြည့် ကော်တင်ကြည့်ပါ။</td>
+            </tr>
+            <tr>
+              <td><strong>Undertone</strong></td>
+              <td>ဆေးသားကို အလွန်ပါးလွှာစွာ ဆွဲဆန့်လိုက်သည့်အခါ သို့မဟုတ် အဖြူစပ်လိုက်သည့်အခါ ထွက်ပေါ်လာသည့် အောက်ခံရောင်စစ်။</td>
+              <td>အဖြူရောင်စက္ကူပေါ်တွင် လက်ချောင်း (သို့) ရေ/ဆီဖြင့် ပါးပါးပွတ်ဆွဲကြည့်ပါ။</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 style="font-size: 1.25rem; margin-bottom: 12px; margin-top: 32px;">၃။ Clean Reading Formula Block (နမူနာဖော်မြူလာ)</h2>
+      <div class="recipe-block">
+<strong>[ Chromatic Black & Shadow Tone Formula ]</strong><br>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
+• ပါဝင်သည့် ပစ်ဂမန့်များ : Burnt Sienna (PR102) + Ultramarine Blue (PB29)<br>
+• ရောစပ်မှု အချိုးအစား   : 1 : 1 (Neutral Dark Velvet)<br>
+<br>
+[အသုံးချမှု ညွှန်ကြားချက်]<br>
+1. အပြာဘက်သို့ ပိုစောင်းပါက  → အေးမြသော အရိပ် (Cool Atmospheric Shadow)<br>
+2. အညိုဘက်သို့ ပိုစောင်းပါက  → နွေးထွေးသော မြေသားအရိပ် (Warm Earth Shadow)<br>
+<br>
+* မှတ်ချက်: Lamp Black (အနက်ရောင်စစ်စစ်) သည် အလင်းကို ကာဆီးပိတ်ဆို့တတ်သောကြောင့် <br>
+  ဤကဲ့သို့ တွဲဖက်စပ်ဆေးကို သုံးခြင်းဖြင့် ပိုမိုအသက်ဝင်ပြီး အလင်းပေါက်သည့် အရိပ်ကို ရရှိစေပါသည်။
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const targetView = document.getElementById('tab-' + tabId);
+      if (targetView) targetView.classList.add('active');
+
+      const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => 
+        b.getAttribute('onclick').includes(tabId)
+      );
+      if (clickedBtn) clickedBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Filter Logic for Archive (Earth vs Lake)
+    function filterArchive(category) {
+      const cards = document.querySelectorAll('#pigment-grid .card');
+      const chips = document.querySelectorAll('.filter-bar .filter-chip');
+
+      chips.forEach(chip => chip.classList.remove('active'));
+      event.target.classList.add('active');
+
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Direct Link from Card to Recipe
+    function goToRecipe(recipeElementId) {
+      switchTab('recipes');
+      setTimeout(() => {
+        const el = document.getElementById(recipeElementId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          el.style.borderColor = 'var(--accent-warm)';
+          setTimeout(() => {
+            el.style.borderColor = 'var(--border-color)';
+          }, 1500);
+        }
+      }, 100);
+    }
+  </script>
+</body>
+</html>
