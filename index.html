@@ -1,21 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
   <meta charset="UTF-8">
   <title>Chroma Studio - Artist & Paint Maker Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ChromaStudio">
+  <meta name="theme-color" content="#0A0A0C">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    .nav-btn, .chip, .btn-action, .btn-step, .circle-swatch, .details-toggle { user-select: none; -webkit-user-select: none; }
     body {
       background-color: #0A0A0C;
       color: #FFFFFF;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Padauk", Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.8;
       padding-top: env(safe-area-inset-top, 20px);
       padding-bottom: env(safe-area-inset-bottom, 20px);
       overflow-x: hidden;
@@ -36,9 +43,9 @@
     .nav-bar::-webkit-scrollbar { display: none; }
     .nav-btn {
       flex: 0 0 auto;
-      padding: 12px 11px;
+      padding: 13px 13px;
       text-align: center;
-      font-size: 9.5px;
+      font-size: 12px;
       font-weight: 800;
       color: #8E8E93;
       border-bottom: 2px solid transparent;
@@ -46,15 +53,17 @@
       white-space: nowrap;
     }
     .nav-btn.active { color: #FFF; border-bottom-color: #0A84FF; }
-    .tab-content { display: none; padding: 14px; }
+    .tab-content { display: none; padding: 16px; max-width: 920px; margin: 0 auto; }
+    @media (min-width: 980px) { .nav-bar { padding-left: calc(50vw - 460px); } }
     .tab-content.active { display: block; }
     
     /* Universal Cards & Layout */
     .card {
       background: #161618;
+      border: 1px solid #26262B;
       border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
     }
     .active-bar {
       display: flex;
@@ -72,9 +81,9 @@
       background: #242426;
       color: #0A84FF;
       border: none;
-      padding: 8px 12px;
+      padding: 9px 13px;
       border-radius: 8px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -82,9 +91,9 @@
     .chip {
       background: #161618;
       color: #8E8E93;
-      padding: 6px 11px;
+      padding: 7px 12px;
       border-radius: 14px;
-      font-size: 10px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -98,7 +107,7 @@
     }
     .strip-row { display: flex; height: 22px; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
     .strip-col { flex: 1; }
-    .matrix-title { font-size: 10px; color: #8E8E93; font-weight: 700; margin-bottom: 4px; }
+    .matrix-title { font-size: 12px; color: #8E8E93; font-weight: 700; margin-bottom: 6px; line-height: 1.7; }
 
     /* Schemes Swatches Grid */
     .scheme-swatches {
@@ -116,8 +125,8 @@
     .scheme-color-box {
       width: 100%; height: 28px; border-radius: 5px; margin-bottom: 4px;
     }
-    .scheme-label { font-size: 8.5px; color: #8E8E93; font-weight: 700; }
-    .scheme-hex { font-size: 9.5px; font-weight: 800; color: #FFF; }
+    .scheme-label { font-size: 10px; color: #8E8E93; font-weight: 700; }
+    .scheme-hex { font-size: 11px; font-weight: 800; color: #FFF; }
 
     /* Pigment Cards & Badges */
     .pigment-card {
@@ -131,7 +140,7 @@
       border: 1px solid rgba(255,255,255,0.2);
     }
     .temp-tag {
-      font-size: 8.5px; font-weight: 800; padding: 2px 6px;
+      font-size: 10px; font-weight: 800; padding: 3px 7px;
       border-radius: 4px; display: inline-block; margin-bottom: 2px;
     }
     .temp-warm { background: rgba(255, 69, 58, 0.2); color: #FF453A; }
@@ -140,12 +149,12 @@
 
     .prop-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
     .prop-badge {
-      font-size: 8.5px; background: #242426; padding: 2px 6px;
+      font-size: 10px; background: #242426; padding: 3px 7px;
       border-radius: 4px; color: #A1A1A6;
     }
     .psychology-box {
-      background: #1C1C1E; border-radius: 8px; padding: 8px 10px;
-      font-size: 10.5px; line-height: 1.4; color: #D1D1D6; margin-top: 4px;
+      background: #1C1C1E; border-radius: 8px; padding: 10px 12px;
+      font-size: 12.5px; line-height: 1.9; color: #D1D1D6; margin-top: 4px;
       border-left: 3px solid #0A84FF;
     }
 
@@ -153,15 +162,15 @@
     .particle-box {
       background: #101115;
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       border-left: 3px solid #FF9F0A;
-      font-size: 10px;
+      font-size: 12px;
       color: #E5E5EA;
-      line-height: 1.45;
+      line-height: 1.9;
       margin-top: 4px;
     }
     .particle-title {
-      font-size: 9px;
+      font-size: 10.5px;
       font-weight: 800;
       color: #FF9F0A;
       text-transform: uppercase;
@@ -173,14 +182,15 @@
     .prop-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 9.5px;
+      font-size: 11.5px;
+      line-height: 1.7;
       margin-top: 6px;
       background: #1C1C1E;
       border-radius: 6px;
       overflow: hidden;
     }
     .prop-table td {
-      padding: 5px 10px;
+      padding: 7px 10px;
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .prop-table td:first-child { color: #8E8E93; width: 40%; }
@@ -190,11 +200,11 @@
     .concept-box {
       background: #161618; border-radius: 12px; padding: 14px; margin-bottom: 14px;
     }
-    .concept-title { font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .concept-sub { font-size: 10.5px; color: #8E8E93; line-height: 1.4; margin-bottom: 10px; }
+    .concept-title { font-size: 14px; font-weight: 800; color: #FFF; margin-bottom: 6px; letter-spacing: 0.3px; line-height: 1.7; }
+    .concept-sub { font-size: 13px; color: #B9B9BE; line-height: 1.95; margin-bottom: 10px; }
     
     .light-shadow-preview { display: flex; gap: 8px; margin-top: 10px; }
-    .light-col { flex: 1; border-radius: 8px; padding: 10px; text-align: center; font-size: 10px; font-weight: 700; }
+    .light-col { flex: 1; border-radius: 8px; padding: 10px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.8; }
     .relativity-test { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
     .rel-outer { width: 100px; height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
     .rel-inner { width: 36px; height: 36px; border-radius: 6px; background: #FF5E80; }
@@ -203,26 +213,26 @@
       background: #161618; border-radius: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid #262628;
     }
     .recipe-title {
-      font-size: 12.5px; font-weight: 800; color: #FFF; margin-bottom: 4px;
+      font-size: 14.5px; font-weight: 800; color: #FFF; margin-bottom: 4px; line-height: 1.7;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .recipe-sub { font-size: 10px; color: #0A84FF; font-weight: 700; margin-bottom: 10px; }
+    .recipe-sub { font-size: 12px; color: #0A84FF; font-weight: 700; margin-bottom: 10px; line-height: 1.8; }
     .code-terminal {
       background: #0A0A0C; border: 1px solid #262628; border-left: 3px solid #0A84FF;
-      border-radius: 6px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px; color: #96C2EC; line-height: 1.5; margin: 8px 0;
+      border-radius: 6px; padding: 12px 14px; font-family: 'JetBrains Mono', 'Padauk', sans-serif;
+      font-size: 11.5px; color: #96C2EC; line-height: 2.0; margin: 8px 0;
     }
     .step-ordered { list-style: none; counter-reset: step-c; margin-top: 10px; }
     .step-ordered li {
-      position: relative; padding-left: 28px; margin-bottom: 10px;
-      font-size: 10.5px; color: #D1D1D6; line-height: 1.45;
+      position: relative; padding-left: 30px; margin-bottom: 12px;
+      font-size: 13.5px; color: #D1D1D6; line-height: 1.95;
     }
     .step-ordered li::before {
       counter-increment: step-c; content: counter(step-c);
-      position: absolute; left: 0; top: 0; width: 18px; height: 18px;
+      position: absolute; left: 0; top: 2px; width: 20px; height: 20px;
       background: #242426; color: #0A84FF; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 9px; font-weight: 800;
+      font-size: 10px; font-weight: 800;
     }
 
     /* Mixer */
@@ -241,7 +251,7 @@
     }
     .badge {
       background: rgba(0,0,0,0.65); padding: 5px 9px;
-      border-radius: 6px; font-size: 11px; font-weight: 800;
+      border-radius: 6px; font-size: 12px; font-weight: 800;
     }
 
     /* Extractor & Loupe */
@@ -265,6 +275,27 @@
     #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.9); }
     #crosshair::before { top: 6px; left: 0; width: 14px; height: 2px; }
     #crosshair::after { top: 0; left: 6px; width: 2px; height: 14px; }
+    /* Collapsible details (cleanup pass) */
+    .collapsible { display: none; }
+    .collapsible.open { display: block; }
+    .details-toggle {
+      width: 100%; background: #1C1C1E; color: #0A84FF; border: 1px solid #26262B;
+      padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; margin-top: 2px; font-family: inherit;
+    }
+    .recipe-box.collapsed > *:not(.recipe-title):not(.details-toggle) { display: none !important; }
+    .recipe-box .details-toggle { margin-top: 8px; }
+
+    /* Search inputs (cleanup pass) */
+    .search-input {
+      width: 100%; background: #161618; border: 1px solid #2C2C2E; border-radius: 10px;
+      color: #FFF; padding: 11px 13px; font-size: 13px; margin-bottom: 12px;
+      font-family: inherit; outline: none;
+    }
+    .search-input:focus { border-color: #0A84FF; }
+    .search-input::placeholder { color: #6E6E73; }
+    .no-result { text-align: center; color: #8E8E93; font-size: 12.5px; padding: 22px 0; line-height: 1.9; }
+
     .palette-circles { display: flex; justify-content: space-between; gap: 6px; margin: 10px 0 14px 0; }
     .circle-swatch {
       width: 44px; height: 44px; border-radius: 22px; border: 2px solid transparent;
@@ -290,8 +321,8 @@
   <!-- TAB 1: 2D CHROMA WHEEL & DYNAMIC SCHEMES -->
   <div id="tabWheel" class="tab-content active">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-      <span style="font-size: 10px; color: #8E8E93;">Wheel ပေါ် ဖိဆွဲပြီး လှည့်လည်စမ်းသပ်ပါ</span>
-      <button class="btn-action" style="padding: 4px 8px; font-size: 9.5px;" onclick="toggleValueMode()" id="valToggleBtn">
+      <span style="font-size: 12.5px; color: #8E8E93;">Wheel ပေါ် ဖိဆွဲပြီး လှည့်လည်စမ်းသပ်ပါ</span>
+      <button class="btn-action" style="padding: 6px 10px; font-size: 11px;" onclick="toggleValueMode()" id="valToggleBtn">
         VIEW VALUE (GREY)
       </button>
     </div>
@@ -305,7 +336,7 @@
       <div id="mainSwatch" class="swatch-box"></div>
       <div style="flex:1;">
         <div id="hexText" style="font-size: 16px; font-weight: 800;">#FF5500</div>
-        <div id="hueChromaText" style="font-size: 10px; color: #8E8E93;">HUE: 0° | CHROMA: 100%</div>
+        <div id="hueChromaText" style="font-size: 12px; color: #8E8E93;">HUE: 0° | CHROMA: 100%</div>
       </div>
       <button class="btn-action" onclick="routeHexToMixer(document.getElementById('hexText').innerText)">စပ်နည်းကြည့်ရန်</button>
     </div>
@@ -350,6 +381,7 @@
       <div class="chip" onclick="filterPigments('WHITE', this)">WHITES</div>
     </div>
 
+    <input class="search-input" id="tonesSearch" type="search" placeholder="🔍 Pigment ရှာရန် — အမည် သို့မဟုတ် C.I. code" oninput="searchTones(this.value)">
     <div id="pigmentsList"></div>
   </div>
 
@@ -424,21 +456,21 @@
     <div id="tradControls" class="card">
       <div class="matrix-title" style="margin-bottom:8px;">WARM PRIMARIES (အပူရောင် မူလဆေးများ)</div>
       <div class="step-row">
-        <span style="color:#FF453A; font-weight:700; font-size:12px;">Cadmium Red Light / Vermilion PR113 (<span id="vWR">20</span> pts)</span>
+        <span style="color:#FF453A; font-weight:700; font-size:13px;">Cadmium Red Light PR108 / Vermilion PR106 (<span id="vWR">20</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('wr', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('wr', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#FFD60A; font-weight:700; font-size:12px;">Indian Yellow PY110 / Cadmium (<span id="vWY">20</span> pts)</span>
+        <span style="color:#FFD60A; font-weight:700; font-size:13px;">Indian Yellow PY110 / Cadmium (<span id="vWY">20</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('wy', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('wy', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#5E5CE6; font-weight:700; font-size:12px;">Ultramarine Blue PB29 (Warm/Purple shade) (<span id="vWB">20</span> pts)</span>
+        <span style="color:#5E5CE6; font-weight:700; font-size:13px;">Ultramarine Blue PB29 (Warm/Purple shade) (<span id="vWB">20</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('wb', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('wb', 10)">+</button>
@@ -447,21 +479,21 @@
 
       <div class="matrix-title" style="margin-top:12px; margin-bottom:8px;">COOL PRIMARIES (အအေးရောင် မူလဆေးများ)</div>
       <div class="step-row">
-        <span style="color:#FF2D55; font-weight:700; font-size:12px;">Alizarin / Rose Madder NR9 / Quinacridone (<span id="vCR">0</span> pts)</span>
+        <span style="color:#FF2D55; font-weight:700; font-size:13px;">Alizarin / Rose Madder NR9 / Quinacridone (<span id="vCR">0</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('cr', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('cr', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#FFDF00; font-weight:700; font-size:12px;">Lemon Yellow PY3 / Lead-Tin (<span id="vCY">0</span> pts)</span>
+        <span style="color:#FFDF00; font-weight:700; font-size:13px;">Lemon Yellow PY3 / Lead-Tin (<span id="vCY">0</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('cy', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('cy', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#00C7BE; font-weight:700; font-size:12px;">Prussian PB27 / Cerulean PB35 / Phthalo (<span id="vCB">0</span> pts)</span>
+        <span style="color:#00C7BE; font-weight:700; font-size:13px;">Prussian PB27 / Cerulean PB35 / Phthalo (<span id="vCB">0</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('cb', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('cb', 10)">+</button>
@@ -470,21 +502,21 @@
 
       <div class="matrix-title" style="margin-top:12px; margin-bottom:8px;">GREY & EARTH MODIFIERS (VIRGIL HARMONY)</div>
       <div class="step-row">
-        <span style="color:#FFF; font-weight:700; font-size:12px;">Lead / Titanium White (<span id="vW">10</span> pts)</span>
+        <span style="color:#FFF; font-weight:700; font-size:13px;">Lead / Titanium White (<span id="vW">10</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('w', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('w', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#8E8E93; font-weight:700; font-size:12px;">Neutral Grey (White + Bone Black) (<span id="vG">0</span> pts)</span>
+        <span style="color:#8E8E93; font-weight:700; font-size:13px;">Neutral Grey (White + Bone Black) (<span id="vG">0</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('g', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('g', 10)">+</button>
         </div>
       </div>
       <div class="step-row">
-        <span style="color:#A2845E; font-weight:700; font-size:12px;">Transparent Oxide Red PR101 / Burnt Sienna (<span id="vE">0</span> pts)</span>
+        <span style="color:#A2845E; font-weight:700; font-size:13px;">Transparent Oxide Red PR101 / Burnt Sienna (<span id="vE">0</span> pts)</span>
         <div class="step-btns">
           <button class="btn-step" onclick="adjSplit('e', -10)">-</button>
           <button class="btn-step" onclick="adjSplit('e', 10)">+</button>
@@ -536,6 +568,7 @@
       <div class="chip" onclick="filterArchiveCategory('SYN_ORGANIC', this)">SYNTHETIC ORGANIC</div>
     </div>
 
+    <input class="search-input" id="archiveSearch" type="search" placeholder="🔍 Pigment ရှာရန် — အမည်၊ C.I. code သို့မဟုတ် ဓာတုပုံသေနည်း" oninput="searchArchive(this.value)">
     <div id="archivePigmentsList"></div>
   </div>
 
@@ -557,15 +590,15 @@
         <span class="badge" style="color:#FF9F0A;">THERMAL</span>
       </div>
       <div class="recipe-sub">Yellow Ochre (FeO·OH) မှ Red / Burnt Ochre (Fe₂O₃) သို့ အပူချိန်ဖြင့် ပြောင်းလဲခြင်း</div>
-      <div style="font-size:10.5px; color:#A1A1A6; line-height:1.45; margin-bottom:8px;">
+      <div style="font-size:13px; color:#A1A1A6; line-height:1.95; margin-bottom:8px;">
         သဘာဝ မြေဝါတွင် ကိန်းအောင်းနေသော ဓာတုပေါင်းစပ်ရေကို အပူဖြင့် နှင်ထုတ်လိုက်သောအခါ မီးခတ်သံအောက်ဆိုဒ် (Hematite) ဖြစ်လာပြီး နီမြန်းသော ချောကလက်ရောင်သို့ ကူးပြောင်းသွားသည်။
       </div>
       
       <div class="code-terminal">
-        [၁] ဒယ်အိုးလှော်နည်း (Pan Roasting): သံဒယ်အိုးအထူထဲသို့ အမှုန့်ခြောက်ထည့်၍ 200°C-300°C တွင် အဆက်မပြတ် မွှေပေးပါ။ ၁၅-၃၀ မိနစ်အတွင်း ရွှေဝါမှ လိမ္မော်နီသို့ ကူးပြောင်းသည်။<br>
-        [၂] Kiln မီးဖိုနည်း (Crucible Annealing): မီးခံခွက်တွင် ထည့်ကာ Ceramic Kiln ထဲတွင် 500°C-650°C ဖြင့် ၁ နာရီ မီးဖုတ်လျှင် နက်ရှိုင်းသော Venetian Red အဆင့် ရရှိသည်။<br>
+        [၁] ဒယ်အိုးလှော်နည်း (Pan Roasting): သံဒယ်အိုးအထူထဲသို့ အမှုန့်ခြောက် 50g ခန့်ထည့်၍ အပူချိန် တဖြည်းဖြည်း မြှင့်ရင်း (အမြင့်ဆုံး 370°C ခန့်) အဆက်မပြတ် မွှေပေးပါ။ ၁၅-၃၀ မိနစ်အတွင်း ရွှေဝါမှ လိမ္မော်နီသို့ ကူးပြောင်းသည်။<br>
+        [၂] Kiln မီးဖိုနည်း (Crucible Annealing): မီးခံခွက်တွင် ထည့်၍ အပူချိန် အဆင့်ဆင့် (100°C / 50°C / 20°C စီ တိုး၍) ၁၀ မိနစ်စီ ဖုတ်ပါ — နမူနာ တစ်ခုတည်းမှ အရောင် အဆင့်မျိုးစုံ ရမည်။ ပိုနက်သော Venetian Red အဆင့် အတွက် 500°C-650°C အထိ ဖုတ်နိုင်သည်။<br>
         [၃] မီးပုံနည်း (Fire Pit Method): ရှေးရိုးနည်းဖြစ်ပြီး မြေစိုင်ခဲကြီးများကို မီးသွေးခဲရဲရဲများကြား တိုက်ရိုက်ဖုတ်ကာ အေးမှ ဆယ်ယူ၍ ရေဆေးအနည်ထိုင်သည်။<br>
-        [၄] Press Cake Handling: ရေဆေးပြီးသော ရွှံ့နုကို ပိတ်စဖြင့် ဖိညှစ်ထုတ်ပြီး ရလာသော တုံးခဲ (Press Cake) ကို အရိပ်ထဲ အခြောက်ခံပြီးမှ ဖန်လက်ရိုက်ဖြင့် အချောကြိတ်ရသည်။
+        [၄] Press Cake မီးတိုက်ရိုက် ကင်နည်း: Pigment 20g ခန့်ကို ရေဖြင့် ပျစ် (Putty) ဖြစ်အောင် နှယ်၍ သံတံ (Skewer) တွင် ညှစ်ပုံသွင်းပြီး မီးတိုက်ရိုက်ပေါ် တင်၍ အရောင် ပြောင်းသည်အထိ (၁၀ မိနစ်ခန့်) ကင်ပါ။ ကြေမွဲလျှင် Kaolin 10–20% ထည့်ပါ။ အေးသောအခါ ကြိတ်၍ သိမ်းပါ။
       </div>
     </div>
 
@@ -582,10 +615,10 @@
       </div>
 
       <ol class="step-ordered">
-        <li><b>Dye Extraction:</b> သစ်ဥ/ပန်းပွင့် ၁၀၀ ဂရမ်ကို ရေနွေးနွေး 60°C-70°C တွင် ၁ နာရီကြာ နှပ်၍ ပြင်းအားမြင့် ဆေးဆိုးရည်ကို စစ်ယူပါ။</li>
-        <li><b>Mordant Dissolution:</b> Potassium Alum (ကျောက်ချဉ်) ၃၀ ဂရမ်ကို ရေနွေးဖျော်ပြီး ဆေးဆိုးရည်ထဲသို့ ရောမွှေပါ။</li>
-        <li><b>Precipitation (အနည်ချခြင်း):</b> Washing Soda (Sodium Carbonate) ၁၅ ဂရမ်ကို ရေဖျော်ပြီး ဆေးရည်ထဲသို့ အစက်ချ ထည့်ပါ။ ပူဖောင်းများ ထွက်လာပြီး Alumina Hydrate အဖြူမှုန်လေးများက အပင်ဆိုးဆေးကို ဖမ်းဆွဲကာ အောက်သို့ အနည်ထိုင်ဆင်းသွားပါမည် (pH 6.8-7.0 တွင် ရပ်ပါ)။</li>
-        <li><b>Washing the Lake:</b> ရေကြည်သွန်ပစ်ပြီး ဆိုဒီယမ်ဆားများ ကင်းစင်စေရန် ရေနွေးစင်ဖြင့် ၂ ကြိမ် ပြန်ဆေးပါ။</li>
+        <li><b>Dye Extraction:</b> အပင်ခြောက် ၁၀၀ ဂရမ်ကို ရေထဲတွင် (ပစ္စည်းမျက်နှာပြင် အထက် လက်နှစ်လုံးခန့် ရေ) မိနစ် ၃၀ ညင်သာစွာ ကျို၍ ဆေးဆိုးရည်ကို Muslin ဖြင့် စစ်ယူပါ။ (Madder ကဲ့သို့ အပူမခံနိုင်သော ဆေးများတွင် 70°C ထက် မကျော်စေရ။)</li>
+        <li><b>Mordant Dissolution:</b> Potassium Alum (ကျောက်ချဉ်) ၁၀ ဂရမ် (အပင်ခြောက် 100g လျှင် 10–20g အထိ သုံးနိုင်) ကို ရေ 100ml တွင် ပျော်ဝင်စေပါ (10% ရည်)။ ဆေးဆိုးရည်ထဲသို့ ထုထည် ထက်ဝက်မှ တူညီမှု အထိ ရောမွှေပါ။</li>
+        <li><b>Precipitation (အနည်ချခြင်း):</b> Sodium Carbonate (သို့မဟုတ် Potassium Carbonate) ၅ ဂရမ်ကို ရေနွေး 100ml တွင် ပျော်ဝင်စေပါ (5% ရည်)။ ဆက်တိုက် မွှေရင်း ဖြည်းဖြည်း ထည့်ပါ — CO₂ ထွက်၍ အမြှုပ် ဖြစ်လာပြီး Alumina Hydrate အဖြူမှုန်လေးများက အပင်ဆိုးဆေးကို ဖမ်းဆွဲကာ အနည်ထိုင်ဆင်းသွားပါမည်။ မြင်သာသော ဓာတ်ပြုမှု မရှိတော့သောအခါ ရပ်ပါ။</li>
+        <li><b>Washing the Lake:</b> အပေါ်ရေကြည် သွန်ပစ်ပြီး ပျော်ဝင်ဆားများ ကင်းစင်စေရန် ပေါင်းခံရေဖြင့် ရေကြည်သည်အထိ ပြန်ဆေးပါ။</li>
         <li><b>Filtration & Drying:</b> စစ်စက္ကူ (Filter paper) ဖြင့် စစ်ယူပြီး အရိပ်ထဲတွင် အခြောက်ခံကာ အမှုန့်ကြိတ်ပါ။</li>
       </ol>
     </div>
@@ -611,9 +644,9 @@
       </div>
       <div class="recipe-sub">Kaolin နှင့် ကန့်မှုန့် အပူပေးပေါင်းစပ်ဓာတုနည်းစဉ်</div>
       <ol class="step-ordered">
-        <li><b>ကုန်ကြမ်းအချိုး:</b> Kaolin Clay ၁၀၀ ပုံ၊ ဆိုဒါပြာ ၁၀၀ ပုံ၊ ကန့်မှုန့် ၆၀ ပုံ၊ မီးသွေးမှုန့်နု ၁၂ ပုံတို့ကို သမအောင် ရောစပ်ကြိတ်ပါ။</li>
-        <li><b>Crucible Firing:</b> မီးခံအိုးထဲတွင် ဖိသိပ်ထည့်ပြီး အဖုံးကို ရွှံ့စေးဖြင့် လေလုံအောင်ပိတ်ကာ 750°C-800°C တွင် ၂၄ နာရီကြာ မီးဖုတ်ပါ (အစိမ်းရောင်အဆင့် ရရှိသည်)။</li>
-        <li><b>Oxidation:</b> မီးခံအိုးကိုဖွင့်၍ 450°C တွင် လေထဲမှ အောက်ဆီဂျင်နှင့် ထိတွေ့စေသောအခါ တောက်ပသော Ultramarine Blue အဖြစ်သို့ အပြီးသတ် ပြောင်းလဲသွားသည်။ ရေဆေး၍ ဆားချွတ်ပါ။</li>
+        <li><b>ကုန်ကြမ်းအချိုး:</b> Kaolin Clay ၁၀၀ ပုံ၊ ဆိုဒါပြာ ၁၀၀ ပုံ၊ ကန့်မှုန့် ၆၀ ပုံ၊ မီးသွေးမှုန့်နု ၁၂ ပုံ၊ Rosin ၄၀ ပုံတို့ကို သမအောင် ရောစပ်ကြိတ်ပါ။ (Kaolin ကို အရင် 700°C တွင် ၁ နာရီ ဖုတ်၍ Metakaolin ပြုလုပ်ထားပါ။ ကန့်မှုန့် နောက်ထပ် ၂၀ ပုံကို ဒုတိယ အဆင့် အတွက် ဖယ်ထားပါ။)</li>
+        <li><b>Crucible Firing:</b> မီးခံအိုးထဲတွင် ထည့်၍ အဖုံး လျော့ရဲစွာ ဖုံးကာ အောက်ဆီဂျင် နည်းသော ပတ်ဝန်းကျင်တွင် 750°C ဖြင့် ၄ နာရီ မီးဖုတ်ပါ။ အေးသောအခါ အပြာ အတောက်ဆုံး အပိုင်းကိုသာ ရွေးယူပါ (မီးခိုး/အရောင်ပျက် အပိုင်းများ စွန့်ပါ)။ ဓာတ်ပြုစဉ် Sulfur Dioxide ထွက်သောကြောင့် လေဝင်လေထွက် ကောင်းရန် လိုသည်။</li>
+        <li><b>Brightening & Oxidation:</b> ရွေးထားသော အပိုင်းကို ကန့်မှုန့် ၂၀ ပုံ ထပ်ထည့် ကြိတ်၍ အဖုံးမပါဘဲ 500°C တွင် ၂ နာရီ ဖုတ်ပါ။ တစ်နာရီလျှင် 50°C စီ ဖြည်းဖြည်း အေးစေပါ။ ထို့နောက် ပေါင်းခံရေဖြင့် pH ကြားနေ ဖြစ်သည်အထိ ဆေးချွတ်၍ အခြောက်ခံပါ။</li>
       </ol>
     </div>
 
@@ -625,20 +658,20 @@
       <div class="recipe-sub">အမှုန်အရွယ်အစား မပျက်စီးစေသော ရေဆေးအနည်ထိုင်စနစ်</div>
       <ol class="step-ordered">
         <li><b>သတိပြုရန်:</b> Azurite ကို အလွန်မုန့်ညက်အောင် မကြိတ်ရပါ။ အမှုန်သေးငယ်လွန်းပါက အလင်းယိုင်မှုကြောင့် မီးခိုးရောင်ပြောင်းတတ်သဖြင့် သဲဆန်ဆန် အမှုန်အရွယ်အစားကို ထိန်းသိမ်းရမည်။</li>
-        <li><b>သန့်စင်ခြင်း:</b> အက်ဆစ် လုံးဝမသုံးရ (ကြေးနီပျော်ဝင်ပြီး ပျက်စီးသည်)။ ရေစင်ထဲတွင် အမှုန့်ထည့်မွှေပြီး ကျောက်စရစ်များ အောက်ကျချိန်တွင် အပြာရောင်ရေကို အခြားခွက်သို့ လျင်မြန်စွာ ကူးပြောင်းကာ အနည်ထိုင်စေရမည်။</li>
+        <li><b>သန့်စင်ခြင်း:</b> အက်ဆစ် ပြင်း လုံးဝမသုံးရ (ကြေးနီ ပျော်ဝင်ပြီး ပျက်စီးသည်)။ White Vinegar အားနည်းရည်ဖြင့် ညင်သာစွာ ဆေးနိုင်သော်လည်း နောက်တွင် ရေကြည်ဖြင့် ကြားနေ ဖြစ်အောင် သေချာ ဆေးရမည်။ ရေစင်ထဲတွင် အမှုန့်ထည့်မွှေပြီး ကျောက်စရစ်များ အောက်ကျချိန်တွင် အပြာရောင်ရေကို အခြားခွက်သို့ လျင်မြန်စွာ ကူးပြောင်းကာ အနည်ထိုင်စေရမည်။</li>
       </ol>
     </div>
 
     <div class="recipe-box" id="rec-verditer">
       <div class="recipe-title">
         <span>၄။ BLUE & GREEN VERDITER ပြုလုပ်နည်း</span>
-        <span class="badge" style="color:#30D158;">TEMPERATURE SWITCH</span>
+        <span class="badge" style="color:#30D158;">COPPER CARBONATE</span>
       </div>
-      <div class="recipe-sub">ကြေးနီနိုက်ထရိတ်မှ အပူချိန်အလိုက် အပြာနှင့် အစိမ်း ထုတ်ယူခြင်း</div>
+      <div class="recipe-sub">Basic Copper Carbonate — သဘာဝ Azurite / Malachite ၏ လူလုပ် ပုံစံတူများ (၁၈ ရာစု နည်းများ)</div>
       <ol class="step-ordered">
-        <li><b>Copper Nitrate:</b> ကြေးနီကြိုးစများကို နိုက်ထရစ်အက်ဆစ်ထဲ ထည့်၍ Copper Nitrate အပြာရည် ထုတ်ယူပါ။</li>
-        <li><b>Blue Verditer:</b> ကြေးနီရည်ထဲသို့ Chalk (မြေဖြူမှုန့်) ထည့်မွှေပါ။ <b>15°C အောက် အအေးခန်း</b> တွင် ထိန်းထားပါက ကောင်းကင်ပြာရောင် Blue Verditer အနည်ကျမည်။</li>
-        <li><b>Green Verditer:</b> ဤဖျော်ရည်ကို <b>ဆူပွက်အောင် အပူပေးလိုက်ပါက (Boiling)</b> မော်လီကျူးပြောင်းလဲကာ အစိမ်းရောင် Green Verditer အဖြစ်သို့ အလိုအလျောက် ပြောင်းလဲသွားပါသည်။</li>
+        <li><b>ပါဝင်ပစ္စည်းများ:</b> Copper Nitrate၊ Copper Sulfate၊ Chalk (မြေဖြူ)၊ Sodium Bicarbonate၊ ပေါင်းခံရေ။ ကြေးနီ ဒြပ်ပေါင်းများသည် အဆိပ်ရှိသဖြင့် လက်အိတ်နှင့် မျက်မှန် တပ်ဆင်ပါ။</li>
+        <li><b>Blue Verditer (အင်္ဂလိပ် နည်း):</b> Copper Nitrate 15g ကို ရေအေး 200ml တွင် ပျော်ဝင်စေပြီး Chalk 6g ကို ဖြည်းဖြည်း ထည့်မွှေပါ။ ၁၂ နာရီအတွင်း မိနစ် ၃၀ တိုင်း ၂ မိနစ် မွှေပြီး နောက်နှစ်ရက်တိုင် ထပ်လုပ်ပါ — အပြာရောင် အနှစ် ကျလာမည်။ စစ်၍ ပေါင်းခံရေဖြင့် ဆေးပါ။ ပိုနက်သော အပြာ အတွက် Copper Nitrate 11.25g (ရေ 150ml) + Chalk 4.5g ဖြင့် ဒုတိယ အကြိမ် ထပ်လုပ်ပါ။</li>
+        <li><b>Green Verditer (ဥရောပ နည်း):</b> Copper Sulfate 20g ကို ရေနွေး (80°C) 200ml တွင် ပျော်ဝင်စေပါ။ Sodium Bicarbonate 20g ကို ရေနွေး 200ml တွင် သီးခြား ပျော်ဝင်စေပြီး 80°C ခန့် အပူပေးထားသော ကြေးနီရည်ထဲ ဖြည်းဖြည်း ထည့်မွှေပါ (အမြှုပ် များစွာ ထွက်မည်)။ အမြှုပ် ရပ်သောအခါ ရေနွေး 50ml ထပ်ထည့်၍ ၃ မိနစ် မွှေပါ — တောက်ပသော အစိမ်း အနှစ် ရမည်။ စစ်၍ ရေနွေးဖြင့် ဆေးပြီး အခြောက်ခံ ကြိတ်ပါ။</li>
       </ol>
     </div>
 
@@ -661,9 +694,9 @@
       </div>
       <div class="recipe-sub">Tannic Acid + Green Vitriol ဓာတ်ပေါင်းမှင်</div>
       <ol class="step-ordered">
-        <li><b>ကုန်ကြမ်းအချိုး:</b> Oak Galls (သပိတ်သီး) ၃ ပုံ၊ Ferrous Sulfate (Green Vitriol) ၁ ပုံ၊ Gum Arabic ၁ ပုံ၊ မိုးရေသန့်။</li>
-        <li><b>ထုတ်ယူခြင်း:</b> သပိတ်သီးများကို ထုထောင်း၍ မိုးရေထဲတွင် ၃ ရက် နေလှန်းနှပ်ထားပါ (သို့မဟုတ် မီးအေးအေးဖြင့် မိနစ် ၃၀ ကျိုပါ)။</li>
-        <li><b>မှင်ဖြစ်စေခြင်း:</b> Ferrous Sulfate ထည့်လိုက်သည်နှင့် ချက်ချင်း မည်းနက်သွားမည်။ ချောမွေ့စွာ စီးဆင်းစေရန် Gum Arabic ဖျော်ရည်ကို ထည့်သွင်းမွှေပေးပါ။</li>
+        <li><b>ကုန်ကြမ်းအချိုး:</b> Oak Galls (သပိတ်သီး) 10g၊ Ferrous Sulfate (Green Vitriol) 1g၊ Gum Arabic 20g၊ ပေါင်းခံရေ 100ml။</li>
+        <li><b>ထုတ်ယူခြင်း:</b> သပိတ်သီးများကို ပဲစေ့အရွယ် ထုချေ၍ ပေါင်းခံရေထဲတွင် ၁ ပတ် စိမ် (အချဉ်ဖောက်) ပါ။ ထို့နောက် လေးညှင်း (Cloves) နှင့် အတူ မိနစ် ၃၀ ကျို၍ နေ့စဉ် မွှေရင်း နောက်ထပ် ၁ ပတ် ထားပါ။</li>
+        <li><b>မှင်ဖြစ်စေခြင်း:</b> Muslin ဖြင့် စစ်၍ Ferrous Sulfate ထည့်ပါ — ချက်ချင်း မည်းနက်သွားမည်။ Gum Arabic 20g ကို ပွက်နေသော ရေ 50ml တွင် ပျော်ဝင်စေပြီး ရောထည့်ပါ။ ဘူးထဲ လောင်းထည့် သိမ်းပါ။</li>
       </ol>
     </div>
   </div>
@@ -673,22 +706,22 @@
     <div class="matrix-title">STUDIO EQUIPMENT, PPE & TRADITIONAL BINDERS</div>
 
     <div class="card">
-      <div style="font-size:12px; font-weight:800; color:#FF9F0A; margin-bottom:4px;">Glass Muller & Frosted Slab (ဖန်လက်ရိုက်နှင့် ကြိတ်ပြား)</div>
-      <div style="font-size:10.5px; color:#D1D1D6; line-height:1.45;">
+      <div style="font-size:14px; font-weight:800; color:#FF9F0A; margin-bottom:4px; line-height:1.7;">Glass Muller & Frosted Slab (ဖန်လက်ရိုက်နှင့် ကြိတ်ပြား)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
         ပစ်ဂမန့်အမှုန့်ကို ကော်ရည် (Gum Arabic / Linseed Oil) ထဲသို့ အမှုန်တစ်မှုန့်ချင်းစီ အညီအမျှ ပျံ့နှံ့စီးဝင်စေရန် နံပါတ် ၈ (Figure-8) ပုံသဏ္ဌာန် ဖိကြိတ်ရသည့် အဓိကကိရိယာ ဖြစ်သည်။ မျက်နှာပြင်ကြမ်း Frosted Glass သည် အထိရောက်ဆုံး ဖြစ်သည်။
       </div>
     </div>
 
     <div class="card">
-      <div style="font-size:12px; font-weight:800; color:#0A84FF; margin-bottom:4px;">Mesh Sieves & Levigation Column (ဆန်ခါနုနှင့် အနည်ထိုင်ဘူး)</div>
-      <div style="font-size:10.5px; color:#D1D1D6; line-height:1.45;">
+      <div style="font-size:14px; font-weight:800; color:#0A84FF; margin-bottom:4px; line-height:1.7;">Mesh Sieves & Levigation Column (ဆန်ခါနုနှင့် အနည်ထိုင်ဘူး)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
         100 Mesh, 200 Mesh နှင့် 325 Mesh ဆန်ခါနုများ။ ရေဆေးအနည်ထိုင်ရာတွင် ဖန်ပုလင်းရှည်များကို အဆင့်ဆင့် သုံးစွဲခြင်းဖြင့် သဲမှုန်ကြမ်းနှင့် ဆေးမှုန့်နုကို မိုက်ခရိုမီတာအလိုက် တိကျစွာ ခွဲခြားနိုင်သည်။
       </div>
     </div>
 
     <div class="card">
-      <div style="font-size:12px; font-weight:800; color:#FF453A; margin-bottom:4px;">PPE & Chemical Safety (အလုပ်ရုံ ဘေးကင်းရေး)</div>
-      <div style="font-size:10.5px; color:#D1D1D6; line-height:1.45;">
+      <div style="font-size:14px; font-weight:800; color:#FF453A; margin-bottom:4px; line-height:1.7;">PPE & Chemical Safety (အလုပ်ရုံ ဘေးကင်းရေး)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
         ပစ်ဂမန့်အမှုန့်များသည် အလွန်နုနယ်သဖြင့် အဆုတ်တွင်း ဝင်ရောက်လွယ်သည်။ Copper, Lead, Cadmium, Cobalt ဓာတ်ပေါင်းများ ကြိတ်ခွဲချိန်တွင် N95 / FFP3 Mask၊ Nitrile Gloves နှင့် မျက်မှန် မဖြစ်မနေ တပ်ဆင်ရမည်။
       </div>
     </div>
@@ -699,7 +732,7 @@
         <span>TECHNICAL NOTE: WHY ACRYLIC IS EXCLUDED FROM STUDIO MULLING</span>
         <span class="badge" style="color:#FF453A;">INDUSTRIAL ONLY</span>
       </div>
-      <div style="font-size:10.5px; color:#D1D1D6; line-height:1.45;">
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
         Acrylic emulsion (Plextol, Rhoplex) သည် ရေနံဓာတုအခြေခံ ပေါ်လီမာဖြစ်ပြီး ဖန်ကြိတ်ပြားပေါ်တွင် ကြိတ်စပ်ပါက မိနစ်ပိုင်းအတွင်း အခြောက်မြန်ကာ ပလတ်စတစ်အလွှာအဖြစ် အပြီးသတ်ခဲသွားမည်ဖြစ်သဖြင့် Muller နှင့် Slab ကို ပျက်စီးစေပါသည်။ ထို့အပြင် စက်မှုသုံး Wetting Agent (Surfactant) နှင့် Defoamer မပါဘဲ လက်ဖြင့် ညီညာစွာ ရောစပ်၍ မရနိုင်သောကြောင့် ရိုးရာ လက်လုပ်ဆေးဖော်စပ်မှုတွင် မထည့်သွင်းဘဲ သဘာဝ Binders (Watercolor, Oil, Tempera) ကိုသာ သီးသန့် အသုံးပြုရပါသည်။
       </div>
     </div>
@@ -710,7 +743,7 @@
         <span class="badge" style="color:#FFF;">VEHICLES</span>
       </div>
       <div class="code-terminal">
-        [၁] Watercolor Binder: Gum Arabic အခဲမှုန့် ၁ ပုံ + ရေနွေးစင် ၂ ပုံ (အရည်ဖျော်ပါ)၊ ပျားရည်/Glycerin အနည်းငယ် (အစိုဓာတ်ထိန်းရန်)၊ လေးညှင်းဆီ ၁ စက် (မှိုမတက်စေရန်)။<br><br>
+        [၁] Watercolor Binder: Gum Arabic အမှုန့် ၁ ပုံ + ပွက်နေသော ရေ ၃ ပုံ (၁၀–၁၅ မိနစ် မွှေပါ၊ သို့မဟုတ် တစ်ည စိမ်ပါ)။ Muslin ဖြင့် စစ်ပါ။ ပျားရည် ကို ရည် ၈ ဆ : ပျားရည် ၁ ဆ အချိုးဖြင့် ထည့်ပါ (Glycerin လည်း သုံးနိုင်)၊ လေးညှင်းဆီ ၁–၂ စက် (မှိုမတက်စေရန်)။<br><br>
         [၂] Oil Paint Medium: Cold-Pressed Linseed Oil (စက်နှိပ်နှမ်းကြတ်ဆီ)။ အမှုန့် ၁၀၀ ဂရမ်လျှင် Particle Size အလိုက် ဆီ ၃၀-၈၅ ဂရမ်ခန့် ဖြည်းဖြည်းချင်း ထည့်ကာ ဖန်လက်ရိုက်ဖြင့် ထောပတ်မုန့်နှစ်ကဲ့သို့ ကြိတ်စပ်ပါ။<br><br>
         [၃] Egg Tempera Binder: လတ်ဆတ်သော ကြက်ဥအနှစ်ကို အမြှေးပါးဖောက်၍ ခွဲထုတ်ပါ။ ကြက်ဥအနှစ် ၁ ပုံ + ရေသန့် ၁ ပုံ သမအောင် ခလောက်ပြီး ပစ်ဂမန့်နှစ်ထဲသို့ ၁:၁ ရောစပ်ရေးဆွဲပါ။
       </div>
@@ -719,7 +752,7 @@
 
   <!-- TAB 8: EXTRACTOR -->
   <div id="tabExtractor" class="tab-content">
-    <div style="font-size: 10px; text-align: center; color: #8E8E93; margin-bottom: 8px;">
+    <div style="font-size: 12.5px; text-align: center; color: #8E8E93; margin-bottom: 8px; line-height: 1.9;">
       လက် ၂ ချောင်းဖြင့် Zoom ချဲ့ပါ၊ လက် ၁ ချောင်းဖြင့် ၅ ဆ မှန်ဘီလူး ထောက်ယူပါ
     </div>
 
@@ -738,14 +771,14 @@
       </button>
     </div>
 
-    <div style="font-size: 11px; font-weight: 800; color: #8E8E93;">ပုံထဲမှ ထွက်လာသော COLOR PALETTE (၆ ရောင်)</div>
+    <div style="font-size: 12.5px; font-weight: 800; color: #8E8E93;">ပုံထဲမှ ထွက်လာသော COLOR PALETTE (၆ ရောင်)</div>
     <div class="palette-circles" id="paletteRow"></div>
 
     <div class="card active-bar">
       <div id="extSelectedBox" class="swatch-box" style="background:#E63946;"></div>
       <div style="flex:1;">
         <div id="extHexText" style="font-size: 16px; font-weight: 800;">#E63946</div>
-        <div id="extRgbText" style="font-size: 10px; color: #8E8E93;">RGB: (230, 57, 70)</div>
+        <div id="extRgbText" style="font-size: 12px; color: #8E8E93;">RGB: (230, 57, 70)</div>
       </div>
       <button class="btn-action" onclick="routeHexToMixer(document.getElementById('extHexText').innerText)">MIX THIS ➔</button>
     </div>
@@ -786,6 +819,9 @@
       setTimeout(() => {
         const el = document.getElementById(recipeId);
         if (el) {
+          el.classList.remove('collapsed');
+          const tb = el.querySelector('.details-toggle');
+          if (tb) tb.textContent = 'အကျဉ်းချုပ် ▴';
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           el.style.borderColor = '#0A84FF';
           setTimeout(() => { el.style.borderColor = '#262628'; }, 2000);
@@ -795,18 +831,51 @@
 
     function jumpToArchive(code) {
       switchTab('tabArchive');
+      archiveQuery = '';
+      const si = document.getElementById('archiveSearch');
+      if (si) si.value = '';
       filterArchiveCategory('ALL', document.querySelector('#tabArchive .chip'));
       setTimeout(() => {
         const target = Array.from(document.querySelectorAll('#archivePigmentsList .pigment-card')).find(c => 
-          c.innerText.includes(code)
+          c.textContent.includes(code)
         );
         if (target) {
+          const col = target.querySelector('.collapsible');
+          if (col && !col.classList.contains('open')) {
+            col.classList.add('open');
+            const tb = target.querySelector('.details-toggle');
+            if (tb) tb.textContent = tb.textContent.replace('▾', '▴');
+          }
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           target.style.borderColor = '#0A84FF';
           setTimeout(() => { target.style.borderColor = '#242428'; }, 2000);
         }
       }, 100);
     }
+
+    // --- COLLAPSIBLE DETAILS (cleanup pass) ---
+    function toggleDetails(btn) {
+      const box = btn.closest('.recipe-box');
+      if (box) {
+        const collapsed = box.classList.toggle('collapsed');
+        btn.textContent = collapsed ? 'အသေးစိတ် ▾' : 'အကျဉ်းချုပ် ▴';
+        return;
+      }
+      const col = btn.parentElement.querySelector('.collapsible');
+      if (col) {
+        const open = col.classList.toggle('open');
+        btn.textContent = btn.textContent.replace(open ? '▾' : '▴', open ? '▴' : '▾');
+      }
+    }
+
+    document.querySelectorAll('#tabMaking .recipe-box').forEach((box, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'details-toggle';
+      btn.textContent = i === 0 ? 'အကျဉ်းချုပ် ▴' : 'အသေးစိတ် ▾';
+      btn.onclick = () => toggleDetails(btn);
+      box.querySelector('.recipe-title').insertAdjacentElement('afterend', btn);
+      if (i > 0) box.classList.add('collapsed');
+    });
 
     // --- COLOR CONVERSIONS & VALUE CALCULATOR ---
     function hslToHex(h, s, l) {
@@ -1036,9 +1105,19 @@
       { name: 'Titanium White', code: 'PW6', group: 'WHITE', temp: 'COOL', hex: '#FFFFFF', type: 'Inorganic', opacity: 'Opaque', stain: 'N/A', astm: 'I', desc: 'Rutile titanium dioxide. Maximum opacity and tinting strength with a bluish bias.', psych: 'Modern clarity, cleanliness, sterile light.' }
     ];
 
-    function renderPigmentsList(filter = 'ALL') {
+    let tonesFilter = 'ALL', tonesQuery = '';
+    function renderPigmentsList(filter = tonesFilter) {
+      tonesFilter = filter;
       const container = document.getElementById('pigmentsList');
-      const list = filter === 'ALL' ? pigmentData : pigmentData.filter(p => p.group === filter);
+      let list = filter === 'ALL' ? pigmentData : pigmentData.filter(p => p.group === filter);
+      if (tonesQuery) {
+        const q = tonesQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q));
+      }
+      if (!list.length) {
+        container.innerHTML = '<div class="no-result">ရှာမတွေ့ပါ — အခြား အမည် သို့မဟုတ် C.I. code ဖြင့် စမ်းကြည့်ပါ။</div>';
+        return;
+      }
       
       container.innerHTML = list.map(p => `
         <div class="pigment-card">
@@ -1057,16 +1136,24 @@
               </div>
             </div>
             <div style="display:flex; flex-direction:column; gap:4px;">
-              <button class="btn-action" style="padding:4px 8px; font-size:9.5px;" onclick="loadPigmentToMix('${p.name}', '${p.temp}', '${p.group}')">MIX ➔</button>
-              <button class="btn-action" style="padding:4px 8px; font-size:9.5px; background:#1C1C1E; color:#FFF;" onclick="jumpToArchive('${p.code}')">PARTICLES ➔</button>
+              <button class="btn-action" style="padding:6px 9px; font-size:10.5px;" onclick="loadPigmentToMix('${p.name}', '${p.temp}', '${p.group}')">MIX ➔</button>
+              <button class="btn-action" style="padding:6px 9px; font-size:10.5px; background:#1C1C1E; color:#FFF;" onclick="jumpToArchive('${p.code}')">PARTICLES ➔</button>
             </div>
           </div>
-          <div style="font-size:10px; color:#A1A1A6; line-height:1.4;">${p.desc}</div>
-          <div class="psychology-box">
-            <b>Psychology & Mood:</b> ${p.psych}
+          <button class="details-toggle" onclick="toggleDetails(this)">အသေးစိတ် ▾</button>
+          <div class="collapsible">
+            <div style="font-size:12px; color:#A1A1A6; line-height:1.9;">${p.desc}</div>
+            <div class="psychology-box">
+              <b>Psychology & Mood:</b> ${p.psych}
+            </div>
           </div>
         </div>
       `).join('');
+    }
+
+    function searchTones(q) {
+      tonesQuery = q.trim();
+      renderPigmentsList(tonesFilter);
     }
 
     function filterPigments(grp, el) {
@@ -1461,9 +1548,19 @@
       }
     ];
 
-    function renderArchivePigments(cat = 'ALL') {
+    let archiveCat = 'ALL', archiveQuery = '';
+    function renderArchivePigments(cat = archiveCat) {
+      archiveCat = cat;
       const container = document.getElementById('archivePigmentsList');
-      const list = cat === 'ALL' ? archiveData : archiveData.filter(a => a.category === cat);
+      let list = cat === 'ALL' ? archiveData : archiveData.filter(a => a.category === cat);
+      if (archiveQuery) {
+        const q = archiveQuery.toLowerCase();
+        list = list.filter(a => a.name.toLowerCase().includes(q) || a.code.toLowerCase().includes(q) || (a.chemical || '').toLowerCase().includes(q));
+      }
+      if (!list.length) {
+        container.innerHTML = '<div class="no-result">ရှာမတွေ့ပါ — အခြား အမည် သို့မဟုတ် C.I. code ဖြင့် စမ်းကြည့်ပါ။</div>';
+        return;
+      }
 
       container.innerHTML = list.map(item => `
         <div class="pigment-card">
@@ -1478,7 +1575,9 @@
             ${item.recipeId ? `<button class="btn-action" onclick="jumpToMaking('${item.recipeId}')">ဖော်စပ်နည်း ➔</button>` : ''}
           </div>
 
-          <div style="font-size:10px; color:#D1D1D6; line-height:1.45;">
+          <button class="details-toggle" onclick="toggleDetails(this)">အသေးစိတ် (သမိုင်း / အမှုန် / ဂုဏ်သတ္တိ) ▾</button>
+          <div class="collapsible">
+          <div style="font-size:12.5px; color:#D1D1D6; line-height:1.9;">
             <b>သမိုင်းနှင့် သဘောသဘာဝ:</b> ${item.history}
           </div>
 
@@ -1497,8 +1596,14 @@
             <tr><td>Oil Absorption (ဆီစုပ်နှုန်း):</td><td>${item.oilRate}</td></tr>
             <tr><td>Studio Safety:</td><td>${item.toxicity}</td></tr>
           </table>
+          </div>
         </div>
       `).join('');
+    }
+
+    function searchArchive(q) {
+      archiveQuery = q.trim();
+      renderArchivePigments(archiveCat);
     }
 
     function filterArchiveCategory(cat, el) {
@@ -1654,6 +1759,14 @@
         self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
       `;
       navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], { type: 'text/javascript' }))).catch(() => {});
+    }
+  </script>
+  <script>
+    // Offline support (cleanup pass) — registers only on https or localhost
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
     }
   </script>
 </body>
