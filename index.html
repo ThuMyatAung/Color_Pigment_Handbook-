@@ -3,52 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pigment Studio & Archive</title>
+  <title>Master Color Theory & Pigment Alchemy Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Padauk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-main: #111215;
-      --bg-surface: #181a20;
-      --bg-card: #20232c;
-      --bg-card-hover: #262a35;
-      --border-color: #2e3342;
-      --text-main: #f0f2f7;
-      --text-muted: #9ba1b4;
-      --accent-warm: #d97736;
-      --accent-lake: #c24168;
-      --accent-blue: #3b82f6;
-      --accent-green: #10b981;
-      --font-stack: 'Plus Jakarta Sans', 'Padauk', sans-serif;
+      --bg-body: #0d0e12;
+      --bg-surface: #14161d;
+      --bg-card: #1c1f28;
+      --bg-card-hover: #232734;
+      --border: #2a2e3d;
+      --border-focus: #4f566b;
+      --text-main: #f1f3f9;
+      --text-muted: #9aa1b5;
+      --accent-warm: #e07a38;
+      --accent-lake: #d9466f;
+      --accent-blue: #388bfd;
+      --accent-green: #2ea043;
+      --accent-purple: #a371f7;
+      --font-ui: 'Plus Jakarta Sans', 'Padauk', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: var(--bg-main);
+      background-color: var(--bg-body);
       color: var(--text-main);
-      font-family: var(--font-stack);
+      font-family: var(--font-ui);
       line-height: 1.6;
-      padding-bottom: 60px;
+      padding-bottom: 80px;
     }
 
-    /* Header & Navigation */
+    /* Top Bar */
     header {
       background-color: var(--bg-surface);
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 100;
-      padding: 16px 24px;
+      z-index: 1000;
+      padding: 14px 24px;
     }
-
-    .header-container {
-      max-width: 1200px;
+    .header-inner {
+      max-width: 1400px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
@@ -56,629 +53,1036 @@
       align-items: center;
       gap: 16px;
     }
-
-    .brand-title {
-      font-size: 1.25rem;
+    .brand-logo {
+      font-size: 1.15rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       gap: 10px;
+      letter-spacing: 0.5px;
     }
+    .brand-logo span { color: var(--accent-warm); }
 
-    .brand-title span {
-      color: var(--accent-warm);
-    }
-
+    /* Nav Buttons */
     nav {
       display: flex;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
-
     .nav-btn {
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-muted);
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       transition: all 0.2s ease;
     }
-
     .nav-btn:hover {
       color: var(--text-main);
-      background-color: var(--border-color);
+      background-color: var(--border);
     }
-
     .nav-btn.active {
       background-color: var(--bg-card);
-      color: var(--text-main);
-      border-color: var(--border-color);
+      color: #fff;
+      border-color: var(--border);
     }
 
-    /* Container & Layout */
-    .main-container {
-      max-width: 1200px;
-      margin: 32px auto 0;
+    /* Layout Containers */
+    .container {
+      max-width: 1400px;
+      margin: 28px auto 0;
       padding: 0 24px;
     }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .tab-view {
-      display: none;
+    /* Typography & Sections */
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
     }
 
-    .tab-view.active {
-      display: block;
-      animation: fadeIn 0.25s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Filter Chips */
+    /* Filter Bar */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 24px;
+      gap: 8px;
+      margin-bottom: 22px;
     }
-
-    .filter-chip {
+    .chip {
       background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       color: var(--text-muted);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
+      font-weight: 500;
       transition: 0.2s;
     }
-
-    .filter-chip:hover, .filter-chip.active {
+    .chip:hover, .chip.active {
       color: #fff;
+      background: var(--bg-card-hover);
       border-color: var(--accent-warm);
-      background-color: rgba(217, 119, 54, 0.15);
     }
 
-    .filter-chip.lake.active {
-      border-color: var(--accent-lake);
-      background-color: rgba(194, 65, 104, 0.15);
-    }
-
-    /* Pigment Archive Grid */
-    .grid {
+    /* Grid Layouts */
+    .grid-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 20px;
     }
 
-    .card {
+    /* Archive Card */
+    .pigment-card {
       background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      transition: transform 0.2s, background-color 0.2s;
+      display: flex;
+      flex-direction: column;
     }
-
-    .card:hover {
-      background-color: var(--bg-card-hover);
-      transform: translateY(-2px);
-    }
-
-    .card-swatch {
+    .card-top {
       height: 70px;
       position: relative;
-      border-bottom: 1px solid var(--border-color);
+      padding: 12px 16px;
       display: flex;
       align-items: flex-end;
-      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
     }
-
     .category-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.72rem;
+      font-weight: 700;
       padding: 3px 8px;
       border-radius: 4px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.65);
       backdrop-filter: blur(4px);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
     .card-body {
       padding: 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
-
-    .card-header-row {
+    .pigment-head {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
-
-    .pigment-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .color-index {
-      font-size: 0.8rem;
+    .pigment-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .ci-code {
+      font-family: var(--font-code);
+      font-size: 0.78rem;
+      background: rgba(224, 122, 56, 0.15);
       color: var(--accent-warm);
-      font-weight: 600;
-      background: rgba(217, 119, 54, 0.1);
       padding: 2px 6px;
       border-radius: 4px;
+      font-weight: 600;
     }
-
-    .pigment-meta {
+    .history-box {
+      background: rgba(0,0,0,0.2);
+      border-left: 2px solid var(--accent-warm);
+      padding: 8px 10px;
+      border-radius: 0 4px 4px 0;
       font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
+      color: #cbd2e0;
+      margin: 12px 0;
+      line-height: 1.5;
     }
 
-    .meta-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px dashed rgba(255,255,255,0.06);
-    }
-
-    .meta-row:last-child {
-      border-bottom: none;
-    }
-
-    .action-btn {
+    /* Properties Table inside Card */
+    .prop-chart {
       width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: auto;
+      background: rgba(0,0,0,0.15);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .prop-chart td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .prop-chart td:first-child {
+      color: var(--text-muted);
+      width: 40%;
+    }
+    .prop-chart td:last-child {
+      color: var(--text-main);
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .card-link-btn {
       margin-top: 14px;
-      padding: 8px 12px;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      padding: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       color: var(--text-main);
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      text-align: center;
       transition: 0.2s;
     }
-
-    .action-btn:hover {
-      background-color: var(--border-color);
-      border-color: var(--text-muted);
+    .card-link-btn:hover {
+      background: var(--border);
+      border-color: var(--border-focus);
     }
 
-    /* Recipe Step List */
-    .recipe-card {
+    /* Making / Protocol Blocks */
+    .protocol-card {
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 22px;
       margin-bottom: 24px;
     }
-
-    .recipe-header {
+    .protocol-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
+      align-items: flex-start;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
       padding-bottom: 12px;
     }
+    .protocol-title { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .protocol-sub { font-size: 0.85rem; color: var(--accent-warm); margin-top: 2px; }
 
     .step-list {
       list-style: none;
-      counter-reset: step-counter;
+      counter-reset: p-counter;
       margin-top: 12px;
     }
-
     .step-list li {
       position: relative;
       padding-left: 36px;
-      margin-bottom: 14px;
-      font-size: 0.95rem;
+      margin-bottom: 12px;
+      font-size: 0.92rem;
+      color: #d8deec;
     }
-
     .step-list li::before {
-      counter-increment: step-counter;
-      content: counter(step-counter);
+      counter-increment: p-counter;
+      content: counter(p-counter);
       position: absolute;
       left: 0;
       top: 0;
       width: 24px;
       height: 24px;
-      background: var(--border-color);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       color: var(--accent-warm);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
     }
 
-    /* Tone & Mixing Matrix */
-    .matrix-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .matrix-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      padding: 18px;
-      border-radius: 10px;
-    }
-
-    .matrix-badge {
-      display: inline-block;
-      font-weight: 700;
-      font-size: 0.85rem;
-      margin-bottom: 8px;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    .recipe-block {
-      background: #14161b;
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-warm);
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 16px;
-      font-family: monospace;
-      font-size: 0.9rem;
-    }
-
-    .table-container {
-      overflow-x: auto;
-      margin-top: 16px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-
-    th, td {
+    .tech-box {
+      background: #111318;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-blue);
       padding: 12px 14px;
-      border-bottom: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-family: var(--font-code);
+      font-size: 0.83rem;
+      margin: 10px 0;
+      color: #9eb6dc;
     }
 
-    th {
+    /* Color Theory Wheel / Mixer Styles */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .theory-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .swatch-row {
+      display: flex;
+      height: 38px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 12px 0;
+      border: 1px solid var(--border);
+    }
+    .swatch-row div { flex: 1; }
+
+    /* Interactive Color Extractor */
+    .extractor-workspace {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+    }
+    @media(max-width: 900px) {
+      .extractor-workspace { grid-template-columns: 1fr; }
+    }
+    .canvas-container {
       background: var(--bg-surface);
-      color: var(--text-muted);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    #image-canvas {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 6px;
+      cursor: crosshair;
+      display: none;
+    }
+    .extractor-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .extracted-palette {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .pal-swatch {
+      height: 55px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.15s;
+    }
+    .pal-swatch:hover { transform: scale(1.05); }
+
+    .custom-upload-btn {
+      background: var(--accent-warm);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
       font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="header-container">
-      <div class="brand-title">
-        <span>●</span> Pigment Archive & Studio Lab
+    <div class="header-inner">
+      <div class="brand-logo">
+        <span>●</span> Color Theory, Pigment Archive & Alchemy Studio
       </div>
       <nav>
-        <button class="nav-btn active" onclick="switchTab('archive')">Archive (မှတ်တမ်း)</button>
-        <button class="nav-btn" onclick="switchTab('recipes')">Making & Recipes (ပြုလုပ်နည်း)</button>
-        <button class="nav-btn" onclick="switchTab('equipment')">Studio Tools (ကိရိယာများ)</button>
-        <button class="nav-btn" onclick="switchTab('tone-mixing')">Tone & Mixing (အရောင်စပ်နည်း)</button>
+        <button class="nav-btn active" onclick="switchNav('theory')">၁။ Color Theory (သီအိုရီ)</button>
+        <button class="nav-btn" onclick="switchNav('archive')">၂။ Pigment Archive (မော်ကွန်းတိုက်)</button>
+        <button class="nav-btn" onclick="switchNav('making')">၃။ Pigment Making (ဖော်စပ်နည်းစဉ်)</button>
+        <button class="nav-btn" onclick="switchNav('equipment')">၄။ Studio & Tools (ကိရိယာတန်ဆာ)</button>
+        <button class="nav-btn" onclick="switchNav('extractor')">၅။ Palette Extractor (အရောင်ဆွဲထုတ်စနစ်)</button>
       </nav>
     </div>
   </header>
 
-  <div class="main-container">
+  <div class="container">
 
-    <!-- TAB 1: ARCHIVE -->
-    <div id="tab-archive" class="tab-view active">
+    <!-- ==================== TAB 1: COLOR THEORY ==================== -->
+    <div id="tab-theory" class="tab-content active">
+      <h1 class="section-title">Color Theory & Optical Interaction (အရောင်သီအိုရီ ပင်မစနစ်)</h1>
+      <p class="section-subtitle">အရောင်များ၏ အလင်းနှင့် မျက်စိမြင်လွှာ အပြန်အလှန်သက်ရောက်မှု၊ ချိန်ခွင်လျှာနှင့် ရောစပ်မှုသဘောတရားများ</p>
+
+      <!-- 4 Dimensions of Color -->
+      <div class="theory-grid">
+        <div class="theory-box">
+          <h3 style="color: var(--accent-blue);">Hue (မူရင်းအရောင်)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 10px;">Spectral Wave Identification</p>
+          <p style="font-size: 0.88rem;">အဖြူ၊ အမည်း ရောစပ်မထားသော သဘာဝရောင်စဉ်စစ်စစ် (Red, Yellow, Blue စသည်)။</p>
+          <div class="swatch-row">
+            <div style="background:#ef4444;"></div><div style="background:#f59e0b;"></div><div style="background:#10b981;"></div><div style="background:#3b82f6;"></div><div style="background:#8b5cf6;"></div>
+          </div>
+        </div>
+
+        <div class="theory-box">
+          <h3 style="color: #cbd5e1;">Value (အလင်း/အမှောင် တန်ဖိုး)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 10px;">Relative Lightness or Darkness</p>
+          <p style="font-size: 0.88rem;">အရောင်တစ်ခု၏ အလင်းရောင်ပြန်နိုင်မှု စွမ်းအား။ ပန်းချီကားတစ်ချပ်တွင် ပုံရိပ်ထုထည် (Volume) ကို ဆုံးဖြတ်သည်။</p>
+          <div class="swatch-row">
+            <div style="background:#ffffff;"></div><div style="background:#cbd5e1;"></div><div style="background:#64748b;"></div><div style="background:#334155;"></div><div style="background:#020617;"></div>
+          </div>
+        </div>
+
+        <div class="theory-box">
+          <h3 style="color: var(--accent-warm);">Chroma / Saturation (တောက်ပစူးရှမှု)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 10px;">Color Purity & Intensity</p>
+          <p style="font-size: 0.88rem;">အရောင်တစ်ခု၏ စစ်မှန်ပြင်းထန်မှုအဆင့်။ မီးခိုးရောင် သို့မဟုတ် ဆန့်ကျင်ဘက်အရောင် စပ်လိုက်ပါက Chroma ကျဆင်းသွားသည်။</p>
+          <div class="swatch-row">
+            <div style="background:#ff2200;"></div><div style="background:#d9381e;"></div><div style="background:#ad4636;"></div><div style="background:#824f46;"></div><div style="background:#555555;"></div>
+          </div>
+        </div>
+
+        <div class="theory-box">
+          <h3 style="color: var(--accent-lake);">Tone, Tint & Shade (အသွင်ကွဲများ)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 10px;">Formulaic Modifications</p>
+          <p style="font-size: 0.88rem;"><strong>Tint:</strong> Hue + အဖြူ | <strong>Shade:</strong> Hue + အနက် | <strong>Tone:</strong> Hue + မီးခိုးရောင် (Neutral Grey)။</p>
+          <div class="swatch-row">
+            <div style="background:#fca5a5;" title="Tint"></div><div style="background:#ef4444;" title="Hue"></div><div style="background:#991b1b;" title="Shade"></div><div style="background:#7f5555;" title="Tone"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color Harmonies & Temperature -->
+      <div class="protocol-card">
+        <h2 style="font-size: 1.15rem; margin-bottom: 12px;">အရောင်တွဲဖက်ညီညွတ်မှုနှင့် အပူ/အအေးသဘောတရား (Harmonies & Temperature)</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
+          <div>
+            <h4 style="color: var(--accent-warm); margin-bottom: 6px;">Harmonies (အရောင်တွဲများ)</h4>
+            <ul style="padding-left: 20px; font-size: 0.9rem; color: #cbd2e0;">
+              <li><strong>Complementary (ဆန့်ကျင်ဘက်):</strong> Wheel တွင် မျက်နှာချင်းဆိုင်ရှိသော အရောင်နှစ်ခု (ဥပမာ - Ultramarine Blue & Burnt Orange)။ အမြင့်ဆုံး Contrast ကို ရရှိစေသည်။</li>
+              <li><strong>Analogous (ဘေးချင်းကပ်):</strong> Wheel ပေါ်တွင် ကပ်လျက်ရှိသော အရောင် ၃ ရောင် (ဥပမာ - အဝါ၊ ဝါစိမ်း၊ အစိမ်း)။ ငြိမ်သက်အေးချမ်းသော အရောင်ဖွဲ့စည်းမှု ရရှိသည်။</li>
+              <li><strong>Split-Complementary:</strong> ဆန့်ကျင်ဘက်ရောင်၏ ဘေးတိုက် ၂ ရောင်ကို တွဲဖက်သုံးခြင်း။ Contrast ကို ညင်သာစွာ ထိန်းညှိပေးသည်။</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="color: var(--accent-blue); margin-bottom: 6px;">Color Temperature (နွေးရောင် နှင့် အေးရောင်)</h4>
+            <p style="font-size: 0.88rem; color: #cbd2e0; margin-bottom: 8px;">
+              အနီရောင်နှင့် အပြာရောင်တိုင်းတွင် နွေးဘက်/အေးဘက် ရှိကြသည်:
+            </p>
+            <div class="tech-box">
+              • Warm Red (Cadmium Red / Vermilion - ဝါဘက်သန်းသည်)<br>
+              • Cool Red (Madder Lake / Quinacridone Magenta - ပြာဘက်သန်းသည်)<br>
+              • Warm Blue (Ultramarine Blue - ခရမ်းနီဘက်သန်းသည်)<br>
+              • Cool Blue (Phthalo / Cerulean / Azurite - စိမ်းဘက်သန်းသည်)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: PIGMENT ARCHIVE ==================== -->
+    <div id="tab-archive" class="tab-content">
+      <h1 class="section-title">Pigment Comprehensive Archive (ဆေးရောင်ခြယ် ပစ္စည်းများ မော်ကွန်းတိုက်)</h1>
+      <p class="section-subtitle">မြေသား၊ အပင်၊ တွင်းထွက်ကျောက်မျက်နှင့် ရှေးဟောင်းဓာတုအရောင်များ၏ သမိုင်းကြောင်း၊ ဓာတုဖွဲ့စည်းပုံနှင့် Properties Chart</p>
+
       <div class="filter-bar">
-        <button class="filter-chip active" onclick="filterArchive('all')">အားလုံး (All)</button>
-        <button class="filter-chip" onclick="filterArchive('earth')">မြေသားနှင့် တွင်းထွက် (Earth & Mineral)</button>
-        <button class="filter-chip lake" onclick="filterArchive('lake')">အပင်ထွက်အရောင်များ (Botanical & Lake)</button>
+        <button class="chip active" onclick="filterArchive('all')">အားလုံး (All)</button>
+        <button class="chip" onclick="filterArchive('earth')">မြေသား (Earth)</button>
+        <button class="chip" onclick="filterArchive('botanical')">အပင်နှင့် သက်ရှိထွက် (Botanical / Organic)</button>
+        <button class="chip" onclick="filterArchive('mineral')">သဘာဝတွင်းထွက် (Mineral)</button>
+        <button class="chip" onclick="filterArchive('synthetic')">ခေတ်ဟောင်းဓာတု (Historical Synthetic)</button>
       </div>
 
-      <div class="grid" id="pigment-grid">
-        <!-- Earth Pigment 1 -->
-        <div class="card" data-category="earth">
-          <div class="card-swatch" style="background: #c36228;">
-            <span class="category-badge">Earth & Mineral</span>
+      <div class="grid-cards" id="archive-grid">
+
+        <!-- 1. Yellow Ochre -->
+        <div class="pigment-card" data-cat="earth">
+          <div class="card-top" style="background: #c68a35;">
+            <span class="category-badge">Earth Mineral</span>
           </div>
           <div class="card-body">
-            <div class="card-header-row">
-              <span class="pigment-title">Yellow / Red Ochre</span>
-              <span class="color-index">PY43 / PR102</span>
+            <div class="pigment-head">
+              <span class="pigment-title">Yellow Ochre (မြေဝါနု)</span>
+              <span class="ci-code">PY43</span>
             </div>
-            <p class="pigment-meta" style="color: #c9a47d; font-size: 0.85rem;">မြေဝါနု / မြေနီရောင်ခြယ်ပစ္စည်း</p>
-            <div class="pigment-meta">
-              <div class="meta-row"><span>Chemical:</span> <span>Fe₂O₃ · H₂O / Fe₂O₃</span></div>
-              <div class="meta-row"><span>Lightfastness:</span> <span>အဆင့် ၁ (Excellent)</span></div>
-              <div class="meta-row"><span>Toxicity:</span> <span>Non-toxic (အဆိပ်မရှိ)</span></div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ကျောက်ခေတ်ဂူနံရံပန်းချီများ (Lascaux, Chauvet) မှစတင်၍ နှစ်ပေါင်း ၃၀,၀၀၀ ကျော် လူသားတို့ မပြတ်သုံးစွဲခဲ့သော သမိုင်းအရှည်ဆုံး သဘာဝဆေးရောင်။ မြေလွှာထဲရှိ ရေဓာတ်ပါ သံအောက်ဆိုဒ် (Limonite/Goethite) မှ ဖြစ်ပေါ်သည်။
             </div>
-            <button class="action-btn" onclick="goToRecipe('recipe-ochre')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+            <table class="prop-chart">
+              <tr><td>Chemical:</td><td>$\text{FeO(OH)} \cdot n\text{H}_2\text{O}$</td></tr>
+              <tr><td>Lightfastness:</td><td>အဆင့် ၁ (ASTM I - Excellent)</td></tr>
+              <tr><td>Opacity:</td><td>Semi-Opaque မှ Opaque</td></tr>
+              <tr><td>Oil Absorption:</td><td>၃၀ - ၄၀ ဂရမ် / ၁၀၀ ဂရမ်</td></tr>
+              <tr><td>Toxicity:</td><td>လုံးဝ အဆိပ်မရှိ (Non-Toxic)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-calcination')">Calcination ဖော်မြူလာကြည့်ရန် →</button>
           </div>
         </div>
 
-        <!-- Botanical Pigment 1 -->
-        <div class="card" data-category="lake">
-          <div class="card-swatch" style="background: #a32244;">
-            <span class="category-badge" style="background: rgba(194,65,104,0.85);">Botanical & Lake</span>
+        <!-- 2. Natural Ultramarine (Lapis Lazuli) -->
+        <div class="pigment-card" data-cat="mineral">
+          <div class="card-top" style="background: #1434a4;">
+            <span class="category-badge">Precious Mineral</span>
           </div>
           <div class="card-body">
-            <div class="card-header-row">
+            <div class="pigment-head">
+              <span class="pigment-title">Natural Ultramarine</span>
+              <span class="ci-code">PB29 (Natural)</span>
+            </div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> အာဖဂန်နစ္စတန်ရှိ Badakhshan မိုင်းများမှထွက်သော Lapis Lazuli ကျောက်မျက်မှ ထုတ်ယူသည်။ အလယ်ခေတ်နှင့် ရီနေဆန်းခေတ်တွင် ရွှေထက်ပင် တန်ဖိုးကြီးမြင့်ခဲ့ပြီး မယ်တော်မာရီ၏ ဝတ်ရုံတော်များကို ရေးဆွဲရာတွင်သာ သီးသန့်သုံးစွဲခဲ့သည်။
+            </div>
+            <table class="prop-chart">
+              <tr><td>Chemical:</td><td>$\text{Na}_{8-10}\text{Al}_6\text{Si}_6\text{O}_{24}\text{S}_{2-4}$</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM I (Excellent)</td></tr>
+              <tr><td>Opacity:</td><td>Transparent မှ Semi-Transparent</td></tr>
+              <tr><td>Oil Absorption:</td><td>၃၅ - ၄၀ ဂရမ် / ၁၀၀ ဂရမ်</td></tr>
+              <tr><td>Acid Sensitivity:</td><td>အက်ဆစ်ဒဏ် မခံနိုင် (ပျက်ပြယ်လွယ်)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-lapis')">Pastiglia ထုတ်ယူနည်းဖတ်ရန် →</button>
+          </div>
+        </div>
+
+        <!-- 3. Synthetic French Ultramarine -->
+        <div class="pigment-card" data-cat="synthetic">
+          <div class="card-top" style="background: #002fa7;">
+            <span class="category-badge">Historical Synthetic</span>
+          </div>
+          <div class="card-body">
+            <div class="pigment-head">
+              <span class="pigment-title">French Ultramarine</span>
+              <span class="ci-code">PB29 (Synthetic)</span>
+            </div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ၁၈၂၈ ခုနှစ်တွင် ပြင်သစ်ဓာတုပညာရှင် Jean-Baptiste Guimet က ကျောက်မျက်အစစ်ကဲ့သို့ တောက်ပသော အပြာရောင်ကို တန်ဖိုးနည်း Kaolin ရွှံ့စေး၊ ကန့်နှင့် ဆိုဒါတို့ဖြင့် ပေါင်းစပ်ဖန်တီးနိုင်ခဲ့ပြီး Societe d'Encouragement ဆုကို ဆွတ်ခူးခဲ့သည်။
+            </div>
+            <table class="prop-chart">
+              <tr><td>Chemical:</td><td>Polysulfide Sodium Aluminosilicate</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM I (အလွန်ခိုင်မာ)</td></tr>
+              <tr><td>Opacity:</td><td>Semi-Transparent (Undertone နီဘက်သန်း)</td></tr>
+              <tr><td>Oil Absorption:</td><td>၃၂ ဂရမ် / ၁၀၀ ဂရမ်</td></tr>
+              <tr><td>Toxicity:</td><td>Non-Toxic (ဘေးကင်းသည်)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-syn-ultra')">Guimet ပြုလုပ်နည်းဖတ်ရန် →</button>
+          </div>
+        </div>
+
+        <!-- 4. Madder Lake -->
+        <div class="pigment-card" data-cat="botanical">
+          <div class="card-top" style="background: #981c3c;">
+            <span class="category-badge">Botanical Lake</span>
+          </div>
+          <div class="card-body">
+            <div class="pigment-head">
               <span class="pigment-title">Madder Lake (ရိုးစွဲနီ)</span>
-              <span class="color-index">NR9 (Natural Red)</span>
+              <span class="ci-code">NR9</span>
             </div>
-            <p class="pigment-meta" style="color: #e28fa7; font-size: 0.85rem;">Rubia Tinctorum (မဲဒါအမြစ်မှထုတ်ယူ)</p>
-            <div class="pigment-meta">
-              <div class="meta-row"><span>Dye Base:</span> <span>Alizarin & Purpurin</span></div>
-              <div class="meta-row"><span>Fixative:</span> <span>Alum (ကျောက်ချဉ်) + Soda Ash</span></div>
-              <div class="meta-row"><span>Lightfastness:</span> <span>အလယ်အလတ် (Moderate)</span></div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ရုရှားနှင့် အရှေ့အလယ်ပိုင်းဒေသပေါက် Rubia Tinctorum အမြစ်မှ ထုတ်ယူသော ရှေးအကျဆုံး အနီရောင်စွဲဆေး။ ရှေးခေတ်အီဂျစ်သင်္ချိုင်းများနှင့် ရောမခေတ် အဝတ်အထည်များ၊ ၁၇ ရာစု ဒတ်ခ်ျပန်းချီဆရာများ၏ အလင်းပေါက် Glazing များတွင် အထူးထင်ရှားသည်။
             </div>
-            <button class="action-btn" onclick="goToRecipe('recipe-madder')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+            <table class="prop-chart">
+              <tr><td>Active Dye:</td><td>Alizarin & Purpurin</td></tr>
+              <tr><td>Substrate:</td><td>Alumina Hydrate Precipitate</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM III (အလယ်အလတ် - Glazing သင့်လျော်)</td></tr>
+              <tr><td>Opacity:</td><td>အလွန်အလင်းပေါက်သည် (Very Transparent)</td></tr>
+              <tr><td>Oil Absorption:</td><td>၇၀ - ၈၅ ဂရမ် (ဆီစုပ်အားမြင့်)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-laking-std')">Standard Laking နည်းစဉ်ကြည့်ရန် →</button>
           </div>
         </div>
 
-        <!-- Earth Pigment 2 -->
-        <div class="card" data-category="earth">
-          <div class="card-swatch" style="background: #3e3228;">
-            <span class="category-badge">Earth & Mineral</span>
+        <!-- 5. Azurite -->
+        <div class="pigment-card" data-cat="mineral">
+          <div class="card-top" style="background: #1d4e89;">
+            <span class="category-badge">Natural Mineral</span>
           </div>
           <div class="card-body">
-            <div class="card-header-row">
-              <span class="pigment-title">Raw & Burnt Umber</span>
-              <span class="color-index">PBr7</span>
+            <div class="pigment-head">
+              <span class="pigment-title">Azurite (အဇူရိုက် ကြေးပြာကျောက်)</span>
+              <span class="ci-code">PB30</span>
             </div>
-            <p class="pigment-meta" style="color: #c9a47d; font-size: 0.85rem;">သဘာဝ သံနှင့် မန်းဂနိစ်မြေညို</p>
-            <div class="pigment-meta">
-              <div class="meta-row"><span>Chemical:</span> <span>Fe₂O₃ + MnO₂</span></div>
-              <div class="meta-row"><span>Drying Rate:</span> <span>အလွန်မြန် (ဆီခြောက်လွယ်)</span></div>
-              <div class="meta-row"><span>Undertone:</span> <span>အစိမ်း/အဝါသန်းသော မြေညို</span></div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ကြေးနီသတ္တုကြောများတွင် တွဲလျက်တွေ့ရသော သဘာဝ ကာဗွန်နိတ်ကျောက်ပြာ။ အလယ်ခေတ် ဥရောပတွင် Lapis Lazuli မတတ်နိုင်သော ပန်းချီဆရာများ အဓိက အားကိုးခဲ့ရသည့် ကောင်းကင်ပြာရောင်ခြယ် ဖြစ်သည်။
             </div>
-            <button class="action-btn" onclick="goToRecipe('recipe-ochre')">ပြုလုပ်နည်း ဖော်မြူလာကြည့်ရန် →</button>
+            <table class="prop-chart">
+              <tr><td>Chemical:</td><td>$2\text{CuCO}_3 \cdot \text{Cu(OH)}_2$</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM I (အလင်းဒဏ်ခံနိုင်)</td></tr>
+              <tr><td>Texture:</td><td>Coarse Grit (နုလွန်းပါက မီးခိုးရောင်ပြောင်း)</td></tr>
+              <tr><td>Toxicity:</td><td>အဆိပ်သင့်မှု အသင့်အတင့် (ကြေးနီဓာတ်ပေါင်း)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-azurite')">သန့်စင်ခွဲထုတ်နည်းဖတ်ရန် →</button>
           </div>
         </div>
 
-        <!-- Botanical Pigment 2 -->
-        <div class="card" data-category="lake">
-          <div class="card-swatch" style="background: #1e3f66;">
-            <span class="category-badge" style="background: rgba(194,65,104,0.85);">Botanical Extract</span>
+        <!-- 6. Blue & Green Verditer -->
+        <div class="pigment-card" data-cat="synthetic">
+          <div class="card-top" style="background: #257d77;">
+            <span class="category-badge">Historical Synthetic</span>
           </div>
           <div class="card-body">
-            <div class="card-header-row">
-              <span class="pigment-title">Natural Indigo (မဲနယ်)</span>
-              <span class="color-index">NB1 (Natural Blue)</span>
+            <div class="pigment-head">
+              <span class="pigment-title">Verditer (Blue / Green)</span>
+              <span class="ci-code">PB30 / PG39 (Synth)</span>
             </div>
-            <p class="pigment-meta" style="color: #9cb8da; font-size: 0.85rem;">Indigofera Tinctorum အရွက်မှအချဉ်ဖောက်ထုတ်ယူ</p>
-            <div class="pigment-meta">
-              <div class="meta-row"><span>Active Agent:</span> <span>Indigotin (အောက်ဆီဂျင်ဓာတ်ပြု)</span></div>
-              <div class="meta-row"><span>Solubility:</span> <span>ရေတွင် မပျော်ဝင် (Insoluble)</span></div>
-              <div class="meta-row"><span>Lightfastness:</span> <span>အဆင့် ၃ (Fair to Good)</span></div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ၁၆ ရာစုမှ ၁၈ ရာစုအတွင်း ရွှေငွေသန့်စင်လုပ်ငန်းများ၏ ဘေးထွက်ပစ္စည်းအဖြစ် ထွက်လာသော ကြေးနီနိုက်ထရိတ်ရည်ကို မြေဖြူခဲဖြင့် ဓာတ်ပြုအနည်ချကာ ထုတ်လုပ်ခဲ့သည့် ဓာတုဗေဒ အဇူရိုက်/မာလာခိုက် ဖြစ်သည်။
             </div>
-            <button class="action-btn" onclick="goToRecipe('recipe-lake-general')">Lake ပြုလုပ်နည်းကြည့်ရန် →</button>
+            <table class="prop-chart">
+              <tr><td>Composition:</td><td>Basic Copper Carbonate precipitate</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM II (ကောင်းမွန်)</td></tr>
+              <tr><td>Particle Size:</td><td>Uniform / Soft Fine Texture</td></tr>
+              <tr><td>Opacity:</td><td>Semi-Opaque (နံရံဆေးရေးနှင့် Distemper သုံး)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-verditer')">Verditer ဖော်စပ်နည်းဖတ်ရန် →</button>
           </div>
         </div>
+
+        <!-- 7. Verdigris -->
+        <div class="pigment-card" data-cat="synthetic">
+          <div class="card-top" style="background: #1b8a5a;">
+            <span class="category-badge">Historical Synthetic</span>
+          </div>
+          <div class="card-body">
+            <div class="pigment-head">
+              <span class="pigment-title">Verdigris (ကြေးညှိစိမ်း)</span>
+              <span class="ci-code">PG20</span>
+            </div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ရှေးဂရိနှင့် ရောမခေတ်ကတည်းက ကြေးနီပြားများကို စပျစ်ရည်ချဉ် (ရှာလကာရည်) အငွေ့ဖြင့် လှောင်မြှိုက်ကာ ဖြစ်ပေါ်စေခဲ့သော ကြေးချေးစိမ်း။ ရီနေဆန်းခေတ် ပန်းချီကားများတွင် အစိမ်းရောင်အလင်းပေါက် အရောင်တင်အဖြစ် အထူးကျော်ကြားခဲ့သည်။
+            </div>
+            <table class="prop-chart">
+              <tr><td>Chemical:</td><td>Basic / Neutral Copper Acetate</td></tr>
+              <tr><td>Reactivity:</td><td>အလွန်ဓာတ်ပြုလွယ် (ဆီဆေးထဲတွင် အညိုရောင်ပြောင်းတတ်)</td></tr>
+              <tr><td>Lightfastness:</td><td>ASTM III (အလယ်အလတ် - Resin ဖြင့်ထိန်းချုပ်ရသည်)</td></tr>
+              <tr><td>Toxicity:</td><td>အဆိပ်သင့်မှု မြင့်မား (စားသုံးမိပါက အန္တရာယ်ရှိ)</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-verdigris')">နည်းလမ်းမျိုးစုံ ပြုလုပ်နည်း →</button>
+          </div>
+        </div>
+
+        <!-- 8. Oak Gall Ink -->
+        <div class="pigment-card" data-cat="botanical">
+          <div class="card-top" style="background: #2b221b;">
+            <span class="category-badge">Tannin Extract / Ink</span>
+          </div>
+          <div class="card-body">
+            <div class="pigment-head">
+              <span class="pigment-title">Oak Gall Ink (သပိတ်သီး သံမှင်)</span>
+              <span class="ci-code">Iron-Gall Complex</span>
+            </div>
+            <div class="history-box">
+              <strong>သမိုင်းကြောင်း:</strong> ရောမအင်ပါယာနှောင်းပိုင်းမှစ၍ ၁၉ ရာစုအထိ အနောက်ကမ္ဘာ၏ အရေးအပါဆုံး စာရေးမှင်။ Magna Carta၊ Leonardo da Vinci ၏ မှတ်စုကြမ်းများနှင့် အမေရိကန် လွတ်လပ်ရေးကြေညာစာတမ်းကို ဤမှင်ဖြင့် ရေးထိုးခဲ့သည်။
+            </div>
+            <table class="prop-chart">
+              <tr><td>Active Agents:</td><td>Tannic/Gallic Acid + Ferrous Sulfate</td></tr>
+              <tr><td>Permanence:</td><td>Permanently Indelible (စက္ကူသားထဲ စွဲထွင်းသွားသည်)</td></tr>
+              <tr><td>Acidity:</td><td>High Acidity (ကာလကြာလျှင် စက္ကူကို စားတတ်သည်)</td></tr>
+              <tr><td>Shade Range:</td><td>ရေးစတွင် မီးခိုးခရမ်း၊ အောက်ဆီဂျင်ထိလျှင် အနက်စွဲသွားသည်</td></tr>
+            </table>
+            <button class="card-link-btn" onclick="jumpToRecipe('rec-oakgall')">မှင်ဖော်စပ်နည်းဖတ်ရန် →</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- TAB 2: RECIPES -->
-    <div id="tab-recipes" class="tab-view">
-      
-      <!-- Earth Recipe -->
-      <div class="recipe-card" id="recipe-ochre">
-        <div class="recipe-header">
-          <div>
-            <h2 style="font-size: 1.25rem;">မြေသားပစ်ဂမန့် အဆင့်ဆင့်သန့်စင်နည်း (Earth Levigation & Calcination)</h2>
-            <span style="color: var(--accent-warm); font-size: 0.85rem;">Ochre, Umber, Sienna ကဲ့သို့ မြေသားများနှင့် သက်ဆိုင်သည်</span>
+    <!-- ==================== TAB 3: PIGMENT MAKING & RECIPES ==================== -->
+    <div id="tab-making" class="tab-content">
+      <h1 class="section-title">Pigment Making Lab & Artisanal Protocols (ဖော်စပ်နည်းစဉ် လက်တွေ့ဓာတ်ခွဲခန်း)</h1>
+      <p class="section-subtitle">ခေတ်အလိုက် ဆေးဖော်စပ်မှု သမိုင်း၊ Calcination နည်းစနစ်များ၊ Standard Laking နှင့် သီးသန့် အသေးစိတ် ဖော်မြူလာများ</p>
+
+      <!-- Historical Evolution Summary -->
+      <div class="protocol-card">
+        <h2 style="font-size: 1.15rem; margin-bottom: 8px;">ခေတ်အလိုက် ဆေးဖော်စပ်နည်းစနစ် အကျဉ်းချုပ် (Historical Chronology)</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; font-size: 0.88rem;">
+          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; border-left: 3px solid #f59e0b;">
+            <strong style="color: #f59e0b;">ရှေးဟောင်းနှင့် ကျောက်ခေတ် (Antiquity)</strong>
+            <p style="margin-top: 4px; color: #cbd2e0;">သဘာဝမြေသားများကို လက်ဖြင့်ရွေးချယ်ခြင်း၊ ရေဆေးအနည်ထိုင်နည်း (Levigation) နှင့် တိရစ္ဆာန်အဆီ၊ သွေး၊ ရေတို့ဖြင့် ရိုးရှင်းစွာ ကြိတ်ချေရောစပ်ခြင်း။</p>
           </div>
-          <span class="category-badge">Earth Protocol</span>
+          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; border-left: 3px solid #3b82f6;">
+            <strong style="color: #3b82f6;">အလယ်ခေတ်နှင့် ရီနေဆန်း (Medieval & Renaissance)</strong>
+            <p style="margin-top: 4px; color: #cbd2e0;">Alchemy (အဂ္ဂိရတ်) ထွန်းကားလာခြင်း။ ကြေးနီနှင့် ခဲကို အက်ဆစ်ငွေ့ဖြင့် တိုက်စားစေခြင်း (Corrosion)၊ အပင်ဆိုးဆေးများကို Alum ဖြင့် အနည်ချခြင်း (Laking) နှင့် Pastiglia နည်းဖြင့် ကျောက်မျက်ခွဲထုတ်ခြင်း။</p>
+          </div>
+          <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; border-left: 3px solid #10b981;">
+            <strong style="color: #10b981;">စက်မှုတော်လှန်ရေးခေတ် (Industrial Era)</strong>
+            <p style="margin-top: 4px; color: #cbd2e0;">ဓာတုဗေဒသန့်စင်မှု တိုးတက်လာပြီး သတ္တုဒြပ်ပေါင်းသစ်များ (Cobalt, Cadmium, Chromium) ရှာဖွေတွေ့ရှိခြင်းနှင့် ဓာတ်ခွဲခန်းသုံး ဓာတုအရောင်များ ပေါ်ပေါက်လာခြင်း။</p>
+          </div>
         </div>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
-          <strong>လိုအပ်သော ကိရိယာ:</strong> ကျောက်ဆုံ၊ ရေစစ်ဆန်ခါ (100-200 Mesh sieve)၊ ဖန်ပုလင်းရှည် (Levigation jars)၊ အပူပေးဖို (မီးဖုတ်ရန်)။
+      </div>
+
+      <!-- SECTION: GENERAL CALCINATION -->
+      <div class="protocol-card" id="rec-calcination">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">General Calcination (အပူပေးဓာတ်ပြုခြင်း နည်းလမ်း ၄ သွယ်)</div>
+            <div class="protocol-sub">သံဓာတ်ပါ မြေသားများကို အပူပေး၍ မော်လီကျူးဖွဲ့စည်းပုံ ပြောင်းလဲစေခြင်း</div>
+          </div>
+          <span class="category-badge">Thermal Transformation</span>
+        </div>
+        <p style="font-size: 0.9rem; color: #cbd2e0; margin-bottom: 12px;">
+          သဘာဝမြေဝါ (Yellow Ochre - $\text{FeO(OH)}$) တွင် ကိန်းအောင်းနေသော ဓာတုပေါင်းစပ်ရေ ($\text{H}_2\text{O}$) ကို အပူချိန်ဖြင့် နှင်ထုတ်လိုက်သောအခါ မီးခတ်သံအောက်ဆိုဒ်စစ်စစ် (Hematite - $\text{Fe}_2\text{O}_3$) ဖြစ်သွားပြီး အနီညိုရောင် (Burnt Ochre/Red) သို့ ပြောင်းလဲသွားပါသည်။
         </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+          <div class="tech-box">
+            <strong>၁။ ဒယ်အိုးလှော်နည်း (Pan Roasting):</strong><br>
+            • သံဒယ်အိုးအထူပေါ်တွင် ခြောက်သွေ့သောအမှုန့်ကို ဖြန့်တင်ပါ။<br>
+            • မီးအားအလယ်အလတ် (200°C - 300°C) ဖြင့် အဆက်မပြတ် မွှေပေးပါ။<br>
+            • ၁၅ - ၃၀ မိနစ်အတွင်း ရွှေဝါရောင်မှ လိမ္မော်နီ၊ နောက်ဆုံး ချောကလက်နီရောင်သို့ ကူးပြောင်းလာမည်။
+          </div>
+          <div class="tech-box">
+            <strong>၂။ မီးဖိုသုံးနည်း (Kiln Annealing):</strong><br>
+            • Ceramic Kiln ထဲတွင် မီးခံခွက် (Crucible) ဖြင့် ထည့်ပါ။<br>
+            • 500°C မှ 700°C အထိ အပူတက်စေပြီး ၁ နာရီခန့် ထားပါ။<br>
+            • အလွန်နက်ရှိုင်းပြီး ခရမ်းသန်းသော Venetian Red အဆင့်ထိ ရရှိသည်။
+          </div>
+          <div class="tech-box">
+            <strong>၃။ မီးပုံနည်း (Fire Pit / Hearth Method):</strong><br>
+            • ရှေးရိုးနည်းဖြစ်ပြီး မြေစိုင်ခဲများကို မီးသွေးခဲရဲရဲများအကြား တိုက်ရိုက်ထည့်ဖုတ်ခြင်း။<br>
+            • မီးသွေးငြိမ်းပြီး အေးသွားချိန်တွင် ဆယ်ယူ၍ ရေဆေးအနည်ထိုင်စစ်ထုတ်ရသည်။
+          </div>
+          <div class="tech-box">
+            <strong>၄။ Press Cake Handling (အခြောက်ခံခြင်း):</strong><br>
+            • Calcination ပြီး၍ ရေဆေးထားသော ရွှံ့နုကို ပိတ်စဖြင့် ဖိညှစ်ထုတ်ပါ။<br>
+            • ကိတ်မုန့်သဖွယ် တုံးခဲဖြစ်လာသော Press Cake ကို နေရိပ်တွင် လေဝင်လေထွက်ကောင်းစွာ အခြောက်ခံပြီးမှ ဖန်လက်ရိုက်ဖြင့် အချောကြိတ်ပါ။
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: STANDARD LAKING PROCEDURE -->
+      <div class="protocol-card" id="rec-laking-std">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">Standard Laking Procedure (SLP - အပင်ထွက် အနည်ချနည်းစဉ်)</div>
+            <div class="protocol-sub">ရေတွင်ပျော်ဝင်သော အော်ဂဲနစ်ဆိုးဆေးကို ရေမပျော်သော ပစ်ဂမန့်အမှုန့်အဖြစ် ပြောင်းလဲခြင်း</div>
+          </div>
+          <span class="category-badge" style="background: rgba(217, 70, 111, 0.7);">Laking Protocol</span>
+        </div>
+        <div class="tech-box">
+          ဓာတုညီမျှခြင်း: $\text{Al}_2(\text{SO}_4)_3 + 3\text{Na}_2\text{CO}_3 + 3\text{H}_2\text{O} \longrightarrow 2\text{Al(OH)}_3 \downarrow + 3\text{Na}_2\text{SO}_4 + 3\text{CO}_2 \uparrow$
+        </div>
         <ol class="step-list">
-          <li><strong>Crushing (ကြိတ်ခွဲခြင်း):</strong> ကောက်ယူရရှိသော မြေစိုင်/ကျောက်စရစ်ရိုင်းများကို နေခြောက်လှန်းပြီးနောက် သံ/ကျောက်ဆုံထဲတွင် အမှုန့်ကြမ်းရသည်အထိ ထုထောင်းပါ။</li>
-          <li><strong>Levigation (ရေဆေး အနည်ထိုင်နည်းစနစ်):</strong> အမှုန့်များကို ရေဖလားရှည်ထဲထည့်၍ မွှေပါ။ ၁၀ စက္ကန့်ခန့် စောင့်ဆိုင်းပြီး သဲကြမ်းများ အောက်ခြေကျသွားချိန်တွင် အပေါ်ယံ ရေနောက်ကို နောက်ထပ် ဖန်ဘူးတစ်လုံးထဲသို့ ညင်သာစွာ ပြောင်းငှဲ့ပါ။</li>
-          <li><strong>Settling & Drying (အနည်ထိုင်ခြင်းနှင့် အခြောက်ခံခြင်း):</strong> ဒုတိယဖန်ဘူးရှိ အနုစား ရွှံ့မှုန့်များကို ၂၄ နာရီ ငြိမ်သက်စွာ ထား၍ ရေကြည်ကို အပေါ်မှ ခပ်ထုတ်ပါ။ အောက်ခြေကျန်သော ရွှံ့နုကို ပိတ်စပေါ်တင်၍ အခြောက်ခံပါ။</li>
-          <li><strong>Calcination (မီးဖုတ်နည်း - ရွေးချယ်နိုင်သည်):</strong> Yellow Ochre မှ နီညိုရောင် Burnt Ochre လိုချင်ပါက ရရှိလာသောအမှုန့်ခြောက်ကို ဒယ်ပြားပေါ်တင်၍ 200°C - 300°C တွင် အပူပေးလျှင် ဓာတုဓာတ်ပေါင်းပြောင်းလဲကာ နီမြန်းသောအရောင် ရရှိပါမည်။</li>
+          <li><strong>Extraction (အရောင်ထုတ်ယူခြင်း):</strong> သစ်ဥ/ပန်းပွင့်/သစ်ခေါက် ၁၀၀ ဂရမ်ကို ကြိတ်ချေ၍ ရေစင် ၁ လီတာတွင် 60°C - 70°C ဖြင့် ၁ နာရီကြာ နှပ်၍ ပြင်းအားမြင့် ဆေးဆိုးရည်ကို စစ်ယူပါ။</li>
+          <li><strong>Mordant Dissolution (ကျောက်ချဉ်ထည့်ခြင်း):</strong> Potassium Alum (ကျောက်ချဉ်) ၃၀ ဂရမ်ကို ရေနွေးတွင် ဖျော်ပြီး ဆေးဆိုးရည်ထဲသို့ ရောမွှေပါ။</li>
+          <li><strong>Precipitation (အနည်ချခြင်း):</strong> Washing Soda (Sodium Carbonate) ၁၅ ဂရမ်ကို ရေဖျော်ပြီး ဆေးရည်ထဲသို့ ဖြည်းညင်းစွာ အစက်ချပါ။ ပူဖောင်းများ ထွက်လာပြီး Alumina Hydrate အဖြူရောင်အမှုန်လေးများက အပင်ဆိုးဆေးကို ဖမ်းဆွဲကာ အောက်သို့ အနည်ထိုင်သွားပါမည် (pH 6.8 - 7.0 တွင် ရပ်ပါ)။</li>
+          <li><strong>Washing the Lake (ဆားဓာတ်ဆေးကြောခြင်း):</strong> အနည်ထိုင်ပြီးလျှင် အပေါ်ယံရေကြည်ကို သွန်ပစ်ပါ။ ရေနွေးစင် ထပ်ထည့်၍ ၂ ကြိမ် ပြန်ဆေးပါ (Sodium Sulfate ဆားများ ကင်းစင်စေရန် ဖြစ်သည်)။</li>
+          <li><strong>Filtration & Drying:</strong> စစ်စက္ကူ (Filter paper) ဖြင့် စစ်ယူပြီး ရလာသော ရွှံ့စေးခဲကို အရိပ်ထဲတွင် အခြောက်ခံကာ အမှုန့်ကြိတ်ပါ။</li>
         </ol>
       </div>
 
-      <!-- Lake Recipe -->
-      <div class="recipe-card" id="recipe-madder">
-        <div class="recipe-header">
+      <!-- SECTION: SPECIFIC HISTORICAL RECIPES -->
+      
+      <!-- 1. Lapis Lazuli to Ultramarine -->
+      <div class="protocol-card" id="rec-lapis">
+        <div class="protocol-header">
           <div>
-            <h2 style="font-size: 1.25rem;">အပင်ထွက်ဆေးဆိုးရည်ကို ဆေးမှုန့်ဖြစ်စေနည်း (Botanical Lake Pigment Precipitation)</h2>
-            <span style="color: var(--accent-lake); font-size: 0.85rem;">Madder, Marigold, သစ်ခေါက်၊ ပန်းပွင့်အရောင်များမှ အမှုန့်ထုတ်ယူခြင်း</span>
+            <div class="protocol-title">၁။ Lapis Lazuli မှ Ultramarine ထုတ်ယူနည်း (Cennini's Pastiglia Method)</div>
+            <div class="protocol-sub">၁၅ ရာစု Cennino Cennini ၏ စာအုပ်ပါ သမိုင်းဝင် ဖယောင်းမုန့်နှစ်စနစ်</div>
           </div>
-          <span class="category-badge" style="background: rgba(194,65,104,0.85);">Lake Protocol</span>
+          <span class="category-badge">Pastiglia Method</span>
         </div>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
-          <strong>လိုအပ်သော ဓာတုပစ္စည်းများ:</strong> Potassium Alum (ကျောက်ချဉ်မှုန့် - $KAl(SO_4)_2$)၊ Washing Soda / Soda Ash (ဆိုဒါမှုန့် - $Na_2CO_3$)၊ စစ်စက္ကူ (Coffee filter)။
+        <p style="font-size: 0.9rem; color: #cbd2e0; margin-bottom: 12px;">
+          Lapis Lazuli ကျောက်မျက်ကို ကြိတ်လျှင် အပြာမှုန် (Lazurite) အပြင် မီးခိုးရောင် calcite နှင့် pyrite အညစ်အကြေးများ ရောနှောနေသဖြင့် မီးခိုးရောင်သာ ထွက်သည်။ Pastiglia နည်းသည် အညစ်အကြေးများကို ဖယောင်းစေးထဲတွင် ထိန်းထားပြီး အပြာစစ်စစ်ကိုသာ ရေထဲသို့ ဆွဲထုတ်သည့် နည်းပညာဖြစ်သည်။
         </p>
         <ol class="step-list">
-          <li><strong>Dye Extraction (အရောင်ထုတ်ယူခြင်း):</strong> သစ်ဥ/ပန်းပွင့်များကို ကြိတ်ပြီး ရေနွေးနွေး (60°C ခန့်) တွင် ၁ နာရီကြာ နှပ်ထားကာ ပြင်းအားမြင့် ဆေးဆိုးရည်ကို အဝတ်ပါးဖြင့် စစ်ယူပါ။</li>
-          <li><strong>Alum Bath (ချည်နှောင်ပစ္စည်း ထည့်ခြင်း):</strong> ထွက်လာသော အရောင်ရည်ထဲသို့ ကျောက်ချဉ်ရည်ပျော်ရည် (Alum solution) ကို ရောထည့်ပြီး သမအောင် မွှေပေးပါ။</li>
-          <li><strong>Precipitation (အနည်ကျစေခြင်း):</strong> Soda Ash အရည်ကို အစက်ချ ဖြည်းညင်းစွာ ထည့်ပါ။ ဓာတ်ငွေ့ပူဖောင်းများ ထွက်လာပြီး Alumina Hydrate နှင့် ဆေးရောင်ဓာတ်ပေါင်းစပ်ကာ အမှုန့်အနည်အဖြစ် အောက်ခြေသို့ ထိုင်ဆင်းသွားပါမည် (pH 6.5 - 7 တွင် ရပ်ပါ)။</li>
-          <li><strong>Washing & Filtering:</strong> အနည်ထိုင်ပြီးသော Lake pigment ကို filter စက္ကူဖြင့် စစ်ယူပြီး ဆားဓာတ်များပြောင်စေရန် ရေစင်စစ်ဖြင့် ၂ ကြိမ် ဆေးကြောကာ အရိပ်ထဲတွင် အခြောက်ခံပါ။</li>
+          <li><strong>ကျောက်ချေခြင်း:</strong> Lapis ကျောက်ရိုင်းကို အလွန်နုညက်သော အမှုန့်ဖြစ်သည်အထိ ကြွေဆုံတွင် ရေထည့်၍ ကြိတ်ပါ။</li>
+          <li><strong>Dough (မုန့်နှစ်စပ်ခြင်း):</strong> ပျားဖယောင်း (Beeswax)၊ ထင်းရှူးစေး (Pine Rosin) နှင့် Gum Mastic တို့ကို အညီအမျှ ကျိုချက်အရည်ဖျော်ပြီး Lapis မှုန့်နှင့် ရောနယ်ကာ မုန့်နှစ်တုံးကဲ့သို့ နယ်ပါ။ ဤတုံးကို ၃ ရက်ကြာ နှပ်ထားပါ။</li>
+          <li><strong>Kneading in Lye (ပြာရည်ထဲတွင် ဆုပ်နယ်ထုတ်ယူခြင်း):</strong> မုန့်နှစ်တုံးကို ပြာရည်နွေးနွေး (Potash / Dilute Lye Water) ခွက်ထဲတွင် လက်ဖြင့် ညင်သာစွာ နယ်ဖတ်ပါ။ အပြာရောင် Lazurite အမှုန်စစ်စစ်များသည် ရေထဲသို့ လွတ်ကျလာပြီး အောက်ခြေတွင် စုဝေးအနည်ထိုင်မည် (ပထမအကြိမ်ထွက်သော အပြာသည် တန်ဖိုးအကြီးဆုံး Fra Angelico Blue ဖြစ်သည်)။</li>
+          <li><strong>Ultramarine Ash:</strong> ဒုတိယနှင့် တတိယအကြိမ် ရေလဲ၍ နယ်လျှင် အရောင်ဖျော့သော ပြာမီးခိုးရောင် (Ultramarine Ash) ရရှိသည်။</li>
+        </ol>
+      </div>
+
+      <!-- 2. Synthetic French Ultramarine -->
+      <div class="protocol-card" id="rec-syn-ultra">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">၂။ Synthetic French Ultramarine ပြုလုပ်နည်း (Guimet's Process)</div>
+            <div class="protocol-sub">၁၈၂၈ ခုနှစ် အပူပေးပေါင်းစပ်ဓာတုနည်းစဉ်</div>
+          </div>
+          <span class="category-badge">High-Heat Synthesis</span>
+        </div>
+        <ol class="step-list">
+          <li><strong>ကုန်ကြမ်းအချိုးအစား:</strong> သန့်စင်သော Kaolin Clay (ကြွေမြေဖြူ) ၁၀၀ ပုံ၊ ဆိုဒါပြာ (Sodium Carbonate) ၁၀၀ ပုံ၊ ကန့်မှုန့် (Sulfur) ၆၀ ပုံ၊ မီးသွေးမှုန့်နု (Charcoal powder) ၁၂ ပုံတို့ကို သမအောင် ရောစပ်ကြိတ်ပါ။</li>
+          <li><strong>Crucible Firing (ပထမအဆင့် အပူပေးခြင်း):</strong> ရောစပ်ထားသော ကုန်ကြမ်းများကို လေလုံသော မီးခံအိုး (Closed Crucible) ထဲတွင် ထည့်ဖိသိပ်ပြီး အဖုံးကို ရွှံ့စေးဖြင့် လုံအောင်ပိတ်ပါ။ 750°C မှ 800°C တွင် ၂၄ နာရီကြာ မီးဖုတ်ပါ။ ထွက်လာသောအဆင့်တွင် အစိမ်းရောင် (Ultramarine Green) အဖြစ် ရရှိသည်။</li>
+          <li><strong>Oxidation (ဒုတိယအဆင့် အပြာပြောင်းခြင်း):</strong> မီးခံအိုးကိုဖွင့်၍ လေဝင်စေပြီး ကန့်ငွေ့များကို 450°C တွင် အောက်ဆီဂျင်နှင့် ဓာတ်ပြုစေသောအခါ အစိမ်းရောင်မှ တောက်ပသော Ultramarine Blue အဖြစ်သို့ အပြီးသတ် ပြောင်းလဲသွားသည်။</li>
+          <li><strong>Washing:</strong> ရရှိလာသော အပြာခဲကို ကြိတ်ခွဲ၍ ပိုလျှံနေသော ဆိုဒီယမ်ဆားများ စင်ကြယ်သွားသည်အထိ ရေနွေးဖြင့် ဆေးကြောပါ။</li>
+        </ol>
+      </div>
+
+      <!-- 3. Azurite Refining -->
+      <div class="protocol-card" id="rec-azurite">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">၃။ Azurite (အဇူရိုက် ကြေးပြာကျောက်) သန့်စင်နည်း</div>
+            <div class="protocol-sub">သိပ်သည်းဆကွာခြားချက်ကို အခြေခံသော ရေဆေးအနည်ထိုင်စနစ်</div>
+          </div>
+          <span class="category-badge">Density Levigation</span>
+        </div>
+        <ol class="step-list">
+          <li><strong>ကြိတ်ခွဲမှု သတိပြုရန်:</strong> Azurite ကို အလွန်အမင်း မုန့်ညက်အောင် မကြိတ်ရပါ။ ပစ်ဂမန့်အမှုန် သေးငယ်လွန်းသွားပါက အလင်းယိုင်မှုကြောင့် အရောင်ဖျော့တော့ပြီး မီးခိုးပြာရောင်အဖြစ် ပျက်စီးသွားတတ်သည်။ အကြမ်းစား သဲဆန်ဆန် အမှုန်အရွယ်အစားကို ထိန်းသိမ်းရမည်။</li>
+          <li><strong>သန့်စင်ခြင်း:</strong> အက်ဆစ်လုံးဝ မသုံးရ (အက်ဆစ်ထိပါက ကြေးနီပျော်ဝင်ပြီး ပျက်စီးသည်)။ ရေစင်ထဲတွင် အမှုန့်ထည့်မွှေပြီး ကျောက်စရစ်အညစ်အကြေးများ မြန်မြန်ကျချိန်တွင် အပြာရောင်ရေကို အခြားခွက်သို့ လျင်မြန်စွာ ကူးပြောင်းပါ။</li>
+          <li><strong>Malachite ခွဲထုတ်ခြင်း:</strong> အဇူရိုက်တွင် အစိမ်းရောင် Malachite အမှုန်များ ရောနှောပါဝင်တတ်သဖြင့် အနည်ထိုင်မှု အဆင့်ဆင့်ပြုလုပ်ကာ သိပ်သည်းဆအလိုက် အစိမ်းနှင့် အပြာကို အလွှာလိုက် ခွဲထုတ်ရယူပါ။</li>
+        </ol>
+      </div>
+
+      <!-- 4. Blue & Green Verditer -->
+      <div class="protocol-card" id="rec-verditer">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">၄။ Blue & Green Verditer ပြုလုပ်နည်း</div>
+            <div class="protocol-sub">Copper Nitrate မှ ဓာတု Basic Copper Carbonate အနည်ချထုတ်လုပ်ခြင်း</div>
+          </div>
+          <span class="category-badge">Precipitation Alchemy</span>
+        </div>
+        <ol class="step-list">
+          <li><strong>Copper Nitrate ပြုလုပ်ခြင်း:</strong> ကြေးနီကြိုးစများကို နိုက်ထရစ်အက်ဆစ် (Nitric Acid) ထဲသို့ ထည့်၍ အပြာရောင် ကြေးနီနိုက်ထရိတ်ရည် ထုတ်ယူပါ (အန္တရာယ်ရှိသော နိုက်ထရိုဂျင်ဒိုင်အောက်ဆိုဒ် အညိုရောင်အငွေ့ထွက်သဖြင့် လေဝင်လေထွက်ကောင်းသော အပြင်ဘက်တွင်သာ ပြုလုပ်ရမည်)။</li>
+          <li><strong>Blue Verditer အနည်ချခြင်း:</strong> ကြေးနီရည်ထဲသို့ Calcium Carbonate (Chalk/Whiting - မြေဖြူမှုန့်) ထည့်မွှေပါ။ <strong>အအေးခန်းအပူချိန် (15°C အောက်)</strong> တွင် ထိန်းသိမ်းထားပါက ကောင်းကင်ပြာရောင် Blue Verditer အနည်ကျလာမည်။</li>
+          <li><strong>Green Verditer သို့ ကူးပြောင်းခြင်း:</strong> အကယ်၍ ဤဖျော်ရည်ကို <strong>အပူပေးဆူပွက်စေပါက (Boiling)</strong> မော်လီကျူးပြောင်းလဲကာ အပြာမှ စိမ်းလဲ့လဲ့ Green Verditer အဖြစ်သို့ အလိုအလျောက် ပြောင်းလဲသွားပါသည်။</li>
+        </ol>
+      </div>
+
+      <!-- 5. Verdigris in Various Color Ways -->
+      <div class="protocol-card" id="rec-verdigris">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">၅။ Verdigris (ကြေးညှိစိမ်း) နည်းလမ်းမျိုးစုံ ပြုလုပ်နည်း</div>
+            <div class="protocol-sub">Basic Verdigris နှင့် Crystal Distilled Verdigris ဖော်စပ်မှု ကွဲပြားချက်များ</div>
+          </div>
+          <span class="category-badge">Copper Corrosion</span>
+        </div>
+        <ol class="step-list">
+          <li><strong>Basic Verdigris (ကြေးပြာစိမ်းလွှာ):</strong> မြေအိုးထဲတွင် ရှာလကာရည် (Acetic acid) ထည့်ပါ။ ကြေးနီပြားများကို ရှာလကာရည်ထဲ မမြုပ်စေဘဲ အပေါ်ယံတွင် စင်တင်၍ အိုးကို လုံအောင်ပိတ်ကာ နွေးထွေးသောနေရာတွင် ၁ လခန့် ထားပါ။ ကြေးနီပြားပေါ်တွင် အစိမ်းဖက်ခဲများ တက်လာချိန်တွင် ခြစ်ယူပါ။</li>
+          <li><strong>Crystallized / Distilled Verdigris (ကြေးစိမ်းသလင်းခဲ):</strong> အထက်ပါ Basic Verdigris အမှုန့်များကို ရေနွေးနွေး ရှာလကာရည်အစစ်ထဲတွင် ပြန်လည်ပျော်ဝင်စေပါ။ အရည်ကြည်ကို စစ်ထုတ်ပြီး ဖန်လင်ပန်းပေါ်တွင် ဖြည်းညင်းစွာ အငွေ့ပျံစေသောအခါ အလွန်တောက်ပပြီး ပွင့်လင်းမြင်သာသော Neutral Copper Acetate သလင်းခဲ စိမ်းစိမ်းပြာပြာများ ရရှိလာမည်။</li>
+        </ol>
+      </div>
+
+      <!-- 6. Oak Gall Ink -->
+      <div class="protocol-card" id="rec-oakgall">
+        <div class="protocol-header">
+          <div>
+            <div class="protocol-title">၆။ Oak Gall Ink (သပိတ်သီး သံမှင်ရည် စစ်စစ် ဖော်စပ်နည်း)</div>
+            <div class="protocol-sub">Tannin + Iron Sulfate ဓာတ်ပေါင်းစပ် အမြဲခံမှင်ရည်</div>
+          </div>
+          <span class="category-badge">Historical Ink Formula</span>
+        </div>
+        <ol class="step-list">
+          <li><strong>ကုန်ကြမ်းအချိုး:</strong> Oak Galls (သပိတ်သီး/မိုးခါးသီး) ၃ ပုံ၊ Green Vitriol (Ferrous Sulfate - $\text{FeSO}_4$) ၁ ပုံ၊ Gum Arabic (ကော်ရည်) ၁ ပုံ၊ မိုးရေ (သို့မဟုတ် ရေသန့်)။</li>
+          <li><strong>Tannic Acid ထုတ်ယူခြင်း:</strong> Oak galls များကို ထုထောင်း၍ မိုးရေထဲတွင် ၃ ရက်ခန့် နေလှန်းနှပ်ထားပါ (သို့မဟုတ် မီးအေးအေးဖြင့် နာရီဝက်ကြာ ကျိုချက်ပါ)။ Gallotannic acid များ ထွက်လာပါမည်။</li>
+          <li><strong>မည်းနက်စေခြင်း:</strong> ထိုအရည်ထဲသို့ Ferrous Sulfate အမှုန့်ကို ထည့်လိုက်သည်နှင့် ချက်ချင်းပင် ဓာတ်ပြုကာ မည်းနက်သော Iron(II) gallate အရည်အဖြစ်သို့ ပြောင်းသွားပါမည်။</li>
+          <li><strong>Gum Arabic ပေါင်းထည့်ခြင်း:</strong> မှင်ရည် ပျစ်ခဲစီးဆင်းမှု မှန်ကန်စေရန်နှင့် စက္ကူပေါ်တွင် အရောင်တင်လက်စေရန် Gum Arabic ဖျော်ရည်ကို ထည့်သွင်းမွှေပေးပါ။ စက္ကူပေါ်တွင် ရေးခြစ်ပြီး လေထဲမှ အောက်ဆီဂျင်နှင့် ထိတွေ့ချိန်တွင် မဖျက်နိုင်သော Iron(III) pyrogallate အနက်ရောင်အဖြစ်သို့ အပြီးသတ် စွဲထင်သွားပါမည်။</li>
         </ol>
       </div>
 
     </div>
 
-    <!-- TAB 3: STUDIO & TOOLS -->
-    <div id="tab-equipment" class="tab-view">
-      <div class="grid">
-        <div class="card">
+    <!-- ==================== TAB 4: STUDIO & TOOLS ==================== -->
+    <div id="tab-equipment" class="tab-content">
+      <h1 class="section-title">Studio Equipment & Lab Safety (စတူဒီယို ကိရိယာတန်ဆာနှင့် ဘေးကင်းရေး)</h1>
+      <p class="section-subtitle">ရိုးရာပစ်ဂမန့်နှင့် ဆေးရောင်စပ်လုပ်ငန်းခွင်တွင် မရှိမဖြစ် လိုအပ်သော ကိရိယာများ</p>
+
+      <div class="grid-cards">
+        <div class="pigment-card">
           <div class="card-body">
-            <h3 style="color: var(--accent-warm); margin-bottom: 6px;">Glass Muller & Slab</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">ဖန်လက်ရိုက်နှင့် မှန်ကြိတ်ပြား</p>
-            <p style="font-size: 0.9rem;">
-              ခြောက်သွေ့နေသော ပစ်ဂမန့်အမှုန့်ကို Gum Arabic (ဝါတာကာလာအတွက်) သို့မဟုတ် Cold-pressed Linseed Oil (ဆီဆေးအတွက်) ဖြင့် အမှုန့်တစ်မှုန့်ချင်းစီ အညီအမျှ ပျံ့နှံ့ရောစပ်စေရန် အဝိုင်းပုံသဏ္ဌာန် ဖိကြိတ်ရသည့် အဓိကကိရိယာ ဖြစ်သည်။
+            <h3 style="color: var(--accent-warm); margin-bottom: 8px;">Glass Muller & Frosted Slab</h3>
+            <p style="font-size: 0.88rem; color: #cbd2e0;">
+              ပစ်ဂမန့်အမှုန့်ကို ဆီ (Linseed Oil) သို့မဟုတ် ဝါတာကာလာကော် (Gum Arabic) ထဲသို့ အမှုန်တစ်မှုန့်ချင်းစီ ပျံ့နှံ့စီးဝင်စေရန် အသုံးပြုသည့် ဖန်လက်ရိုက်နှင့် ဖန်ကြိတ်ပြား ဖြစ်သည်။ ပုံမှန်မှန်ချောထက် မျက်နှာပြင်ကို Silicon Carbide ဖြင့် အနည်းငယ်ကြမ်းအောင် လုပ်ထားသော Frosted Glass သည် အထိရောက်ဆုံး ဖြစ်သည်။
             </p>
           </div>
         </div>
 
-        <div class="card">
+        <div class="pigment-card">
           <div class="card-body">
-            <h3 style="color: var(--accent-warm); margin-bottom: 6px;">Porcelain Mortar & Pestle</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">ကြွေကျောက်ဆုံနှင့် လက်ရိုက်</p>
-            <p style="font-size: 0.9rem;">
-              အပင်ထွက် အမှုန့်ခြောက်များ၊ Lake pigment အခဲဖတ်များနှင့် မြေစိုင်အလတ်စားများကို ကနဦး ကြိတ်ခွဲမှုန့်ညက်စေရန် သုံးသည်။ သတ္တုကြိတ်ဆုံများထက် ဓာတုဓာတ်မပြုသော ကြွေသားကို ရွေးချယ်သင့်သည်။
+            <h3 style="color: var(--accent-blue); margin-bottom: 8px;">Mesh Sieves & Levigation Column</h3>
+            <p style="font-size: 0.88rem; color: #cbd2e0;">
+              100 Mesh, 200 Mesh နှင့် 325 Mesh ရှိသော သတ္တုဆန်ခါနုများ။ ရေဆေးအနည်ထိုင်ရာတွင် ဖန်ပုလင်းရှည်များကို အဆင့်ဆင့် သုံးစွဲခြင်းဖြင့် မိုက်ခရိုမီတာ အရွယ်အစားအလိုက် သဲမှုန်နှင့် ဆေးမှုန့်နုကို တိကျစွာ ခွဲခြားနိုင်သည်။
             </p>
           </div>
         </div>
 
-        <div class="card">
+        <div class="pigment-card">
           <div class="card-body">
-            <h3 style="color: var(--accent-lake); margin-bottom: 6px;">Chemical Safety & Masks</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">N95 / FFP3 မျက်နှာဖုံးနှင့် လက်အိတ်</p>
-            <p style="font-size: 0.9rem;">
-              ပစ်ဂမန့်အမှုန့်များသည် အလွန်သေးငယ်သည့်အတွက် ကြိတ်ခွဲချိန်နှင့် မွှေချိန်တွင် အဆုတ်တွင်းသို့ မဝင်ရောက်စေရန် N95 Respirator တပ်ဆင်ရန် မဖြစ်မနေ လိုအပ်ပါသည်။
+            <h3 style="color: var(--accent-lake); margin-bottom: 8px;">PPE & Chemical Safety</h3>
+            <p style="font-size: 0.88rem; color: #cbd2e0;">
+              ပစ်ဂမန့်အမှုန့်များသည် အလွန်နုနယ်သဖြင့် လေထဲပျံလွင့်လွယ်သည်။ အထူးသဖြင့် Copper, Lead, Iron ဓာတ်ပေါင်းများကို ကိုင်တွယ်ရာတွင် N95 / FFP3 Mask၊ ဓာတုခံလက်အိတ် (Nitrile Gloves) နှင့် မျက်မှန်တို့ကို မဖြစ်မနေ တပ်ဆင်ရမည်။
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: TONE & COLOR MIXING -->
-    <div id="tab-tone-mixing" class="tab-view">
-      
-      <h2 style="font-size: 1.25rem; margin-bottom: 16px;">၁။ အရောင်ဂုဏ်သတ္တိများ ခွဲခြားဖတ်ရှုမှု (Tone Terminology)</h2>
-      
-      <div class="matrix-grid">
-        <div class="matrix-box">
-          <span class="matrix-badge" style="background: #2563eb; color: #fff;">Hue</span>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">အရောင်စင်စစ် အမည်</p>
-          <p style="font-size: 0.9rem; margin-top: 6px;">အဖြူ၊ အမည်း ရောစပ်မထားသော သဘာဝအရောင်လှိုင်း မူရင်းအခြေအနေ (ဥပမာ - မူရင်းအနီ၊ အပြာစစ်စစ်)။</p>
+    <!-- ==================== TAB 5: PALETTE EXTRACTOR ==================== -->
+    <div id="tab-extractor" class="tab-content">
+      <h1 class="section-title">Color Extractor Studio (အရောင်ဆွဲထုတ် ကိရိယာ)</h1>
+      <p class="section-subtitle">ဓာတ်ပုံ သို့မဟုတ် ပန်းချီကားများမှ အရောင်အချိုးအစားနှင့် Palette များကို ဆွဲထုတ်လေ့လာခြင်း</p>
+
+      <div class="extractor-workspace">
+        <div class="canvas-container" id="drop-zone">
+          <input type="file" id="image-loader" accept="image/*" style="display: none;">
+          <div id="upload-placeholder">
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 8px;">ဓာတ်ပုံကို Drag & Drop ဆွဲထည့်ပါ သို့မဟုတ် ဖိုင်ရွေးပါ</p>
+            <label for="image-loader" class="custom-upload-btn">ပုံတင်သွင်းရန် (Choose File)</label>
+          </div>
+          <canvas id="image-canvas"></canvas>
         </div>
 
-        <div class="matrix-box">
-          <span class="matrix-badge" style="background: #e2e8f0; color: #000;">Tint</span>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + White (အဖြူစပ်အရောင်)</p>
-          <p style="font-size: 0.9rem; margin-top: 6px;">အရောင်၏ Value (အလင်းတန်ဖိုး) ကို မြှင့်တင်ပေးပြီး နုပျိုကြည်လင်သောအရောင်အဖြစ် ပြောင်းလဲစေသည်။</p>
-        </div>
+        <div class="extractor-panel">
+          <h3 style="font-size: 1.05rem; margin-bottom: 10px;">ခွဲထုတ်ရရှိသော အရောင်များ (Dominant Palette)</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">အရောင်ကွက်ကို နှိပ်၍ Hex Code ကူးယူနိုင်သည်</p>
+          
+          <div class="extracted-palette" id="palette-result">
+            <!-- Palette boxes generated by JS -->
+          </div>
 
-        <div class="matrix-box">
-          <span class="matrix-badge" style="background: #0f172a; color: #cbd5e1; border: 1px solid #334155;">Shade</span>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + Black (အနက်စပ်အရောင်)</p>
-          <p style="font-size: 0.9rem; margin-top: 6px;">အရောင်၏ Value ကို လျှော့ချပြီး မှောင်နက်သွားစေကာ လေးလံသော အရိပ်အရောင်ကို ရရှိစေသည်။</p>
-        </div>
-
-        <div class="matrix-box">
-          <span class="matrix-badge" style="background: #64748b; color: #fff;">Tone</span>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Hue + Grey (မီးခိုးစပ်အရောင်)</p>
-          <p style="font-size: 0.9rem; margin-top: 6px;">စူးရှတောက်ပမှု (Saturation/Chroma) ကို လျှော့ချထားပြီး သဘာဝပတ်ဝန်းကျင်နှင့် လိုက်ဖက်သော ငြိမ်သက်သည့်အရောင်။</p>
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+            <h4 style="font-size: 0.9rem; margin-bottom: 6px;">Eyedropper Analysis (ရွေးချယ်ထားသော အရောင်)</h4>
+            <div id="inspector-color" style="height: 30px; border-radius: 4px; background: #333; margin-bottom: 8px; border: 1px solid var(--border);"></div>
+            <p id="inspector-values" style="font-family: var(--font-code); font-size: 0.82rem; color: var(--text-muted);">
+              ပုံပေါ်တွင် ကလစ်နှိပ်၍ အရောင်ကို တိုက်ရိုက် စစ်ဆေးပါ
+            </p>
+          </div>
         </div>
       </div>
-
-      <h2 style="font-size: 1.25rem; margin-bottom: 12px; margin-top: 28px;">၂။ Mass Tone နှင့် Undertone နားလည်ခြင်း</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ဝေါဟာရ</th>
-              <th>အဓိပ္ပာယ်ဖော်ပြချက်</th>
-              <th>လက်တွေ့ စမ်းသပ်နည်း</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Mass Tone</strong></td>
-              <td>ဆေးသားကို ကင်းဗတ်ပေါ် အထူသုတ်ထားချိန်တွင် မျက်စိဖြင့်မြင်ရသည့် နက်ရှိုင်းသောအရောင်။</td>
-              <td>Palette ဓားဖြင့် ဆေးသားအပြည့် ကော်တင်ကြည့်ပါ။</td>
-            </tr>
-            <tr>
-              <td><strong>Undertone</strong></td>
-              <td>ဆေးသားကို အလွန်ပါးလွှာစွာ ဆွဲဆန့်လိုက်သည့်အခါ သို့မဟုတ် အဖြူစပ်လိုက်သည့်အခါ ထွက်ပေါ်လာသည့် အောက်ခံရောင်စစ်။</td>
-              <td>အဖြူရောင်စက္ကူပေါ်တွင် လက်ချောင်း (သို့) ရေ/ဆီဖြင့် ပါးပါးပွတ်ဆွဲကြည့်ပါ။</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h2 style="font-size: 1.25rem; margin-bottom: 12px; margin-top: 32px;">၃။ Clean Reading Formula Block (နမူနာဖော်မြူလာ)</h2>
-      <div class="recipe-block">
-<strong>[ Chromatic Black & Shadow Tone Formula ]</strong><br>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
-• ပါဝင်သည့် ပစ်ဂမန့်များ : Burnt Sienna (PR102) + Ultramarine Blue (PB29)<br>
-• ရောစပ်မှု အချိုးအစား   : 1 : 1 (Neutral Dark Velvet)<br>
-<br>
-[အသုံးချမှု ညွှန်ကြားချက်]<br>
-1. အပြာဘက်သို့ ပိုစောင်းပါက  → အေးမြသော အရိပ် (Cool Atmospheric Shadow)<br>
-2. အညိုဘက်သို့ ပိုစောင်းပါက  → နွေးထွေးသော မြေသားအရိပ် (Warm Earth Shadow)<br>
-<br>
-* မှတ်ချက်: Lamp Black (အနက်ရောင်စစ်စစ်) သည် အလင်းကို ကာဆီးပိတ်ဆို့တတ်သောကြောင့် <br>
-  ဤကဲ့သို့ တွဲဖက်စပ်ဆေးကို သုံးခြင်းဖြင့် ပိုမိုအသက်ဝင်ပြီး အလင်းပေါက်သည့် အရိပ်ကို ရရှိစေပါသည်။
-      </div>
-
     </div>
 
   </div>
 
   <script>
-    // Tab Switching Logic
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-view').forEach(view => {
-        view.classList.remove('active');
-      });
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
+    // Navigation Switching
+    function switchNav(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-      const targetView = document.getElementById('tab-' + tabId);
-      if (targetView) targetView.classList.add('active');
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
 
-      const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => 
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => 
         b.getAttribute('onclick').includes(tabId)
       );
-      if (clickedBtn) clickedBtn.classList.add('active');
+      if (activeBtn) activeBtn.classList.add('active');
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Filter Logic for Archive (Earth vs Lake)
-    function filterArchive(category) {
-      const cards = document.querySelectorAll('#pigment-grid .card');
-      const chips = document.querySelectorAll('.filter-bar .filter-chip');
+    // Filter Archive Cards
+    function filterArchive(cat) {
+      const cards = document.querySelectorAll('#archive-grid .pigment-card');
+      const chips = document.querySelectorAll('.filter-bar .chip');
 
-      chips.forEach(chip => chip.classList.remove('active'));
+      chips.forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
 
       cards.forEach(card => {
-        if (category === 'all' || card.getAttribute('data-category') === category) {
-          card.style.display = 'block';
+        if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+          card.style.display = 'flex';
         } else {
           card.style.display = 'none';
         }
       });
     }
 
-    // Direct Link from Card to Recipe
-    function goToRecipe(recipeElementId) {
-      switchTab('recipes');
+    // Direct Jump from Archive to Making Recipe
+    function jumpToRecipe(recipeId) {
+      switchNav('making');
       setTimeout(() => {
-        const el = document.getElementById(recipeElementId);
+        const el = document.getElementById(recipeId);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           el.style.borderColor = 'var(--accent-warm)';
-          setTimeout(() => {
-            el.style.borderColor = 'var(--border-color)';
-          }, 1500);
+          setTimeout(() => { el.style.borderColor = 'var(--border)'; }, 2000);
         }
       }, 100);
     }
+
+    // Image Extractor Canvas Logic
+    const imageLoader = document.getElementById('image-loader');
+    const imageCanvas = document.getElementById('image-canvas');
+    const ctx = imageCanvas.getContext('2d');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    const paletteResult = document.getElementById('palette-result');
+    const inspectorColor = document.getElementById('inspector-color');
+    const inspectorValues = document.getElementById('inspector-values');
+
+    imageLoader.addEventListener('change', handleImage, false);
+
+    function handleImage(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          uploadPlaceholder.style.display = 'none';
+          imageCanvas.style.display = 'block';
+
+          // Resize canvas proportionally
+          const maxW = 700;
+          const scale = Math.min(1, maxW / img.width);
+          imageCanvas.width = img.width * scale;
+          imageCanvas.height = img.height * scale;
+
+          ctx.drawImage(img, 0, 0, imageCanvas.width, imageCanvas.height);
+          extractPalette();
+        }
+        img.src = event.target.result;
+      }
+      if (e.target.files[0]) {
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    }
+
+    // Color Quantization / Extraction
+    function extractPalette() {
+      const imgData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height).data;
+      const colorCounts = {};
+      const step = 20; // Sample every 20 pixels for speed
+
+      for (let i = 0; i < imgData.length; i += 4 * step) {
+        const r = Math.round(imgData[i] / 32) * 32;
+        const g = Math.round(imgData[i+1] / 32) * 32;
+        const b = Math.round(imgData[i+2] / 32) * 32;
+        const rgb = `${r},${g},${b}`;
+        colorCounts[rgb] = (colorCounts[rgb] || 0) + 1;
+      }
+
+      // Sort by frequency
+      const sorted = Object.keys(colorCounts).sort((a,b) => colorCounts[b] - colorCounts[a]).slice(0, 8);
+      paletteResult.innerHTML = '';
+
+      sorted.forEach(rgbStr => {
+        const [r, g, b] = rgbStr.split(',').map(Number);
+        const hex = rgbToHex(r, g, b);
+        const swatch = document.createElement('div');
+        swatch.className = 'pal-swatch';
+        swatch.style.backgroundColor = hex;
+        swatch.title = `Click to copy ${hex}`;
+        swatch.onclick = () => {
+          navigator.clipboard.writeText(hex);
+          alert(`Copied: ${hex}`);
+        };
+        paletteResult.appendChild(swatch);
+      });
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    // Canvas Eyedropper on Click
+    imageCanvas.addEventListener('click', function(e) {
+      const rect = imageCanvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * (imageCanvas.width / rect.width));
+      const y = Math.floor((e.clientY - rect.top) * (imageCanvas.height / rect.height));
+
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+
+      inspectorColor.style.backgroundColor = hex;
+      inspectorValues.innerHTML = `HEX: <strong>${hex}</strong> | RGB: (${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+    });
   </script>
 </body>
 </html>
