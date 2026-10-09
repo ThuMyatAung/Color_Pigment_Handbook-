@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <title>Chroma Studio - Artist & Paint Maker Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ChromaStudio">
+  <meta name="theme-color" content="#0A0A0C">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    .nav-btn, .chip, .btn-action, .btn-step, .circle-swatch, .details-toggle { user-select: none; -webkit-user-select: none; }
+    body {
+      background-color: #0A0A0C;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Padauk", Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.8;
+      padding-top: env(safe-area-inset-top, 20px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+      overflow-x: hidden;
+    }
+    
+    /* Top 8 Tabs Navigation (Scrollable & Responsive) */
+    .nav-bar {
+      display: flex;
+      background: #161618;
+      border-bottom: 1px solid #262628;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .nav-bar::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      flex: 0 0 auto;
+      padding: 13px 13px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #8E8E93;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .nav-btn.active { color: #FFF; border-bottom-color: #0A84FF; }
+    .tab-content { display: none; padding: 16px; max-width: 920px; margin: 0 auto; }
+    @media (min-width: 980px) { .nav-bar { padding-left: calc(50vw - 460px); } }
+    .tab-content.active { display: block; }
+    
+    /* Universal Cards & Layout */
+    .card {
+      background: #161618;
+      border: 1px solid #26262B;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .active-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .swatch-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
+    .btn-action {
+      background: #242426;
+      color: #0A84FF;
+      border: none;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .chips-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .chip {
+      background: #161618;
+      color: #8E8E93;
+      padding: 7px 12px;
+      border-radius: 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .chip.active { background: #0A84FF; color: #FFF; }
+    
+    /* Wheel Viewport */
+    .wheel-wrap { display: flex; justify-content: center; margin: 10px 0; }
+    #wheelCanvas {
+      width: 280px; height: 280px; border-radius: 140px;
+      background: #141416; touch-action: none; box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    }
+    .strip-row { display: flex; height: 22px; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+    .strip-col { flex: 1; }
+    .matrix-title { font-size: 12px; color: #8E8E93; font-weight: 700; margin-bottom: 6px; line-height: 1.7; }
+
+    /* Schemes Swatches Grid */
+    .scheme-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .scheme-item {
+      background: #242426;
+      border-radius: 8px;
+      padding: 6px;
+      text-align: center;
+    }
+    .scheme-color-box {
+      width: 100%; height: 28px; border-radius: 5px; margin-bottom: 4px;
+    }
+    .scheme-label { font-size: 10px; color: #8E8E93; font-weight: 700; }
+    .scheme-hex { font-size: 11px; font-weight: 800; color: #FFF; }
+
+    /* Pigment Cards & Badges */
+    .pigment-card {
+      background: #161618; border-radius: 12px; padding: 14px;
+      margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;
+      border: 1px solid #242428;
+    }
+    .pigment-head { display: flex; align-items: center; gap: 12px; }
+    .pigment-swatch {
+      width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .temp-tag {
+      font-size: 10px; font-weight: 800; padding: 3px 7px;
+      border-radius: 4px; display: inline-block; margin-bottom: 2px;
+    }
+    .temp-warm { background: rgba(255, 69, 58, 0.2); color: #FF453A; }
+    .temp-cool { background: rgba(10, 132, 255, 0.2); color: #0A84FF; }
+    .temp-neutral { background: rgba(142, 142, 147, 0.2); color: #EBEBF5; }
+
+    .prop-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .prop-badge {
+      font-size: 10px; background: #242426; padding: 3px 7px;
+      border-radius: 4px; color: #A1A1A6;
+    }
+    .psychology-box {
+      background: #1C1C1E; border-radius: 8px; padding: 10px 12px;
+      font-size: 12.5px; line-height: 1.9; color: #D1D1D6; margin-top: 4px;
+      border-left: 3px solid #0A84FF;
+    }
+
+    /* Particle Callout Box */
+    .particle-box {
+      background: #101115;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border-left: 3px solid #FF9F0A;
+      font-size: 12px;
+      color: #E5E5EA;
+      line-height: 1.9;
+      margin-top: 4px;
+    }
+    .particle-title {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #FF9F0A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    /* Properties Table */
+    .prop-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      line-height: 1.7;
+      margin-top: 6px;
+      background: #1C1C1E;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .prop-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .prop-table td:first-child { color: #8E8E93; width: 40%; }
+    .prop-table td:last-child { color: #FFF; font-weight: 600; text-align: right; }
+
+    /* Concept & Recipe Boxes */
+    .concept-box {
+      background: #161618; border-radius: 12px; padding: 14px; margin-bottom: 14px;
+    }
+    .concept-title { font-size: 14px; font-weight: 800; color: #FFF; margin-bottom: 6px; letter-spacing: 0.3px; line-height: 1.7; }
+    .concept-sub { font-size: 13px; color: #B9B9BE; line-height: 1.95; margin-bottom: 10px; }
+    
+    .light-shadow-preview { display: flex; gap: 8px; margin-top: 10px; }
+    .light-col { flex: 1; border-radius: 8px; padding: 10px; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.8; }
+    .relativity-test { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
+    .rel-outer { width: 100px; height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .rel-inner { width: 36px; height: 36px; border-radius: 6px; background: #FF5E80; }
+
+    .recipe-box {
+      background: #161618; border-radius: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid #262628;
+    }
+    .recipe-title {
+      font-size: 14.5px; font-weight: 800; color: #FFF; margin-bottom: 4px; line-height: 1.7;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .recipe-sub { font-size: 12px; color: #0A84FF; font-weight: 700; margin-bottom: 10px; line-height: 1.8; }
+    .code-terminal {
+      background: #0A0A0C; border: 1px solid #262628; border-left: 3px solid #0A84FF;
+      border-radius: 6px; padding: 12px 14px; font-family: 'JetBrains Mono', 'Padauk', sans-serif;
+      font-size: 11.5px; color: #96C2EC; line-height: 2.0; margin: 8px 0;
+    }
+    .step-ordered { list-style: none; counter-reset: step-c; margin-top: 10px; }
+    .step-ordered li {
+      position: relative; padding-left: 30px; margin-bottom: 12px;
+      font-size: 13.5px; color: #D1D1D6; line-height: 1.95;
+    }
+    .step-ordered li::before {
+      counter-increment: step-c; content: counter(step-c);
+      position: absolute; left: 0; top: 2px; width: 20px; height: 20px;
+      background: #242426; color: #0A84FF; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800;
+    }
+
+    /* Mixer */
+    .step-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid #242426;
+    }
+    .step-btns { display: flex; gap: 6px; }
+    .btn-step {
+      width: 32px; height: 32px; background: #242426; color: #FFF;
+      border: none; border-radius: 6px; font-size: 16px; font-weight: 700;
+    }
+    .hero-mix {
+      height: 100px; border-radius: 12px; padding: 12px;
+      display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px;
+    }
+    .badge {
+      background: rgba(0,0,0,0.65); padding: 5px 9px;
+      border-radius: 6px; font-size: 12px; font-weight: 800;
+    }
+
+    /* Extractor & Loupe */
+    .extractor-viewport {
+      position: relative; width: 100%; height: 230px;
+      border-radius: 10px; overflow: hidden; background: #141416;
+      margin-bottom: 12px; touch-action: none;
+    }
+    #imageCanvas { width: 100%; height: 100%; display: block; }
+    #loupe {
+      position: absolute; width: 90px; height: 90px; border-radius: 45px;
+      border: 3px solid #FFFFFF; box-shadow: 0 4px 20px rgba(0,0,0,0.85);
+      pointer-events: none; display: none; overflow: hidden; background: #000;
+      z-index: 999; transform: translate(-50%, -120%);
+    }
+    #loupeCanvas { width: 100%; height: 100%; }
+    #crosshair {
+      position: absolute; top: 50%; left: 50%; width: 14px; height: 14px;
+      transform: translate(-50%, -50%); pointer-events: none;
+    }
+    #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.9); }
+    #crosshair::before { top: 6px; left: 0; width: 14px; height: 2px; }
+    #crosshair::after { top: 0; left: 6px; width: 2px; height: 14px; }
+    /* Collapsible details (cleanup pass) */
+    .collapsible { display: none; }
+    .collapsible.open { display: block; }
+    .details-toggle {
+      width: 100%; background: #1C1C1E; color: #0A84FF; border: 1px solid #26262B;
+      padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; margin-top: 2px; font-family: inherit;
+    }
+    .recipe-box.collapsed > *:not(.recipe-title):not(.details-toggle) { display: none !important; }
+    .recipe-box .details-toggle { margin-top: 8px; }
+
+    /* Search inputs (cleanup pass) */
+    .search-input {
+      width: 100%; background: #161618; border: 1px solid #2C2C2E; border-radius: 10px;
+      color: #FFF; padding: 11px 13px; font-size: 13px; margin-bottom: 12px;
+      font-family: inherit; outline: none;
+    }
+    .search-input:focus { border-color: #0A84FF; }
+    .search-input::placeholder { color: #6E6E73; }
+    .no-result { text-align: center; color: #8E8E93; font-size: 12.5px; padding: 22px 0; line-height: 1.9; }
+
+    .palette-circles { display: flex; justify-content: space-between; gap: 6px; margin: 10px 0 14px 0; }
+    .circle-swatch {
+      width: 44px; height: 44px; border-radius: 22px; border: 2px solid transparent;
+      cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4); flex-shrink: 0;
+    }
+    .circle-swatch.active { border-color: #FFFFFF; transform: scale(1.15); }
+  </style>
+</head>
+<body>
+
+  <!-- Top 8 Tabs Navigation -->
+  <div class="nav-bar">
+    <div class="nav-btn active" onclick="switchTab('tabWheel')">CHROMA</div>
+    <div class="nav-btn" onclick="switchTab('tabTones')">TONAL DIRECTORY</div>
+    <div class="nav-btn" onclick="switchTab('tabConcepts')">ART CONCEPTS</div>
+    <div class="nav-btn" onclick="switchTab('tabMixer')">MIXER</div>
+    <div class="nav-btn" onclick="switchTab('tabArchive')">PIGMENT ARCHIVE</div>
+    <div class="nav-btn" onclick="switchTab('tabMaking')">PIGMENT MAKING</div>
+    <div class="nav-btn" onclick="switchTab('tabTools')">STUDIO & TOOLS</div>
+    <div class="nav-btn" onclick="switchTab('tabExtractor')">EXTRACTOR</div>
+  </div>
+
+  <!-- TAB 1: 2D CHROMA WHEEL & DYNAMIC SCHEMES -->
+  <div id="tabWheel" class="tab-content active">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <span style="font-size: 12.5px; color: #8E8E93;">Wheel ပေါ် ဖိဆွဲပြီး လှည့်လည်စမ်းသပ်ပါ</span>
+      <button class="btn-action" style="padding: 6px 10px; font-size: 11px;" onclick="toggleValueMode()" id="valToggleBtn">
+        VIEW VALUE (GREY)
+      </button>
+    </div>
+
+    <div class="wheel-wrap">
+      <canvas id="wheelCanvas" width="280" height="280"></canvas>
+    </div>
+
+    <!-- Active Center Info Card -->
+    <div class="card active-bar">
+      <div id="mainSwatch" class="swatch-box"></div>
+      <div style="flex:1;">
+        <div id="hexText" style="font-size: 16px; font-weight: 800;">#FF5500</div>
+        <div id="hueChromaText" style="font-size: 12px; color: #8E8E93;">HUE: 0° | CHROMA: 100%</div>
+      </div>
+      <button class="btn-action" onclick="routeHexToMixer(document.getElementById('hexText').innerText)">စပ်နည်းကြည့်ရန်</button>
+    </div>
+
+    <!-- Color Schemes Selector Chips -->
+    <div class="matrix-title" style="margin-top: 4px;">COLOR SCHEMES (လိုက်ဖက်ညီသော အရောင်အတွဲများ)</div>
+    <div class="chips-row">
+      <div class="chip active" onclick="setScheme('COMPLEMENTARY', this)">COMPLEMENTARY</div>
+      <div class="chip" onclick="setScheme('SPLIT', this)">SPLIT COMP.</div>
+      <div class="chip" onclick="setScheme('ANALOGOUS', this)">ANALOGOUS</div>
+      <div class="chip" onclick="setScheme('ANA_COMP', this)">ANA. COMPLEMENTARY</div>
+      <div class="chip" onclick="setScheme('TRIADIC', this)">TRIADIC</div>
+      <div class="chip" onclick="setScheme('TETRADIC', this)">TETRADIC</div>
+      <div class="chip" onclick="setScheme('MONO', this)">MONOCHROMATIC</div>
+    </div>
+
+    <!-- Live Schemes Color Swatches -->
+    <div class="scheme-swatches" id="schemeSwatchesRow"></div>
+
+    <!-- Tints, Tones & Shades Matrix -->
+    <div class="card" style="margin-top: 14px;">
+      <div class="matrix-title">TINTS (+ WHITE)</div>
+      <div class="strip-row" id="tintsStrip"></div>
+      <div class="matrix-title">TONES (+ GREY)</div>
+      <div class="strip-row" id="tonesStrip"></div>
+      <div class="matrix-title">SHADES (+ BLACK)</div>
+      <div class="strip-row" id="shadesStrip"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: TONAL DIRECTORY (PIGMENT CHART + PSYCHOLOGY/MOOD) -->
+  <div id="tabTones" class="tab-content">
+    <div class="chips-row">
+      <div class="chip active" onclick="filterPigments('ALL', this)">ALL</div>
+      <div class="chip" onclick="filterPigments('BLUE', this)">BLUES</div>
+      <div class="chip" onclick="filterPigments('RED', this)">REDS</div>
+      <div class="chip" onclick="filterPigments('YELLOW', this)">YELLOWS</div>
+      <div class="chip" onclick="filterPigments('GREEN', this)">GREENS</div>
+      <div class="chip" onclick="filterPigments('ORANGE', this)">ORANGE</div>
+      <div class="chip" onclick="filterPigments('VIOLET', this)">VIOLET</div>
+      <div class="chip" onclick="filterPigments('EARTH', this)">EARTH / NEUTRALS</div>
+      <div class="chip" onclick="filterPigments('WHITE', this)">WHITES</div>
+    </div>
+
+    <input class="search-input" id="tonesSearch" type="search" placeholder="🔍 Pigment ရှာရန် — အမည် သို့မဟုတ် C.I. code" oninput="searchTones(this.value)">
+    <div id="pigmentsList"></div>
+  </div>
+
+  <!-- TAB 3: ART CONCEPTS -->
+  <div id="tabConcepts" class="tab-content">
+    <div class="concept-box">
+      <div class="concept-title">☀️ COLOR, LIGHT & SHADOW (အလင်းနှင့် အရိပ်)</div>
+      <div class="concept-sub">
+        "Warm light yields cool shadows; cool light yields warm shadows." (နေရောင်နွေးထွေးလျှင် အရိပ်သည် အေးမြပြီး၊ အလင်းအေးမြလျှင် အရိပ်သည် နွေးထွေးသည်)။
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-action" style="flex:1;" onclick="setLightMode('WARM')">☀️ WARM LIGHT SOURCE</button>
+        <button class="btn-action" style="flex:1;" onclick="setLightMode('COOL')">❄ COOL LIGHT SOURCE</button>
+      </div>
+      <div class="light-shadow-preview" id="lightPreviewBox"></div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-title">👁️ COLOR RELATIVITY (နှိုင်းရ အရောင်သဘော)</div>
+      <div class="concept-sub">
+        ဘေးပတ်လည် နောက်ခံအရောင်ကြောင့် အလယ်ဗဟိုက အရောင်တူတူလေးပင် လုံးဝကွဲပြားစွာ ထင်မြင်ရခြင်း (Simultaneous Contrast)။
+      </div>
+      <div class="relativity-test">
+        <div class="rel-outer" style="background:#FF9F0A;">
+          <div class="rel-inner"></div>
+        </div>
+        <div class="rel-outer" style="background:#0A84FF;">
+          <div class="rel-inner"></div>
+        </div>
+      </div>
+      <div style="font-size:9.5px; color:#A1A1A6; text-align:center; margin-top:8px;">
+        (အလယ်က ပန်းရောင်စတုရန်းလေး ၂ ခုသည် အရောင်အတူတူဖြစ်သော်လည်း လိမ္မော်ရောင်နောက်ခံတွင် ပိုအေးပြီး အပြာနောက်ခံတွင် ပိုနွေးထွေးသည်ဟု ထင်ရပါသည်)။
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-title">🎨 5 PRINCIPLES OF COLOR CONTRAST</div>
+      <div class="concept-sub" style="margin-bottom:6px;">
+        • <b>Value Contrast:</b> အလင်းဆုံးနှင့် အမှောင်ဆုံးကို ဆုံချက် (Focal Point) တွင် ကပ်ထားခြင်း။<br>
+        • <b>Edge Contrast:</b> စူးရှသော အနားသတ် (Hard edge) ဖြင့် အကြည့်ကို ဆွဲဆောင်ခြင်း။<br>
+        • <b>Chroma Contrast:</b> မွဲခြောက်သော အရောင်များကြားတွင် တောက်ပသောအရောင်ကို ပေါ်လွင်စေခြင်း။<br>
+        • <b>Temperature Contrast:</b> အပူရောင်အဓိကကားတွင် အအေးရောင် အနည်းငယ်ထည့်သွင်းခြင်း။<br>
+        • <b>Atmospheric Perspective:</b> အဝေးရှိ အရာဝတ္ထုများသည် အေးမြမွဲညစ်ပြီး အပြာ/မီးခိုးရောင်သန်းသွားကာ၊ အနီးရှိ အရာဝတ္ထုများသည် ပိုမိုနွေးထွေးပြီး အလင်းအမှောင် ကွဲပြားသည် (Leonardo's perspective of disappearance)။
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-title">📜 A HISTORY OF PAINT (ဆေးသမိုင်း ရာဇဝင်အကျဉ်း)</div>
+      <div class="concept-sub">
+        • <b>Prehistoric (ဂူပန်းချီ):</b> မြေစေး၊ မီးသွေး၊ အရိုးပြာများကို တံတွေး၊ တိရစ္ဆာန်အဆီ၊ သွေးတို့ဖြင့် ရောစပ်ပြီး အရိုးခေါင်းဖြင့် မှုတ်ထုတ်ရေးဆွဲခဲ့ကြသည်။<br>
+        • <b>Antiquity (ဂရိ/ရောမ):</b> ဖယောင်း (Encaustic)၊ သစ်စေးနှင့် ကြက်ဥ (Egg tempera) ကို Binder အဖြစ် စတင်သုံးစွဲခဲ့သည်။<br>
+        • <b>Middle Ages:</b> အဖိုးတန် Lapis Lazuli ကျောက်မှ Ultramarine Blue ကို မယ်တော်မာရီဝတ်ရုံအတွက်သာ သီးသန့် အသုံးပြုခဲ့ကြသည်။<br>
+        • <b>15th Century:</b> သစ်ကြားသီးဆီနှင့် နှမ်းကြတ်ဆီ (Linseed Oil) ဖြင့် ဆီဆေး (Oil Paint) ခေတ်ဆန်းလာခဲ့သည်။<br>
+        • <b>19th Century:</b> သံဖြူဘူး (Tin Paint Tube) ပေါ်ပေါက်လာသဖြင့် အပြင်ထွက်၍ ပန်းချီဆွဲနိုင်ကာ Impressionism လှုပ်ရှားမှု ပေါ်ပေါက်ခဲ့သည်။<br>
+        • <b>20th Century:</b> ရေအခြေခံ Acrylic Polymer နှင့် Synthetic Pigment အသစ်များ ပေါ်ထွက်လာခဲ့သည်။<br>
+        • <b>21st Century — အနက် စစ်ပွဲ (The Black War):</b> 2014 တွင် UK ကုမ္ပဏီ Surrey NanoSystems က Carbon Nanotube အလွှာဖြင့် အလင်း 99.965% စုပ်သော <b>Vantablack</b> ကို ထုတ်လုပ်ခဲ့သည် — ဆေးဘူးထဲ ထည့်ရောင်းသော ဆေး မဟုတ်ဘဲ ပစ္စည်း မျက်နှာပြင်ပေါ် Nanotube 'ပေါက်စေ' ရသော Coating ဖြစ်သည်။ 2016 တွင် ပန်းချီဆရာ Anish Kapoor က ၎င်းကို အနုပညာတွင် သုံးခွင့် <b>တစ်ဦးတည်း မူပိုင်</b> ယူလိုက်ရာ 'အရောင် တစ်ခုကို လူတစ်ယောက် ပိုင်ဆိုင်ခွင့် ရှိသလား' ဟူသော အငြင်းပွားမှု ကြီး ဖြစ်ပေါ်ခဲ့သည်။<br>
+        • <b>Semple ၏ ပြန်တိုက်ပွဲ:</b> Stuart Semple က Pinkest Pink ကို Kapoor မှအပ အားလုံးအတွက် ဖွင့်ပေးခြင်းဖြင့် စတင်ခဲ့ပြီး Black 2.0 → 3.0 → 4.0 'အားလုံးအတွက် အနက်' Acrylic စီးရီးဖြင့် ဆက်လက် တိုက်ပွဲ ဝင်ခဲ့သည် (အသေးစိတ်ကို Pigment Archive တွင် ကြည့်ပါ)။ အရောင်ကို ပိုင်ဆိုင်ခြင်း နှင့် မျှဝေခြင်း အကြား ဒရာမာသည် ခေတ်သစ် Pigment သမိုင်း၏ အထူးခြားဆုံး အခန်းတစ်ခု ဖြစ်သည်။
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: COLOR MIXER (SPLIT-PRIMARY & CMYK) -->
+  <div id="tabMixer" class="tab-content">
+    <div class="chips-row">
+      <div class="chip active" id="btnTrad" onclick="setMixMode('TRAD')">SPLIT-PRIMARY (WARM/COOL)</div>
+      <div class="chip" id="btnCmyk" onclick="setMixMode('CMYK')">CMYK PRINTING</div>
+    </div>
+
+    <div id="mixHero" class="hero-mix">
+      <div id="mixHeroBadge" class="badge">MIXED RESULT</div>
+      <div id="tempBiasBadge" class="badge" style="background:#2C2C2E;">BIAS: BALANCED</div>
+    </div>
+
+    <div id="tradControls" class="card">
+      <div class="matrix-title" style="margin-bottom:8px;">WARM PRIMARIES (အပူရောင် မူလဆေးများ)</div>
+      <div class="step-row">
+        <span style="color:#FF453A; font-weight:700; font-size:13px;">Cadmium Red Light PR108 / Vermilion PR106 (<span id="vWR">20</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('wr', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('wr', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#FFD60A; font-weight:700; font-size:13px;">Indian Yellow PY110 / Cadmium (<span id="vWY">20</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('wy', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('wy', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#5E5CE6; font-weight:700; font-size:13px;">Ultramarine Blue PB29 (Warm/Purple shade) (<span id="vWB">20</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('wb', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('wb', 10)">+</button>
+        </div>
+      </div>
+
+      <div class="matrix-title" style="margin-top:12px; margin-bottom:8px;">COOL PRIMARIES (အအေးရောင် မူလဆေးများ)</div>
+      <div class="step-row">
+        <span style="color:#FF2D55; font-weight:700; font-size:13px;">Alizarin / Rose Madder NR9 / Quinacridone (<span id="vCR">0</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('cr', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('cr', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#FFDF00; font-weight:700; font-size:13px;">Lemon Yellow PY3 / Lead-Tin (<span id="vCY">0</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('cy', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('cy', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#00C7BE; font-weight:700; font-size:13px;">Prussian PB27 / Cerulean PB35 / Phthalo (<span id="vCB">0</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('cb', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('cb', 10)">+</button>
+        </div>
+      </div>
+
+      <div class="matrix-title" style="margin-top:12px; margin-bottom:8px;">GREY & EARTH MODIFIERS (VIRGIL HARMONY)</div>
+      <div class="step-row">
+        <span style="color:#FFF; font-weight:700; font-size:13px;">Lead / Titanium White (<span id="vW">10</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('w', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('w', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#8E8E93; font-weight:700; font-size:13px;">Neutral Grey (White + Bone Black) (<span id="vG">0</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('g', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('g', 10)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#A2845E; font-weight:700; font-size:13px;">Transparent Oxide Red PR101 / Burnt Sienna (<span id="vE">0</span> pts)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjSplit('e', -10)">-</button>
+          <button class="btn-step" onclick="adjSplit('e', 10)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cmykControls" class="card" style="display:none;">
+      <div class="step-row">
+        <span style="color:#00F0FF; font-weight:700;">Process Cyan (<span id="vC">0</span>%)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjCmyk('c', -5)">-</button>
+          <button class="btn-step" onclick="adjCmyk('c', 5)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#FF00A0; font-weight:700;">Process Magenta (<span id="vM">80</span>%)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjCmyk('m', -5)">-</button>
+          <button class="btn-step" onclick="adjCmyk('m', 5)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#FFE600; font-weight:700;">Process Yellow (<span id="vK_Y">70</span>%)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjCmyk('y', -5)">-</button>
+          <button class="btn-step" onclick="adjCmyk('y', 5)">+</button>
+        </div>
+      </div>
+      <div class="step-row">
+        <span style="color:#A1A1A6; font-weight:700;">Key (Carbon Black) (<span id="vK">0</span>%)</span>
+        <div class="step-btns">
+          <button class="btn-step" onclick="adjCmyk('k', -5)">-</button>
+          <button class="btn-step" onclick="adjCmyk('k', 5)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: PIGMENT ARCHIVE (COMPLETE MERGED DIRECTORY) ==================== -->
+  <div id="tabArchive" class="tab-content">
+    <div class="recipe-box" id="incompatBox" style="border-left: 3px solid #FF453A;">
+      <div class="recipe-title">
+        <span>⚠️ မတွဲသင့်သော PIGMENT တွဲများ (INCOMPATIBILITIES)</span>
+        <span class="badge" style="color:#FF453A;">CAUTION</span>
+      </div>
+      <div class="recipe-sub">တွဲသုံးလျှင် ဓာတ်ပြု၍ အရောင် ပျက်စီး/မှောင်သွားနိုင်သော တွဲစပ်မှုများ</div>
+      <ol class="step-ordered">
+        <li><b>Verdigris + ဆာလဖာပါ Pigment</b> (Ultramarine, Lapis Lazuli, Vermilion) — Copper Sulfide ဖြစ်ပေါ်၍ အရောင် ညိုနက်သွားသည်။ အထူးသဖြင့် ဆီဆေးတွင် ဓာတ်ပြုမှု ပြင်းထန်သည်။ Verdigris သည် အက်ဆစ်ဓာတ် ပါသောကြောင့် ကောင်းစွာ မခွဲခြားထားလျှင် အောက်ခံ ပစ္စည်းကိုပါ ထိခိုက်စေနိုင်သည်။</li>
+        <li><b>ခဲ Pigment (Lead White, Red Lead) + ကြေးနီ Pigment</b> (Malachite, Azurite) — ခဲနှင့် ကြေးနီ ဓာတ်ပြု၍ Lead Sulfate/Chloride များ ဖြစ်ပေါ်ပြီး ဆေးလွှာ ညိုနက်လာသည်။ (ချွင်းချက် — Lead White ကို Blue Verditer ထဲတွင် တည်မြဲမှု ကောင်းစေရန် ထည့်သွင်း သုံးစွဲခဲ့ဖူးသည်။)</li>
+        <li><b>Orpiment + ခဲ Pigment</b> — Lead Arsenate ဖြစ်ပေါ်၍ Pigment နှစ်မျိုးလုံး ပျက်စီးသည်။ Orpiment ပင်လျှင် အလင်းတွင် မတည်မြဲဘဲ နက်လာတတ်သည်။</li>
+        <li><b>Iron Oxide (Ochre များ) + အယ်လ်ကာလီ ပြင်း</b> (Smalt, ထုံးဖြူများ) — အရောင် ကြည်လင်မှု လျော့၍ ဆေးလွှာ ကွာကျနိုင်သည်။ Fresco တွင် ထုံး Binder နှင့် မြေရောင်များ၏ ဓာတ်ပြုမှုမှာ ခန့်မှန်းရခက်သော ပြဿနာ ဖြစ်ခဲ့သည်။</li>
+        <li><b>Prussian Blue + အယ်လ်ကာလီ</b> (ဥပမာ Fresco တွင် ထုံးဖြူနှင့် တွဲခြင်း) — အရောင် မှိန်၍ စိမ်းညိုဘက် ပြောင်းနိုင်သည်။</li>
+        <li><b>Lake Pigment + သတ္တု Pigment</b> (ခဲ၊ ကြေးနီ အခြေခံများ) — အော်ဂဲနစ် ဆေးများသည် စိုထိုင်းမှုနှင့် အလင်းတွင် မြန်မြန် မှိန်နိုင်သည်။ Renaissance ပန်းချီများတွင် အသားရောင် အနီမှုများ မှိန်ပျောက်သွား၍ အောက်ခံ အစိမ်း/အပြာ များ ပေါ်လာကာ မျက်နှာများ စိမ်းညို ဖြစ်နေခြင်းမှာ ထိုအကျိုးဆက်ပင် ဖြစ်သည်။</li>
+      </ol>
+    </div>
+
+    <div class="matrix-title">PIGMENT ARCHIVE, PARTICLES & TECHNICAL SPECIFICATIONS</div>
+    <div class="chips-row">
+      <div class="chip active" onclick="filterArchiveCategory('ALL', this)">ALL</div>
+      <div class="chip" onclick="filterArchiveCategory('EARTH', this)">EARTH (မြေသား)</div>
+      <div class="chip" onclick="filterArchiveCategory('MINERAL', this)">MINERAL (ကျောက်မျက်)</div>
+      <div class="chip" onclick="filterArchiveCategory('BOTANICAL', this)">BOTANICAL / LAKE (အပင်)</div>
+      <div class="chip" onclick="filterArchiveCategory('SYN_INORGANIC', this)">SYNTHETIC INORGANIC</div>
+      <div class="chip" onclick="filterArchiveCategory('SYN_ORGANIC', this)">SYNTHETIC ORGANIC</div>
+    </div>
+
+    <input class="search-input" id="archiveSearch" type="search" placeholder="🔍 Pigment ရှာရန် — အမည်၊ C.I. code သို့မဟုတ် ဓာတုပုံသေနည်း" oninput="searchArchive(this.value)">
+    <div id="archivePigmentsList"></div>
+  </div>
+
+  <!-- ==================== TAB 6: PIGMENT MAKING ==================== -->
+  <div id="tabMaking" class="tab-content">
+    <div class="concept-box">
+      <div class="concept-title">🏺 CHRONOLOGY OF PAINT MAKING (ခေတ်အလိုက် ဆေးလုပ်နည်း အကျဉ်းချုပ်)</div>
+      <div class="concept-sub">
+        • <b>ရှေးဦးနှင့် ကျောက်ခေတ် (Antiquity):</b> မြေစေး၊ သံသတ္တုကြောများကို ကောက်ယူ၍ ကျောက်ဆုံထောင်းခြင်း၊ ရေဆေးအနည်ထိုင်နည်း (Levigation) ဖြင့် အမှုန့်နုခွဲထုတ်ခြင်း။<br>
+        • <b>အလယ်ခေတ်နှင့် ရီနေဆန်း (Medieval Alchemy):</b> အပင်ဆိုးဆေးကို ကျောက်ချဉ်ဖြင့် အနည်ချခြင်း (Laking)၊ ကြေးနီကို ရှာလကာရည်ငွေ့ဖြင့် တိုက်စားခြင်း (Verdigris)၊ Lapis Lazuli ကို ဖယောင်းမုန့်နယ်၍ အပြာစစ်ထုတ်ခြင်း (Pastiglia)။<br>
+        • <b>စက်မှုတော်လှန်ရေးခေတ် (Industrial 18th-19th C):</b> ဓာတ်ခွဲခန်းတွင်း မြေဖြူစေး၊ ကန့်နှင့် ဆိုဒါတို့ကို မီးဖုတ်၍ French Ultramarine တီထွင်ခြင်းနှင့် သတ္တုနိုက်ထရိတ် ဒြပ်ပေါင်းများဖြင့် Verditer ထုတ်လုပ်လာနိုင်ခြင်း။
+      </div>
+    </div>
+
+    <!-- General Calcination -->
+    <div class="recipe-box" id="rec-calcination">
+      <div class="recipe-title">
+        <span>GENERAL CALCINATION (အပူပေးဓာတ်ပြုနည်း ၄ သွယ်)</span>
+        <span class="badge" style="color:#FF9F0A;">THERMAL</span>
+      </div>
+      <div class="recipe-sub">Yellow Ochre (FeO·OH) မှ Red / Burnt Ochre (Fe₂O₃) သို့ အပူချိန်ဖြင့် ပြောင်းလဲခြင်း</div>
+      <div style="font-size:13px; color:#A1A1A6; line-height:1.95; margin-bottom:8px;">
+        သဘာဝ မြေဝါတွင် ကိန်းအောင်းနေသော ဓာတုပေါင်းစပ်ရေကို အပူဖြင့် နှင်ထုတ်လိုက်သောအခါ မီးခတ်သံအောက်ဆိုဒ် (Hematite) ဖြစ်လာပြီး နီမြန်းသော ချောကလက်ရောင်သို့ ကူးပြောင်းသွားသည်။
+      </div>
+      
+      <div class="code-terminal">
+        [၁] ဒယ်အိုးလှော်နည်း (Pan Roasting): သံဒယ်အိုးအထူထဲသို့ အမှုန့်ခြောက် 50g ခန့်ထည့်၍ အပူချိန် တဖြည်းဖြည်း မြှင့်ရင်း (အမြင့်ဆုံး 370°C ခန့်) အဆက်မပြတ် မွှေပေးပါ။ ၁၅-၃၀ မိနစ်အတွင်း ရွှေဝါမှ လိမ္မော်နီသို့ ကူးပြောင်းသည်။<br>
+        [၂] Kiln မီးဖိုနည်း (Crucible Annealing): မီးခံခွက်တွင် ထည့်၍ အပူချိန် အဆင့်ဆင့် (100°C / 50°C / 20°C စီ တိုး၍) ၁၀ မိနစ်စီ ဖုတ်ပါ — နမူနာ တစ်ခုတည်းမှ အရောင် အဆင့်မျိုးစုံ ရမည်။ ပိုနက်သော Venetian Red အဆင့် အတွက် 500°C-650°C အထိ ဖုတ်နိုင်သည်။<br>
+        [၃] မီးပုံနည်း (Fire Pit Method): ရှေးရိုးနည်းဖြစ်ပြီး မြေစိုင်ခဲကြီးများကို မီးသွေးခဲရဲရဲများကြား တိုက်ရိုက်ဖုတ်ကာ အေးမှ ဆယ်ယူ၍ ရေဆေးအနည်ထိုင်သည်။<br>
+        [၄] Press Cake မီးတိုက်ရိုက် ကင်နည်း: Pigment 20g ခန့်ကို ရေဖြင့် ပျစ် (Putty) ဖြစ်အောင် နှယ်၍ သံတံ (Skewer) တွင် ညှစ်ပုံသွင်းပြီး မီးတိုက်ရိုက်ပေါ် တင်၍ အရောင် ပြောင်းသည်အထိ (၁၀ မိနစ်ခန့်) ကင်ပါ။ ကြေမွဲလျှင် Kaolin 10–20% ထည့်ပါ။ အေးသောအခါ ကြိတ်၍ သိမ်းပါ။
+      </div>
+    </div>
+
+    <!-- Standard Laking -->
+    <div class="recipe-box" id="rec-slp">
+      <div class="recipe-title">
+        <span>STANDARD LAKING PROCEDURE (SLP - အပင်ထွက် အနည်ချနည်းစဉ်)</span>
+        <span class="badge" style="color:#FF2D55;">PRECIPITATION</span>
+      </div>
+      <div class="recipe-sub">Madder, Marigold, သစ်ခေါက်၊ ပန်းပွင့် အရောင်ရည်များကို ဆေးမှုန့်ဖြစ်စေနည်း</div>
+      
+      <div class="code-terminal">
+        ဓာတုညီမျှခြင်း: Al₂(SO₄)₃ + 3Na₂CO₃ + 3H₂O ➔ 2Al(OH)₃↓ + 3Na₂SO₄ + 3CO₂↑
+      </div>
+
+      <ol class="step-ordered">
+        <li><b>Dye Extraction:</b> အပင်ခြောက် ၁၀၀ ဂရမ်ကို ရေထဲတွင် (ပစ္စည်းမျက်နှာပြင် အထက် လက်နှစ်လုံးခန့် ရေ) မိနစ် ၃၀ ညင်သာစွာ ကျို၍ ဆေးဆိုးရည်ကို Muslin ဖြင့် စစ်ယူပါ။ (Madder ကဲ့သို့ အပူမခံနိုင်သော ဆေးများတွင် 70°C ထက် မကျော်စေရ။)</li>
+        <li><b>Mordant Dissolution:</b> Potassium Alum (ကျောက်ချဉ်) ၁၀ ဂရမ် (အပင်ခြောက် 100g လျှင် 10–20g အထိ သုံးနိုင်) ကို ရေ 100ml တွင် ပျော်ဝင်စေပါ (10% ရည်)။ ဆေးဆိုးရည်ထဲသို့ ထုထည် ထက်ဝက်မှ တူညီမှု အထိ ရောမွှေပါ။</li>
+        <li><b>Precipitation (အနည်ချခြင်း):</b> Sodium Carbonate (သို့မဟုတ် Potassium Carbonate) ၅ ဂရမ်ကို ရေနွေး 100ml တွင် ပျော်ဝင်စေပါ (5% ရည်)။ ဆက်တိုက် မွှေရင်း ဖြည်းဖြည်း ထည့်ပါ — CO₂ ထွက်၍ အမြှုပ် ဖြစ်လာပြီး Alumina Hydrate အဖြူမှုန်လေးများက အပင်ဆိုးဆေးကို ဖမ်းဆွဲကာ အနည်ထိုင်ဆင်းသွားပါမည်။ မြင်သာသော ဓာတ်ပြုမှု မရှိတော့သောအခါ ရပ်ပါ။</li>
+        <li><b>Washing the Lake:</b> အပေါ်ရေကြည် သွန်ပစ်ပြီး ပျော်ဝင်ဆားများ ကင်းစင်စေရန် ပေါင်းခံရေဖြင့် ရေကြည်သည်အထိ ပြန်ဆေးပါ။</li>
+        <li><b>Filtration & Drying:</b> စစ်စက္ကူ (Filter paper) ဖြင့် စစ်ယူပြီး အရိပ်ထဲတွင် အခြောက်ခံကာ အမှုန့်ကြိတ်ပါ။</li>
+      </ol>
+    </div>
+
+    <!-- Specific Recipes -->
+    <div class="recipe-box" id="rec-lapis">
+      <div class="recipe-title">
+        <span>၁။ LAPIS LAZULI မှ ULTRAMARINE ထုတ်ယူနည်း</span>
+        <span class="badge" style="color:#5E5CE6;">PASTIGLIA</span>
+      </div>
+      <div class="recipe-sub">၁၅ ရာစု Cennino Cennini ၏ သမိုင်းဝင် ဖယောင်းမုန့်နယ်နည်း</div>
+      <ol class="step-ordered">
+        <li><b>ကြိတ်ချေခြင်း:</b> Lapis ကျောက်ရိုင်းကို ကြွေဆုံတွင် ရေထည့်၍ အလွန်နုညက်အောင် ကြိတ်ပါ။</li>
+        <li><b>Pastiglia Dough:</b> ပျားဖယောင်း၊ Pine Rosin (ထင်းရှူးစေး) နှင့် Mastic စေးတို့ကို အညီအမျှ ကျိုချက်ဖျော်ပြီး Lapis မှုန့်နှင့် ရောနယ်ကာ မုန့်နှစ်တုံးပြုလုပ်ပြီး ၃ ရက်ကြာ နှပ်ထားပါ။</li>
+        <li><b>Kneading in Lye:</b> မုန့်နှစ်တုံးကို ပြာရည်နွေးနွေး (Lye water) ထဲတွင် လက်ဖြင့် ညင်သာစွာ နယ်ဖတ်ပါ။ အပြာရောင် Lazurite အမှုန်စစ်စစ်များသည် ရေထဲသို့ လွတ်ကျလာပြီး အောက်ခြေတွင် စုဝေးအနည်ထိုင်မည် (Fra Angelico Blue အဆင့် ရရှိသည်)။</li>
+      </ol>
+    </div>
+
+    <div class="recipe-box" id="rec-syn-ultra">
+      <div class="recipe-title">
+        <span>၂။ SYNTHETIC FRENCH ULTRAMARINE ပြုလုပ်နည်း</span>
+        <span class="badge" style="color:#0A84FF;">GUIMET 1828</span>
+      </div>
+      <div class="recipe-sub">Kaolin နှင့် ကန့်မှုန့် အပူပေးပေါင်းစပ်ဓာတုနည်းစဉ်</div>
+      <ol class="step-ordered">
+        <li><b>ကုန်ကြမ်းအချိုး:</b> Kaolin Clay ၁၀၀ ပုံ၊ ဆိုဒါပြာ ၁၀၀ ပုံ၊ ကန့်မှုန့် ၆၀ ပုံ၊ မီးသွေးမှုန့်နု ၁၂ ပုံ၊ Rosin ၄၀ ပုံတို့ကို သမအောင် ရောစပ်ကြိတ်ပါ။ (Kaolin ကို အရင် 700°C တွင် ၁ နာရီ ဖုတ်၍ Metakaolin ပြုလုပ်ထားပါ။ ကန့်မှုန့် နောက်ထပ် ၂၀ ပုံကို ဒုတိယ အဆင့် အတွက် ဖယ်ထားပါ။)</li>
+        <li><b>Crucible Firing:</b> မီးခံအိုးထဲတွင် ထည့်၍ အဖုံး လျော့ရဲစွာ ဖုံးကာ အောက်ဆီဂျင် နည်းသော ပတ်ဝန်းကျင်တွင် 750°C ဖြင့် ၄ နာရီ မီးဖုတ်ပါ။ အေးသောအခါ အပြာ အတောက်ဆုံး အပိုင်းကိုသာ ရွေးယူပါ (မီးခိုး/အရောင်ပျက် အပိုင်းများ စွန့်ပါ)။ ဓာတ်ပြုစဉ် Sulfur Dioxide ထွက်သောကြောင့် လေဝင်လေထွက် ကောင်းရန် လိုသည်။</li>
+        <li><b>Brightening & Oxidation:</b> ရွေးထားသော အပိုင်းကို ကန့်မှုန့် ၂၀ ပုံ ထပ်ထည့် ကြိတ်၍ အဖုံးမပါဘဲ 500°C တွင် ၂ နာရီ ဖုတ်ပါ။ တစ်နာရီလျှင် 50°C စီ ဖြည်းဖြည်း အေးစေပါ။ ထို့နောက် ပေါင်းခံရေဖြင့် pH ကြားနေ ဖြစ်သည်အထိ ဆေးချွတ်၍ အခြောက်ခံပါ။</li>
+      </ol>
+    </div>
+
+    <div class="recipe-box" id="rec-azurite">
+      <div class="recipe-title">
+        <span>၃။ AZURITE (ကြေးပြာကျောက်) သန့်စင်နည်း</span>
+        <span class="badge" style="color:#00C7BE;">LEVIGATION</span>
+      </div>
+      <div class="recipe-sub">အမှုန်အရွယ်အစား မပျက်စီးစေသော ရေဆေးအနည်ထိုင်စနစ်</div>
+      <ol class="step-ordered">
+        <li><b>သတိပြုရန်:</b> Azurite ကို အလွန်မုန့်ညက်အောင် မကြိတ်ရပါ။ အမှုန်သေးငယ်လွန်းပါက အလင်းယိုင်မှုကြောင့် မီးခိုးရောင်ပြောင်းတတ်သဖြင့် သဲဆန်ဆန် အမှုန်အရွယ်အစားကို ထိန်းသိမ်းရမည်။</li>
+        <li><b>သန့်စင်ခြင်း:</b> အက်ဆစ် ပြင်း လုံးဝမသုံးရ (ကြေးနီ ပျော်ဝင်ပြီး ပျက်စီးသည်)။ White Vinegar အားနည်းရည်ဖြင့် ညင်သာစွာ ဆေးနိုင်သော်လည်း နောက်တွင် ရေကြည်ဖြင့် ကြားနေ ဖြစ်အောင် သေချာ ဆေးရမည်။ ရေစင်ထဲတွင် အမှုန့်ထည့်မွှေပြီး ကျောက်စရစ်များ အောက်ကျချိန်တွင် အပြာရောင်ရေကို အခြားခွက်သို့ လျင်မြန်စွာ ကူးပြောင်းကာ အနည်ထိုင်စေရမည်။</li>
+      </ol>
+    </div>
+
+    <div class="recipe-box" id="rec-verditer">
+      <div class="recipe-title">
+        <span>၄။ BLUE & GREEN VERDITER ပြုလုပ်နည်း</span>
+        <span class="badge" style="color:#30D158;">COPPER CARBONATE</span>
+      </div>
+      <div class="recipe-sub">Basic Copper Carbonate — သဘာဝ Azurite / Malachite ၏ လူလုပ် ပုံစံတူများ (၁၈ ရာစု နည်းများ)</div>
+      <ol class="step-ordered">
+        <li><b>ပါဝင်ပစ္စည်းများ:</b> Copper Nitrate၊ Copper Sulfate၊ Chalk (မြေဖြူ)၊ Sodium Bicarbonate၊ ပေါင်းခံရေ။ ကြေးနီ ဒြပ်ပေါင်းများသည် အဆိပ်ရှိသဖြင့် လက်အိတ်နှင့် မျက်မှန် တပ်ဆင်ပါ။</li>
+        <li><b>Blue Verditer (အင်္ဂလိပ် နည်း):</b> Copper Nitrate 15g ကို ရေအေး 200ml တွင် ပျော်ဝင်စေပြီး Chalk 6g ကို ဖြည်းဖြည်း ထည့်မွှေပါ။ ၁၂ နာရီအတွင်း မိနစ် ၃၀ တိုင်း ၂ မိနစ် မွှေပြီး နောက်နှစ်ရက်တိုင် ထပ်လုပ်ပါ — အပြာရောင် အနှစ် ကျလာမည်။ စစ်၍ ပေါင်းခံရေဖြင့် ဆေးပါ။ ပိုနက်သော အပြာ အတွက် Copper Nitrate 11.25g (ရေ 150ml) + Chalk 4.5g ဖြင့် ဒုတိယ အကြိမ် ထပ်လုပ်ပါ။</li>
+        <li><b>Green Verditer (ဥရောပ နည်း):</b> Copper Sulfate 20g ကို ရေနွေး (80°C) 200ml တွင် ပျော်ဝင်စေပါ။ Sodium Bicarbonate 20g ကို ရေနွေး 200ml တွင် သီးခြား ပျော်ဝင်စေပြီး 80°C ခန့် အပူပေးထားသော ကြေးနီရည်ထဲ ဖြည်းဖြည်း ထည့်မွှေပါ (အမြှုပ် များစွာ ထွက်မည်)။ အမြှုပ် ရပ်သောအခါ ရေနွေး 50ml ထပ်ထည့်၍ ၃ မိနစ် မွှေပါ — တောက်ပသော အစိမ်း အနှစ် ရမည်။ စစ်၍ ရေနွေးဖြင့် ဆေးပြီး အခြောက်ခံ ကြိတ်ပါ။</li>
+      </ol>
+    </div>
+
+    <div class="recipe-box" id="rec-verdigris">
+      <div class="recipe-title">
+        <span>၅။ VERDIGRIS (ကြေးညှိစိမ်း) နည်းလမ်းမျိုးစုံ</span>
+        <span class="badge" style="color:#34C759;">COPPER ACETATE</span>
+      </div>
+      <div class="recipe-sub">Basic Verdigris နှင့် Crystal Distilled Verdigris</div>
+      <ol class="step-ordered">
+        <li><b>Basic Verdigris:</b> မြေအိုးထဲတွင် ရှာလကာရည်ထည့်ပြီး အပေါ်ယံတွင် ကြေးနီပြားများ စင်တင်ကာ အိုးကို လေလုံပိတ်၍ ၁ လထားပါ။ ကြေးနီပြားပေါ်တွင် တက်လာသော အစိမ်းဖတ်ခဲများကို ခြစ်ယူပါ။</li>
+        <li><b>Distilled Verdigris (သလင်းခဲစိမ်း):</b> Basic Verdigris ကို ရှာလကာရည်အစစ်ထဲ ပြန်လည်ပျော်ဝင်စေပြီး အရည်ကြည်ကို စစ်ထုတ်ကာ ဖန်လင်ပန်းပေါ်တွင် အငွေ့ပျံစေသောအခါ အလွန်တောက်ပသော Copper Acetate သလင်းခဲစိမ်းများ ရရှိသည်။</li>
+      </ol>
+    </div>
+
+    <div class="recipe-box" id="rec-oakgall">
+      <div class="recipe-title">
+        <span>၆။ OAK GALL INK (သပိတ်သီး သံမှင်ရည် စစ်စစ်)</span>
+        <span class="badge" style="color:#A2845E;">HISTORIC INK</span>
+      </div>
+      <div class="recipe-sub">Tannic Acid + Green Vitriol ဓာတ်ပေါင်းမှင်</div>
+      <ol class="step-ordered">
+        <li><b>ကုန်ကြမ်းအချိုး:</b> Oak Galls (သပိတ်သီး) 10g၊ Ferrous Sulfate (Green Vitriol) 1g၊ Gum Arabic 20g၊ ပေါင်းခံရေ 100ml။</li>
+        <li><b>ထုတ်ယူခြင်း:</b> သပိတ်သီးများကို ပဲစေ့အရွယ် ထုချေ၍ ပေါင်းခံရေထဲတွင် ၁ ပတ် စိမ် (အချဉ်ဖောက်) ပါ။ ထို့နောက် လေးညှင်း (Cloves) နှင့် အတူ မိနစ် ၃၀ ကျို၍ နေ့စဉ် မွှေရင်း နောက်ထပ် ၁ ပတ် ထားပါ။</li>
+        <li><b>မှင်ဖြစ်စေခြင်း:</b> Muslin ဖြင့် စစ်၍ Ferrous Sulfate ထည့်ပါ — ချက်ချင်း မည်းနက်သွားမည်။ Gum Arabic 20g ကို ပွက်နေသော ရေ 50ml တွင် ပျော်ဝင်စေပြီး ရောထည့်ပါ။ ဘူးထဲ လောင်းထည့် သိမ်းပါ။</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 7: STUDIO & TOOLS ==================== -->
+  <div id="tabTools" class="tab-content">
+    <div class="matrix-title">STUDIO EQUIPMENT, PPE & TRADITIONAL BINDERS</div>
+
+    <div class="card">
+      <div style="font-size:14px; font-weight:800; color:#FF9F0A; margin-bottom:4px; line-height:1.7;">Glass Muller & Frosted Slab (ဖန်လက်ရိုက်နှင့် ကြိတ်ပြား)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
+        ပစ်ဂမန့်အမှုန့်ကို ကော်ရည် (Gum Arabic / Linseed Oil) ထဲသို့ အမှုန်တစ်မှုန့်ချင်းစီ အညီအမျှ ပျံ့နှံ့စီးဝင်စေရန် နံပါတ် ၈ (Figure-8) ပုံသဏ္ဌာန် ဖိကြိတ်ရသည့် အဓိကကိရိယာ ဖြစ်သည်။ မျက်နှာပြင်ကြမ်း Frosted Glass သည် အထိရောက်ဆုံး ဖြစ်သည်။
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px; font-weight:800; color:#0A84FF; margin-bottom:4px; line-height:1.7;">Mesh Sieves & Levigation Column (ဆန်ခါနုနှင့် အနည်ထိုင်ဘူး)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
+        100 Mesh, 200 Mesh နှင့် 325 Mesh ဆန်ခါနုများ။ ရေဆေးအနည်ထိုင်ရာတွင် ဖန်ပုလင်းရှည်များကို အဆင့်ဆင့် သုံးစွဲခြင်းဖြင့် သဲမှုန်ကြမ်းနှင့် ဆေးမှုန့်နုကို မိုက်ခရိုမီတာအလိုက် တိကျစွာ ခွဲခြားနိုင်သည်။
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px; font-weight:800; color:#FF453A; margin-bottom:4px; line-height:1.7;">PPE & Chemical Safety (အလုပ်ရုံ ဘေးကင်းရေး)</div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
+        ပစ်ဂမန့်အမှုန့်များသည် အလွန်နုနယ်သဖြင့် အဆုတ်တွင်း ဝင်ရောက်လွယ်သည်။ Copper, Lead, Cadmium, Cobalt ဓာတ်ပေါင်းများ ကြိတ်ခွဲချိန်တွင် N95 / FFP3 Mask၊ Nitrile Gloves နှင့် မျက်မှန် မဖြစ်မနေ တပ်ဆင်ရမည်။
+      </div>
+    </div>
+
+    <!-- Technical Note on Acrylic -->
+    <div class="recipe-box" style="border-left: 3px solid #FF453A;">
+      <div class="recipe-title">
+        <span>TECHNICAL NOTE: WHY ACRYLIC IS EXCLUDED FROM STUDIO MULLING</span>
+        <span class="badge" style="color:#FF453A;">INDUSTRIAL ONLY</span>
+      </div>
+      <div style="font-size:13.5px; color:#D1D1D6; line-height:1.95;">
+        Acrylic emulsion (Plextol, Rhoplex) သည် ရေနံဓာတုအခြေခံ ပေါ်လီမာဖြစ်ပြီး ဖန်ကြိတ်ပြားပေါ်တွင် ကြိတ်စပ်ပါက မိနစ်ပိုင်းအတွင်း အခြောက်မြန်ကာ ပလတ်စတစ်အလွှာအဖြစ် အပြီးသတ်ခဲသွားမည်ဖြစ်သဖြင့် Muller နှင့် Slab ကို ပျက်စီးစေပါသည်။ ထို့အပြင် စက်မှုသုံး Wetting Agent (Surfactant) နှင့် Defoamer မပါဘဲ လက်ဖြင့် ညီညာစွာ ရောစပ်၍ မရနိုင်သောကြောင့် ရိုးရာ လက်လုပ်ဆေးဖော်စပ်မှုတွင် မထည့်သွင်းဘဲ သဘာဝ Binders (Watercolor, Oil, Tempera) ကိုသာ သီးသန့် အသုံးပြုရပါသည်။
+      </div>
+    </div>
+
+    <div class="recipe-box">
+      <div class="recipe-title">
+        <span>TRADITIONAL BINDERS FORMULATION (ကော်ရည်စပ်နည်းများ)</span>
+        <span class="badge" style="color:#FFF;">VEHICLES</span>
+      </div>
+      <div class="code-terminal">
+        [၁] Watercolor Binder: Gum Arabic အမှုန့် ၁ ပုံ + ပွက်နေသော ရေ ၃ ပုံ (၁၀–၁၅ မိနစ် မွှေပါ၊ သို့မဟုတ် တစ်ည စိမ်ပါ)။ Muslin ဖြင့် စစ်ပါ။ ပျားရည် ကို ရည် ၈ ဆ : ပျားရည် ၁ ဆ အချိုးဖြင့် ထည့်ပါ (Glycerin လည်း သုံးနိုင်)၊ လေးညှင်းဆီ ၁–၂ စက် (မှိုမတက်စေရန်)။<br><br>
+        [၂] Oil Paint Medium: Cold-Pressed Linseed Oil (စက်နှိပ်နှမ်းကြတ်ဆီ)။ အမှုန့် ၁၀၀ ဂရမ်လျှင် Particle Size အလိုက် ဆီ ၃၀-၈၅ ဂရမ်ခန့် ဖြည်းဖြည်းချင်း ထည့်ကာ ဖန်လက်ရိုက်ဖြင့် ထောပတ်မုန့်နှစ်ကဲ့သို့ ကြိတ်စပ်ပါ။<br><br>
+        [၃] Egg Tempera Binder: လတ်ဆတ်သော ကြက်ဥအနှစ်ကို အမြှေးပါးဖောက်၍ ခွဲထုတ်ပါ။ ကြက်ဥအနှစ် ၁ ပုံ + ရေသန့် ၁ ပုံ သမအောင် ခလောက်ပြီး ပစ်ဂမန့်နှစ်ထဲသို့ ၁:၁ ရောစပ်ရေးဆွဲပါ။
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 8: EXTRACTOR -->
+  <div id="tabExtractor" class="tab-content">
+    <div style="font-size: 12.5px; text-align: center; color: #8E8E93; margin-bottom: 8px; line-height: 1.9;">
+      လက် ၂ ချောင်းဖြင့် Zoom ချဲ့ပါ၊ လက် ၁ ချောင်းဖြင့် ၅ ဆ မှန်ဘီလူး ထောက်ယူပါ
+    </div>
+
+    <div class="extractor-viewport" id="extViewport">
+      <canvas id="imageCanvas"></canvas>
+      <div id="loupe">
+        <canvas id="loupeCanvas" width="90" height="90"></canvas>
+        <div id="crosshair"></div>
+      </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleRealImage(event)">
+    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <button class="btn-action" style="flex:1; padding: 12px;" onclick="document.getElementById('fileInput').click()">
+        📷 GALLERY သို့မဟုတ် CAMERA မှ ဓာတ်ပုံတင်ရန်
+      </button>
+    </div>
+
+    <div style="font-size: 12.5px; font-weight: 800; color: #8E8E93;">ပုံထဲမှ ထွက်လာသော COLOR PALETTE (၆ ရောင်)</div>
+    <div class="palette-circles" id="paletteRow"></div>
+
+    <div class="card active-bar">
+      <div id="extSelectedBox" class="swatch-box" style="background:#E63946;"></div>
+      <div style="flex:1;">
+        <div id="extHexText" style="font-size: 16px; font-weight: 800;">#E63946</div>
+        <div id="extRgbText" style="font-size: 12px; color: #8E8E93;">RGB: (230, 57, 70)</div>
+      </div>
+      <button class="btn-action" onclick="routeHexToMixer(document.getElementById('extHexText').innerText)">MIX THIS ➔</button>
+    </div>
+  </div>
+
+  <script>
+    // --- NAVIGATION CONTROLLER ---
+    function switchTab(id) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-bar .nav-btn').forEach(el => el.classList.remove('active'));
+      
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      
+      const map = { 
+        tabWheel: 0, 
+        tabTones: 1, 
+        tabConcepts: 2, 
+        tabMixer: 3, 
+        tabArchive: 4, 
+        tabMaking: 5, 
+        tabTools: 6, 
+        tabExtractor: 7 
+      };
+      
+      if (map[id] !== undefined) {
+        const btn = document.querySelectorAll('.nav-bar .nav-btn')[map[id]];
+        if (btn) {
+          btn.classList.add('active');
+          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+      if (id === 'tabExtractor') renderImage();
+    }
+
+    function jumpToMaking(recipeId) {
+      switchTab('tabMaking');
+      setTimeout(() => {
+        const el = document.getElementById(recipeId);
+        if (el) {
+          el.classList.remove('collapsed');
+          const tb = el.querySelector('.details-toggle');
+          if (tb) tb.textContent = 'အကျဉ်းချုပ် ▴';
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          el.style.borderColor = '#0A84FF';
+          setTimeout(() => { el.style.borderColor = '#262628'; }, 2000);
+        }
+      }, 100);
+    }
+
+    function jumpToArchive(code) {
+      switchTab('tabArchive');
+      archiveQuery = '';
+      const si = document.getElementById('archiveSearch');
+      if (si) si.value = '';
+      filterArchiveCategory('ALL', document.querySelector('#tabArchive .chip'));
+      setTimeout(() => {
+        const target = Array.from(document.querySelectorAll('#archivePigmentsList .pigment-card')).find(c => 
+          c.textContent.includes(code)
+        );
+        if (target) {
+          const col = target.querySelector('.collapsible');
+          if (col && !col.classList.contains('open')) {
+            col.classList.add('open');
+            const tb = target.querySelector('.details-toggle');
+            if (tb) tb.textContent = tb.textContent.replace('▾', '▴');
+          }
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          target.style.borderColor = '#0A84FF';
+          setTimeout(() => { target.style.borderColor = '#242428'; }, 2000);
+        }
+      }, 100);
+    }
+
+    // --- COLLAPSIBLE DETAILS (cleanup pass) ---
+    function toggleDetails(btn) {
+      const box = btn.closest('.recipe-box');
+      if (box) {
+        const collapsed = box.classList.toggle('collapsed');
+        btn.textContent = collapsed ? 'အသေးစိတ် ▾' : 'အကျဉ်းချုပ် ▴';
+        return;
+      }
+      const col = btn.parentElement.querySelector('.collapsible');
+      if (col) {
+        const open = col.classList.toggle('open');
+        btn.textContent = btn.textContent.replace(open ? '▾' : '▴', open ? '▴' : '▾');
+      }
+    }
+
+    document.querySelectorAll('#tabMaking .recipe-box').forEach((box, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'details-toggle';
+      btn.textContent = i === 0 ? 'အကျဉ်းချုပ် ▴' : 'အသေးစိတ် ▾';
+      btn.onclick = () => toggleDetails(btn);
+      box.querySelector('.recipe-title').insertAdjacentElement('afterend', btn);
+      if (i > 0) box.classList.add('collapsed');
+    });
+
+    const incompatBox = document.getElementById('incompatBox');
+    if (incompatBox) {
+      const iBtn = document.createElement('button');
+      iBtn.className = 'details-toggle';
+      iBtn.textContent = 'အသေးစိတ် ▾';
+      iBtn.onclick = () => toggleDetails(iBtn);
+      incompatBox.querySelector('.recipe-title').insertAdjacentElement('afterend', iBtn);
+      incompatBox.classList.add('collapsed');
+    }
+
+    // --- COLOR CONVERSIONS & VALUE CALCULATOR ---
+    function hslToHex(h, s, l) {
+      l /= 100;
+      const a = (s / 100) * Math.min(l, 1 - l);
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+    }
+
+    function rgbToHex(r, g, b) {
+      return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`.toUpperCase();
+    }
+
+    function hexToRgb(hex) {
+      let c = hex.replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const n = parseInt(c, 16);
+      return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+    }
+
+    function getLuminance(r, g, b) {
+      return Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+    }
+
+    function rgbToCmyk(r, g, b) {
+      const rP = r / 255, gP = g / 255, bP = b / 255;
+      const k = 1 - Math.max(rP, gP, bP);
+      if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
+      return {
+        c: Math.round(((1 - rP - k) / (1 - k)) * 100),
+        m: Math.round(((1 - gP - k) / (1 - k)) * 100),
+        y: Math.round(((1 - bP - k) / (1 - k)) * 100),
+        k: Math.round(k * 100)
+      };
+    }
+
+    // --- TAB 1: 2D CHROMA WHEEL ---
+    let curHue = 0, curChroma = 100, curScheme = 'COMPLEMENTARY', isValueMode = false;
+    const wCanvas = document.getElementById('wheelCanvas');
+    const wCtx = wCanvas.getContext('2d');
+    const C = 140, R = 125;
+
+    function toggleValueMode() {
+      isValueMode = !isValueMode;
+      document.getElementById('valToggleBtn').innerText = isValueMode ? 'VIEW COLOR WHEEL' : 'VIEW VALUE (GREY)';
+      drawWheel();
+    }
+
+    function getSchemeOffsets(scheme) {
+      switch (scheme) {
+        case 'COMPLEMENTARY': return [180];
+        case 'SPLIT': return [150, 210];
+        case 'ANALOGOUS': return [330, 30];
+        case 'ANA_COMP': return [330, 30, 180];
+        case 'TRIADIC': return [120, 240];
+        case 'TETRADIC': return [60, 180, 240];
+        case 'MONO': return [];
+        default: return [];
+      }
+    }
+
+    function drawWheel() {
+      wCtx.clearRect(0, 0, 280, 280);
+
+      for (let i = 0; i < 36; i++) {
+        const deg = i * 10;
+        const rad = (deg - 90) * Math.PI / 180;
+
+        const renderPoint = (radius, chromaLevel, ptSize) => {
+          let hex = hslToHex(deg, chromaLevel, 50);
+          if (isValueMode) {
+            const rgb = hexToRgb(hex);
+            const lum = getLuminance(rgb.r, rgb.g, rgb.b);
+            hex = `rgb(${lum},${lum},${lum})`;
+          }
+          wCtx.fillStyle = hex;
+          wCtx.beginPath();
+          wCtx.arc(C + radius * Math.cos(rad), C + radius * Math.sin(rad), ptSize, 0, Math.PI * 2);
+          wCtx.fill();
+        };
+
+        renderPoint(R - 10, 100, 8);
+        renderPoint(R - 35, 60, 6);
+        renderPoint(R - 60, 30, 5);
+      }
+
+      let centerHex = hslToHex(curHue, curChroma, 50);
+      if (isValueMode) {
+        const rgb = hexToRgb(centerHex);
+        const lum = getLuminance(rgb.r, rgb.g, rgb.b);
+        centerHex = `rgb(${lum},${lum},${lum})`;
+      }
+      wCtx.fillStyle = centerHex;
+      wCtx.beginPath();
+      wCtx.arc(C, C, 28, 0, Math.PI * 2);
+      wCtx.fill();
+      wCtx.lineWidth = 2;
+      wCtx.strokeStyle = '#FFF';
+      wCtx.stroke();
+
+      const offsets = getSchemeOffsets(curScheme);
+      const mainRad = (curHue - 90) * Math.PI / 180;
+      const mainDist = ((R - 10) * curChroma) / 100;
+      const mx = C + mainDist * Math.cos(mainRad);
+      const my = C + mainDist * Math.sin(mainRad);
+
+      offsets.forEach(offset => {
+        const nodeHue = (curHue + offset) % 360;
+        const nRad = (nodeHue - 90) * Math.PI / 180;
+        const nx = C + mainDist * Math.cos(nRad);
+        const ny = C + mainDist * Math.sin(nRad);
+
+        wCtx.strokeStyle = 'rgba(255,255,255,0.75)';
+        wCtx.setLineDash([4, 4]);
+        wCtx.beginPath();
+        wCtx.moveTo(mx, my);
+        wCtx.lineTo(nx, ny);
+        wCtx.stroke();
+        wCtx.setLineDash([]);
+
+        let nodeHex = hslToHex(nodeHue, curChroma, 50);
+        if (isValueMode) {
+          const rgb = hexToRgb(nodeHex);
+          const lum = getLuminance(rgb.r, rgb.g, rgb.b);
+          nodeHex = `rgb(${lum},${lum},${lum})`;
+        }
+        wCtx.fillStyle = nodeHex;
+        wCtx.beginPath();
+        wCtx.arc(nx, ny, 8, 0, Math.PI * 2);
+        wCtx.fill();
+        wCtx.strokeStyle = '#FFF';
+        wCtx.stroke();
+      });
+
+      wCtx.fillStyle = centerHex;
+      wCtx.beginPath();
+      wCtx.arc(mx, my, 12, 0, Math.PI * 2);
+      wCtx.fill();
+      wCtx.lineWidth = 3;
+      wCtx.strokeStyle = '#FFF';
+      wCtx.stroke();
+
+      const liveHex = hslToHex(curHue, curChroma, 50);
+      document.getElementById('mainSwatch').style.backgroundColor = liveHex;
+      document.getElementById('hexText').innerText = liveHex;
+      document.getElementById('hueChromaText').innerText = `HUE: ${curHue}° | CHROMA: ${curChroma}%`;
+
+      document.getElementById('tintsStrip').innerHTML = [90, 80, 70, 60, 50].map(l => `<div class="strip-col" style="background:${hslToHex(curHue, curChroma, l)}"></div>`).join('');
+      document.getElementById('tonesStrip').innerHTML = [85, 65, 45, 25, 10].map(c => `<div class="strip-col" style="background:${hslToHex(curHue, c, 50)}"></div>`).join('');
+      document.getElementById('shadesStrip').innerHTML = [50, 40, 30, 20, 10].map(l => `<div class="strip-col" style="background:${hslToHex(curHue, curChroma, l)}"></div>`).join('');
+
+      renderSchemeSwatches(liveHex, offsets);
+    }
+
+    function renderSchemeSwatches(baseHex, offsets) {
+      const container = document.getElementById('schemeSwatchesRow');
+      const items = [{ label: 'BASE', hex: baseHex }];
+      offsets.forEach((off, i) => {
+        const h = (curHue + off) % 360;
+        items.push({ label: `NODE ${i + 1}`, hex: hslToHex(h, curChroma, 50) });
+      });
+
+      container.innerHTML = items.map(it => `
+        <div class="scheme-item" onclick="routeHexToMixer('${it.hex}')">
+          <div class="scheme-color-box" style="background:${it.hex}"></div>
+          <div class="scheme-label">${it.label}</div>
+          <div class="scheme-hex">${it.hex}</div>
+        </div>
+      `).join('');
+    }
+
+    function handleWheelTouch(e) {
+      e.preventDefault();
+      const rect = wCanvas.getBoundingClientRect();
+      const touch = e.touches ? e.touches[0] : e;
+      const x = touch.clientX - rect.left - C;
+      const y = touch.clientY - rect.top - C;
+
+      let angle = Math.atan2(y, x) * (180 / Math.PI) + 90;
+      if (angle < 0) angle += 360;
+      curHue = Math.round(angle) % 360;
+
+      const dist = Math.sqrt(x * x + y * y);
+      curChroma = Math.min(100, Math.max(10, Math.round((dist / (R - 10)) * 100)));
+      drawWheel();
+    }
+
+    wCanvas.addEventListener('pointerdown', handleWheelTouch);
+    wCanvas.addEventListener('pointermove', e => { if (e.buttons === 1) handleWheelTouch(e); });
+    wCanvas.addEventListener('touchmove', handleWheelTouch, { passive: false });
+
+    function setScheme(scheme, el) {
+      curScheme = scheme;
+      document.querySelectorAll('#tabWheel .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      drawWheel();
+    }
+
+    // --- TAB 2: TONAL DIRECTORY (ORIGINAL DATA + LINK TO ARCHIVE) ---
+    const pigmentData = [
+      { name: 'Ultramarine Blue', code: 'PB29', group: 'BLUE', temp: 'WARM', hex: '#120A8F', type: 'Inorganic', opacity: 'Semi-Transparent', stain: 'Low', astm: 'I', desc: 'Red-leaning/purple blue. Synthetic Lazurite. Absorbs red and green wavelengths.', psych: 'Depth, stability, trust, calmness. In psychology, blue is also an appetite suppressant.' },
+      { name: 'Cobalt Blue', code: 'PB28', group: 'BLUE', temp: 'COOL', hex: '#0047AB', type: 'Inorganic', opacity: 'Semi-Transparent', stain: 'Low', astm: 'I', desc: 'Pure blue discovered in 1802. Exceptional lightfastness; essential for clean skies.', psych: 'Peace, tranquility, intelligence. Preferred in corporate branding.' },
+      { name: 'Cerulean Blue', code: 'PB35', group: 'BLUE', temp: 'COOL', hex: '#2A52BE', type: 'Inorganic', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Cobalt stannate (1860s). Greenish-blue, indispensable for subtle flesh underpainting.', psych: 'Airy, serene, expansive like calm water and winter skies.' },
+      { name: 'Phthalo Blue', code: 'PB15', group: 'BLUE', temp: 'COOL', hex: '#000F89', type: 'Synthetic Organic', opacity: 'Transparent', stain: 'High', astm: 'I', desc: 'Modern intense cyan-blue. Massive tinting strength; quickly overpowers other pigments.', psych: 'Vibrant, high energy, dynamic and commanding.' },
+      { name: 'Prussian Blue', code: 'PB27', group: 'BLUE', temp: 'COOL', hex: '#003153', type: 'Inorganic', opacity: 'Transparent', stain: 'High', astm: 'I', desc: 'First synthetic pigment (1704). Green-leaning dark iron hexacyanoferrate.', psych: 'Historic elegance, melancholy, deep mystery.' },
+      { name: 'Cadmium Red Medium', code: 'PR108', group: 'RED', temp: 'WARM', hex: '#E32619', type: 'Inorganic', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Yellow-leaning radiant scarlet. Outstanding opacity and coverage.', psych: 'Energy, passion, action, appetite stimulant. Raises blood pressure and heart rate.' },
+      { name: 'Pyrrole Red', code: 'PR254', group: 'RED', temp: 'NEUTRAL', hex: '#D11D27', type: 'Synthetic Organic', opacity: 'Semi-Opaque', stain: 'High', astm: 'I', desc: 'Modern "Ferrari Red". Outstanding permanence; transparent alternative to cadmium.', psych: 'Contemporary power, speed, bold excitement.' },
+      { name: 'Alizarin Crimson', code: 'PR83', group: 'RED', temp: 'COOL', hex: '#E32636', type: 'Organic', opacity: 'Transparent', stain: 'High', astm: 'II/III', desc: 'Bluish-red lake. Prone to fading over long exposure; replaced by Quinacridone.', psych: 'Sophistication, royal drama, vintage romance.' },
+      { name: 'Quinacridone Magenta', code: 'PR122', group: 'RED', temp: 'COOL', hex: '#960018', type: 'Synthetic Organic', opacity: 'Transparent', stain: 'High', astm: 'I', desc: 'Vibrant cool magenta tint. Mixes cleanly with blues to create electric purples.', psych: 'Playfulness, creativity, non-conformity and love.' },
+      { name: 'Transparent Oxide Red', code: 'PR101', group: 'RED', temp: 'WARM', hex: '#8B2500', type: 'Synthetic Inorganic', opacity: 'Transparent', stain: 'High', astm: 'I', desc: 'Warm orange-red. Combines with Phthalo Green to formulate transparent dark browns.', psych: 'Earthy grounding, ancient roots, warmth.' },
+      { name: 'Cadmium Yellow Medium', code: 'PY35', group: 'YELLOW', temp: 'WARM', hex: '#FFF600', type: 'Inorganic', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Red-leaning warm sunny yellow. Dense, highly reflective covering power.', psych: 'Sunshine, warmth, optimism, cheerfulness. Human eye processes yellow first.' },
+      { name: 'Lemon Yellow / Hansa', code: 'PY3', group: 'YELLOW', temp: 'COOL', hex: '#FFF44F', type: 'Synthetic Organic', opacity: 'Semi-Transparent', stain: 'Low/Med', astm: 'II', desc: 'Acidic, blue/green-leaning yellow. Yields electric vibrant foliage greens.', psych: 'Freshness, sharp intellect, caution and alert.' },
+      { name: 'Indian Yellow', code: 'PY110', group: 'YELLOW', temp: 'WARM', hex: '#E3A857', type: 'Synthetic Organic', opacity: 'Transparent', stain: 'Med', astm: 'I', desc: 'Luminous golden yellow glaze. Archival PY110 formula provides 100% lightfastness.', psych: 'Enlightenment, holy glow, autumn warmth.' },
+      { name: 'Yellow Ochre', code: 'PY43', group: 'YELLOW', temp: 'WARM', hex: '#CC7722', type: 'Inorganic Earth', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Natural hydrated iron clay. Foundational flesh undertone since antiquity.', psych: 'Nature, organic honesty, stability.' },
+      { name: 'Chromium Green Oxide', code: 'PG17', group: 'GREEN', temp: 'WARM', hex: '#556B2F', type: 'Inorganic', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Dense, lean earthy green. Classical choice for Verdaccio skin underpaintings.', psych: 'Balance, organic tranquility, healing.' },
+      { name: 'Viridian', code: 'PG18', group: 'GREEN', temp: 'COOL', hex: '#40826D', type: 'Inorganic', opacity: 'Transparent', stain: 'Low', astm: 'I', desc: 'Hydrated chromium hydroxide. Transparent cool blue-green glaze.', psych: 'Renewal, nature, soothing refreshment.' },
+      { name: 'Phthalo Green', code: 'PG7', group: 'GREEN', temp: 'COOL', hex: '#005F41', type: 'Synthetic Organic', opacity: 'Transparent', stain: 'High', astm: 'I', desc: 'Tremendous tinting strength and stain. Stains immediately into supports.', psych: 'Prosperity, intense vitality, modern energy.' },
+      { name: 'Cadmium Orange', code: 'PO20', group: 'ORANGE', temp: 'WARM', hex: '#ED872D', type: 'Inorganic', opacity: 'Opaque', stain: 'Low', astm: 'I', desc: 'Single pigment PO20. Perceived by the human eye as the warmest color of all.', psych: 'Enthusiasm, extroverted joy, appetite stimulation, youthfulness.' },
+      { name: 'Manganese Violet', code: 'PV16', group: 'VIOLET', temp: 'COOL', hex: '#8B008B', type: 'Inorganic', opacity: 'Semi-Transparent', stain: 'Med', astm: 'I', desc: 'Phosphoric acid double salt. Deep rich lavender tints with lead white.', psych: 'Royalty, luxury, creativity, appetite suppressant, shortest light wavelength.' },
+      { name: 'Dioxazine Purple', code: 'PV23', group: 'VIOLET', temp: 'COOL', hex: '#4B0082', type: 'Synthetic Organic', opacity: 'Transparent', stain: 'High', astm: 'II/III', desc: 'Extremely dark mass tone; produces bright vibrant lavender washes with white.', psych: 'Magic, mystery, spirituality, ceremonial dignity.' },
+      { name: 'Burnt Sienna', code: 'PBr7', group: 'EARTH', temp: 'WARM', hex: '#E97451', type: 'Inorganic Earth', opacity: 'Transparent', stain: 'Low', astm: 'I', desc: 'Calcined raw sienna. Rich reddish brown, beautiful for muting blues.', psych: 'Earthy comfort, autumn, grounded warmth.' },
+      { name: 'Lead White / Flake White', code: 'PW1', group: 'WHITE', temp: 'NEUTRAL', hex: '#FDFBF7', type: 'Inorganic', opacity: 'Opaque', stain: 'N/A', astm: 'I', desc: 'Basic lead carbonate. The most durable oil white; bulk dryer forming flexible films.', psych: 'Purity, perfection, timeless classicism.' },
+      { name: 'Titanium White', code: 'PW6', group: 'WHITE', temp: 'COOL', hex: '#FFFFFF', type: 'Inorganic', opacity: 'Opaque', stain: 'N/A', astm: 'I', desc: 'Rutile titanium dioxide. Maximum opacity and tinting strength with a bluish bias.', psych: 'Modern clarity, cleanliness, sterile light.' }
+    ];
+
+    let tonesFilter = 'ALL', tonesQuery = '';
+    function renderPigmentsList(filter = tonesFilter) {
+      tonesFilter = filter;
+      const container = document.getElementById('pigmentsList');
+      let list = filter === 'ALL' ? pigmentData : pigmentData.filter(p => p.group === filter);
+      if (tonesQuery) {
+        const q = tonesQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q));
+      }
+      if (!list.length) {
+        container.innerHTML = '<div class="no-result">ရှာမတွေ့ပါ — အခြား အမည် သို့မဟုတ် C.I. code ဖြင့် စမ်းကြည့်ပါ။</div>';
+        return;
+      }
+      
+      container.innerHTML = list.map(p => `
+        <div class="pigment-card">
+          <div class="pigment-head">
+            <div class="pigment-swatch" style="background:${p.hex}"></div>
+            <div style="flex:1;">
+              <span class="temp-tag ${p.temp === 'WARM' ? 'temp-warm' : p.temp === 'COOL' ? 'temp-cool' : 'temp-neutral'}">
+                ${p.temp === 'WARM' ? '🔥 WARM' : p.temp === 'COOL' ? '❄️ COOL' : '⚖️ NEUTRAL'} • ${p.code}
+              </span>
+              <div style="font-size:13px; font-weight:800;">${p.name}</div>
+              <div class="prop-badges">
+                <span class="prop-badge">ASTM: ${p.astm}</span>
+                <span class="prop-badge">${p.opacity}</span>
+                <span class="prop-badge">Stain: ${p.stain}</span>
+                <span class="prop-badge">${p.type}</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="btn-action" style="padding:6px 9px; font-size:10.5px;" onclick="loadPigmentToMix('${p.name}', '${p.temp}', '${p.group}')">MIX ➔</button>
+              <button class="btn-action" style="padding:6px 9px; font-size:10.5px; background:#1C1C1E; color:#FFF;" onclick="jumpToArchive('${p.code}')">PARTICLES ➔</button>
+            </div>
+          </div>
+          <button class="details-toggle" onclick="toggleDetails(this)">အသေးစိတ် ▾</button>
+          <div class="collapsible">
+            <div style="font-size:12px; color:#A1A1A6; line-height:1.9;">${p.desc}</div>
+            <div class="psychology-box">
+              <b>Psychology & Mood:</b> ${p.psych}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function searchTones(q) {
+      tonesQuery = q.trim();
+      renderPigmentsList(tonesFilter);
+    }
+
+    function filterPigments(grp, el) {
+      document.querySelectorAll('#tabTones .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderPigmentsList(grp);
+    }
+
+    function loadPigmentToMix(name, temp, group) {
+      splitPig = { wr: 0, cr: 0, wy: 0, cy: 0, wb: 0, cb: 0, w: 10, g: 0, e: 0 };
+      if (group === 'RED') splitPig[temp === 'WARM' ? 'wr' : 'cr'] = 60;
+      else if (group === 'YELLOW') splitPig[temp === 'WARM' ? 'wy' : 'cy'] = 60;
+      else if (group === 'BLUE') {
+        splitPig[temp === 'WARM' ? 'wb' : 'cb'] = 50;
+        splitPig.g = 20;
+      }
+      else if (group === 'ORANGE') { splitPig.wr = 30; splitPig.wy = 30; }
+      else if (group === 'GREEN') { splitPig.cb = 30; splitPig.cy = 30; }
+      else if (group === 'VIOLET') { splitPig.wb = 30; splitPig.cr = 30; }
+      else if (group === 'WHITE') { splitPig.w = 60; }
+
+      updateSplitDisplay();
+      renderSplitMix();
+      switchTab('tabMixer');
+    }
+
+    // --- TAB 3: ART CONCEPTS ---
+    function setLightMode(mode) {
+      const box = document.getElementById('lightPreviewBox');
+      if (mode === 'WARM') {
+        box.innerHTML = `
+          <div class="light-col" style="background:#FFE6A7; color:#2C1E00;">
+            HIGHLIGHT / LIGHT<br>(Warm Yellow Cast)
+          </div>
+          <div class="light-col" style="background:#826251; color:#FFF;">
+            LOCAL COLOR<br>(Warm Clay / Fruit)
+          </div>
+          <div class="light-col" style="background:#2C3E50; color:#FFF;">
+            SHADOW<br>(Cool Blue / Purple)
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div class="light-col" style="background:#D0E8FF; color:#002244;">
+            HIGHLIGHT / LIGHT<br>(Cool Blue/White Cast)
+          </div>
+          <div class="light-col" style="background:#5C6B73; color:#FFF;">
+            LOCAL COLOR<br>(Muted Midtone)
+          </div>
+          <div class="light-col" style="background:#5A3825; color:#FFF;">
+            SHADOW<br>(Warm Red/Brown Cast)
+          </div>
+        `;
+      }
+    }
+
+    // --- TAB 4: MIXER ENGINE ---
+    let splitPig = { wr: 20, cr: 0, wy: 20, cy: 0, wb: 20, cb: 0, w: 10, g: 0, e: 0 };
+    let cmyk = { c: 0, m: 80, y: 70, k: 0 };
+    let mixMode = 'TRAD';
+
+    function setMixMode(m) {
+      mixMode = m;
+      document.getElementById('btnTrad').className = m === 'TRAD' ? 'chip active' : 'chip';
+      document.getElementById('btnCmyk').className = m === 'CMYK' ? 'chip active' : 'chip';
+      document.getElementById('tradControls').style.display = m === 'TRAD' ? 'block' : 'none';
+      document.getElementById('cmykControls').style.display = m === 'CMYK' ? 'block' : 'none';
+      renderSplitMix();
+    }
+
+    function adjSplit(k, v) {
+      splitPig[k] = Math.max(0, Math.min(100, splitPig[k] + v));
+      updateSplitDisplay();
+      renderSplitMix();
+    }
+
+    function updateSplitDisplay() {
+      document.getElementById('vWR').innerText = splitPig.wr;
+      document.getElementById('vCR').innerText = splitPig.cr;
+      document.getElementById('vWY').innerText = splitPig.wy;
+      document.getElementById('vCY').innerText = splitPig.cy;
+      document.getElementById('vWB').innerText = splitPig.wb;
+      document.getElementById('vCB').innerText = splitPig.cb;
+      document.getElementById('vW').innerText = splitPig.w;
+      document.getElementById('vG').innerText = splitPig.g;
+      document.getElementById('vE').innerText = splitPig.e;
+    }
+
+    function adjCmyk(k, v) {
+      cmyk[k] = Math.max(0, Math.min(100, cmyk[k] + v));
+      const keyId = k === 'y' ? 'vK_Y' : 'v' + k.toUpperCase();
+      document.getElementById(keyId).innerText = cmyk[k];
+      renderSplitMix();
+    }
+
+    function renderSplitMix() {
+      const hero = document.getElementById('mixHero');
+      const badge = document.getElementById('mixHeroBadge');
+      const biasBadge = document.getElementById('tempBiasBadge');
+
+      if (mixMode === 'TRAD') {
+        const totalReds = splitPig.wr * 2.5 + splitPig.cr * 2.2 + splitPig.e * 2.0;
+        const totalYellows = splitPig.wy * 2.2 + splitPig.cy * 2.4 + splitPig.e * 1.1;
+        const totalBlues = splitPig.wb * 2.5 + splitPig.cb * 2.2;
+        const neutralGrey = splitPig.g * 1.2;
+        const whiteAdd = splitPig.w * 1.4;
+
+        const r = Math.min(255, Math.round(totalReds + whiteAdd + neutralGrey));
+        const g = Math.min(255, Math.round(totalYellows + whiteAdd + neutralGrey));
+        const b = Math.min(255, Math.round(totalBlues + whiteAdd + neutralGrey));
+        
+        hero.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        badge.innerText = `PIGMENT MIX`;
+
+        const warmScore = splitPig.wr + splitPig.wy + splitPig.wb + splitPig.e;
+        const coolScore = splitPig.cr + splitPig.cy + splitPig.cb + splitPig.w + splitPig.g;
+        if (warmScore > coolScore + 10) {
+          biasBadge.innerText = 'BIAS: 🔥 WARM';
+          biasBadge.style.color = '#FF453A';
+        } else if (coolScore > warmScore + 10) {
+          biasBadge.innerText = 'BIAS: ❄️ COOL';
+          biasBadge.style.color = '#0A84FF';
+        } else {
+          biasBadge.innerText = 'BIAS: BALANCED';
+          biasBadge.style.color = '#EBEBF5';
+        }
+      } else {
+        const r = Math.round(255 * (1 - cmyk.c / 100) * (1 - cmyk.k / 100));
+        const g = Math.round(255 * (1 - cmyk.m / 100) * (1 - cmyk.k / 100));
+        const b = Math.round(255 * (1 - cmyk.y / 100) * (1 - cmyk.k / 100));
+        hero.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        badge.innerText = `CMYK: C${cmyk.c}% M${cmyk.m}% Y${cmyk.y}% K${cmyk.k}%`;
+        biasBadge.innerText = 'PRINT PROCESS';
+        biasBadge.style.color = '#EBEBF5';
+      }
+    }
+
+    function routeHexToMixer(hex) {
+      const rgb = hexToRgb(hex);
+      const min = Math.min(rgb.r, rgb.g, rgb.b);
+      const pureR = rgb.r - min, pureG = rgb.g - min, pureB = rgb.b - min;
+
+      splitPig.wr = Math.round(Math.max(0, pureR - pureG * 0.4) * 0.3);
+      splitPig.cr = Math.round(Math.max(0, pureR - pureG * 0.2) * 0.2);
+      splitPig.wy = Math.round(pureG * 0.3);
+      splitPig.cy = Math.round(pureG * 0.2);
+      splitPig.wb = Math.round(pureB * 0.3);
+      splitPig.cb = Math.round(pureB * 0.2);
+      splitPig.w = Math.round(min * 0.3);
+      splitPig.g = Math.round(min * 0.1);
+      splitPig.e = 0;
+
+      updateSplitDisplay();
+
+      cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+      document.getElementById('vC').innerText = cmyk.c;
+      document.getElementById('vM').innerText = cmyk.m;
+      document.getElementById('vK_Y').innerText = cmyk.y;
+      document.getElementById('vK').innerText = cmyk.k;
+
+      renderSplitMix();
+      switchTab('tabMixer');
+    }
+
+    // --- TAB 5: UNIFIED COMPREHENSIVE PIGMENT ARCHIVE WITH PARTICLE NATURE ---
+    const archiveData = [
+      // EARTH PIGMENTS
+      {
+        name: 'Yellow Ochre (မြေဝါနု)', code: 'PY43', category: 'EARTH', hex: '#C68A35', recipeId: 'rec-calcination',
+        history: 'Lascaux နှင့် Altamira ဂူပန်းချီများကတည်းက သုံးခဲ့သော သမိုင်းအရှည်ဆုံး သဘာဝရောင်စုံမြေစေး။ Hydrated Iron Oxide ဖြစ်သည်။',
+        chemical: 'FeO(OH)·nH₂O (Goethite)', astm: 'ASTM I (Excellent)', opacity: 'Semi-Opaque', oilRate: '35 - 45 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '1.0 - 5.0 μm (Medium Earth)', partMorph: 'Acicular (အပ်ချောင်းပုံစံ) / Nodular',
+        mullBehavior: 'ဆေးသားကို ထူထဲပျစ်ခဲစေသည်။ အလယ်အလတ်ဖိအားဖြင့် ၅-၁၀ မိနစ် ကြိတ်လျှင် အလွန်ချောမွေ့သော ထောပတ်မုန့်နှစ် ရရှိသည်။'
+      },
+      {
+        name: 'Red Ochre / Burnt Ochre (မြေနီရောင်)', code: 'PR102', category: 'EARTH', hex: '#A33E26', recipeId: 'rec-calcination',
+        history: 'သဘာဝ Hematite မြေနီကျောက် သို့မဟုတ် Yellow Ochre ကို မီးဖုတ်၍ ထုတ်ယူသည်။ ရီနေဆန်းခေတ် ရုပ်လုံးဖော်ဆေးအဖြစ် ထင်ရှားသည်။',
+        chemical: 'Fe₂O₃ (Anhydrous Iron Oxide)', astm: 'ASTM I (Excellent)', opacity: 'Opaque', oilRate: '30 - 35 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.8 - 3.5 μm (Fine Earth)', partMorph: 'Spherical / Nodular (လုံးဝန်းသဏ္ဌာန်)',
+        mullBehavior: 'ဆီစုပ်အား နည်းပြီး စီးဆင်းမှု မြန်သည်။ ဖန်လက်ရိုက်ဖြင့် အလွယ်တကူ ကြိတ်စပ်နိုင်သည်။'
+      },
+      {
+        name: 'Raw & Burnt Umber (မြေညို)', code: 'PBr7', category: 'EARTH', hex: '#4A3B32', recipeId: 'rec-calcination',
+        history: 'အီတလီ Umbria ဒေသမှ ထွက်ရှိပြီး သံနှင့် မန်းဂနိစ် ပါဝင်သဖြင့် ဆီဆေးတွင် အခြောက်အမြန်ဆုံး သဘာဝဆေးရောင် ဖြစ်သည်။',
+        chemical: 'Fe₂O₃ + MnO₂ (45-55% Fe, 8-16% Mn)', astm: 'ASTM I (Excellent)', opacity: 'Semi-Transparent', oilRate: '45 - 55 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '2.0 - 8.0 μm (Porous aggregates)', partMorph: 'Amorphous / Irregular Spongy',
+        mullBehavior: 'အမှုန်ပေါက်ပေါက်ရှာဖြစ်၍ ဆီစုပ်ယူမှု မြင့်သည်။ နှမ်းကြတ်ဆီကို ဖြည်းဖြည်းချင်း ထည့်သွင်း ကြိတ်ရသည်။'
+      },
+      {
+        name: 'Burnt Sienna (သဘာဝစိန်နာနီညို)', code: 'PBr7', category: 'EARTH', hex: '#E97451', recipeId: 'rec-calcination',
+        history: 'Tuscany ရှိ Siena မြေသားကို မီးဖုတ်ထားခြင်းဖြစ်ပြီး Ultramarine Blue နှင့် စပ်ပါက သက်ဝင်သော Chromatic Black ရရှိသည်။',
+        chemical: 'Calcined Hydrated Iron Earth', astm: 'ASTM I (Excellent)', opacity: 'Transparent Glaze', oilRate: '50 - 65 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '1.0 - 4.0 μm', partMorph: 'Colloidal Nodular aggregates',
+        mullBehavior: 'အလွန်ပွင့်လင်းမြင်သာသော Glaze ရရှိသည်။ အမှုန်ချောမွေ့စေရန် ဖန်လက်ရိုက်ဖြင့် ၁၅ မိနစ်ခန့် စိတ်ရှည်စွာ ကြိတ်ရသည်။'
+      },
+      {
+        name: 'Transparent Oxide Red (ဓာတုသံနီ)', code: 'PR101', category: 'EARTH', hex: '#8B2500', recipeId: 'rec-calcination',
+        history: 'ဓာတ်ခွဲခန်းထုတ် Synthetic Iron Oxide ဖြစ်ပြီး သဘာဝမြေနီထက် ပိုမိုကြည်လင်ကာ အလင်းပေါက်သည်။',
+        chemical: 'Synthetic Iron(III) Oxide', astm: 'ASTM I (Excellent)', opacity: 'Transparent', oilRate: '55 - 65 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.05 - 0.2 μm (Nanoscale Sub-micron)', partMorph: 'Ultra-fine Needle Acicular',
+        mullBehavior: 'အမှုန်အလွန်နုသဖြင့် Tinting strength အဆမတန်မြင့်သည်။ ဆေးဖျော်စပ်ရာတွင် အနည်းငယ်သာ ထည့်သုံးရသည်။'
+      },
+
+      // PRECIOUS & NATURAL MINERALS
+      {
+        name: 'Natural Ultramarine (Lapis Lazuli)', code: 'PB29 (Nat)', category: 'MINERAL', hex: '#1434A4', recipeId: 'rec-lapis',
+        history: 'အာဖဂန် Badakhshan မိုင်းထွက် Lapis ကျောက်မျက်မှ Pastiglia နည်းဖြင့် ထုတ်ယူသည်။ အလယ်ခေတ်တွင် ရွှေထက် ဈေးကြီးခဲ့သည်။',
+        chemical: 'Na₈₋₁₀Al₆Si₆O₂₄S₂₋₄ (Lazurite)', astm: 'ASTM I (Excellent)', opacity: 'Transparent / Glaze', oilRate: '35 - 40 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '15.0 - 45.0 μm (Coarse Crystal)', partMorph: 'Angular Crystalline (ထောင့်ချွန်းကျောက်မျက်)',
+        mullBehavior: '⚠️️ လုံးဝ အလွန်အကျွံ မကြိတ်ရ။ အမှုန်နုလွန်းသွားပါက အလင်းရောင်ပြန်မှုကြောင့် မီးခိုးရောင် ပြယ်သွားမည်။ အသာအယာသာ ရောစပ်ရသည်။'
+      },
+      {
+        name: 'Azurite (အဇူရိုက် ကြေးပြာကျောက်)', code: 'PB30', category: 'MINERAL', hex: '#1D4E89', recipeId: 'rec-azurite',
+        history: 'ကြေးနီသတ္တုတွင်းထွက် ကာဗွန်နိတ်ကျောက်ပြာ။ ရီနေဆန်းခေတ် ပန်းချီဆရာများ၏ အဓိက ကောင်းကင်ပြာရောင်ခြယ် ဖြစ်သည်။',
+        chemical: '2CuCO₃·Cu(OH)₂ (Basic Copper Carbonate)', astm: 'ASTM I (Excellent)', opacity: 'Semi-Opaque / Gritty', oilRate: '25 - 30 g / 100g', toxicity: 'Moderate (Copper)',
+        partSize: '20.0 - 60.0 μm (Coarse Grit)', partMorph: 'Monoclinic Prismatic Crystals',
+        mullBehavior: '⚠️ သဲဆန်ဆန် အမှုန်အရွယ်အစားကို ထိန်းသိမ်းရမည်။ ကြိတ်လွန်းပါက အရောင်မှေးမှိန်သွားသည်။ ရေဆေးတွင် လှပသော Granulation ရရှိသည်။'
+      },
+
+      // BOTANICAL & LAKE PIGMENTS
+      {
+        name: 'Madder Lake (ရိုးစွဲနီ စွဲဆေး)', code: 'NR9', category: 'BOTANICAL', hex: '#981C3C', recipeId: 'rec-slp',
+        history: 'Rubia Tinctorum အမြစ်မှ Alizarin ကို Alum ဖြင့် အနည်ချထုတ်ယူသော သမိုင်းဝင် အနီရောင်။ ဒတ်ခ်ျ Glazing ဆေးရေးတွင် နာမည်ကျော်သည်။',
+        chemical: 'Alizarin/Purpurin on Alumina Base', astm: 'ASTM III (Glaze suitable)', opacity: 'Transparent Glaze', oilRate: '75 - 85 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.5 - 2.5 μm (Precipitate)', partMorph: 'Amorphous Flakes (မညီညာသော အနည်ဖတ်)',
+        mullBehavior: 'Alumina Hydrate အခြေခံဖြစ်၍ ဆီနှင့် ကော်ရည်ကို အဆမတန် စုပ်ယူသည်။ ဆီအများအပြား ထည့်သွင်း ဖိကြိတ်ရသည်။'
+      },
+      {
+        name: 'Oak Gall Ink (သပိတ်သီး သံမှင်ရည်)', code: 'Iron-Gall', category: 'BOTANICAL', hex: '#261F1A', recipeId: 'rec-oakgall',
+        history: 'အလယ်ခေတ်မှ ၁၉ ရာစုအထိ အနောက်ကမ္ဘာ၏ အဓိက စာရေးမှင်။ Da Vinci မှတ်စုများနှင့် လွတ်လပ်ရေးကြေညာစာတမ်း ရေးထိုးခဲ့သည်။',
+        chemical: 'Iron(II) Gallate Complex', astm: 'Permanently Indelible', opacity: 'Transparent Ink', oilRate: 'Aqueous Vehicle', toxicity: 'Low Toxicity (Acidic)',
+        partSize: 'Colloidal (< 0.1 μm)', partMorph: 'Molecular Suspension in Water',
+        mullBehavior: 'မှင်ရည်ဖြစ်၍ Muller ဖြင့် ကြိတ်ရန်မလိုဘဲ Gum Arabic ဖျော်ရည်ဖြင့် မွှေနှောက်ရုံဖြင့် အဆင်ပြေသည်။'
+      },
+      {
+        name: 'Alizarin Crimson (ဓာတ်ခွဲခန်းထုတ် အနီရောင်)', code: 'PR83', category: 'BOTANICAL', hex: '#E32636', recipeId: 'rec-slp',
+        history: '၁၈၆၈ တွင် ပထမဆုံး ဓာတုဗေဒနည်းဖြင့် ပေါင်းစပ်နိုင်ခဲ့သော Synthetic Madder Lake ဖြစ်သည်။',
+        chemical: '1,2-Dihydroxyanthraquinone on Alumina', astm: 'ASTM III (Fugitive)', opacity: 'Transparent', oilRate: '70 - 80 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.2 - 1.0 μm', partMorph: 'Soft Amorphous Aggregates',
+        mullBehavior: 'ပွင့်လင်းမြင်သာမှု မြင့်မားသော်လည်း နေရောင်ပြင်းပြင်းတွင် အရောင်ပြယ်လွယ်သည်။ Muller ဖြင့် လျင်မြန်စွာ ညက်စေနိုင်သည်။'
+      },
+
+      // SYNTHETIC INORGANIC PIGMENTS
+      {
+        name: 'French Ultramarine (ဓာတ်ခွဲခန်းထုတ် အပြာ)', code: 'PB29 (Syn)', category: 'SYN_INORGANIC', hex: '#002FA7', recipeId: 'rec-syn-ultra',
+        history: '၁၈၂၈ တွင် Guimet တီထွင်ခဲ့သော ကမ္ဘာ့ပထမဆုံး တန်ဖိုးနည်း တောက်ပသည့် ဓာတုဗေဒ အပြာရောင်။',
+        chemical: 'Polysulfide Sodium Aluminosilicate', astm: 'ASTM I (Excellent)', opacity: 'Semi-Transparent', oilRate: '32 - 38 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.5 - 2.0 μm (Uniform)', partMorph: 'Spherical Micro-nodules (လုံးဝန်းချောမွေ့)',
+        mullBehavior: 'အလွန်ကြိတ်ရလွယ်ကူပြီး ၁၀ မိနစ်ခန့် ကြိတ်ရုံဖြင့် ထောပတ်ကဲ့သို့ သမသွားသည်။ Undertone အနီဘက်သန်းသည်။'
+      },
+      {
+        name: 'Cobalt Blue (ကိုဘော့ပြာ)', code: 'PB28', category: 'SYN_INORGANIC', hex: '#0047AB', recipeId: '',
+        history: '၁၈၀၂ တွင် Thenard ရှာဖွေတွေ့ရှိခဲ့သော စင်ကြယ်သည့် အပြာရောင်။ ကောင်းကင်နှင့် ရေပြင်များအတွက် မရှိမဖြစ် သုံးသည်။',
+        chemical: 'Cobalt(II) Aluminate (CoO·Al₂O₃)', astm: 'ASTM I (Excellent)', opacity: 'Semi-Transparent', oilRate: '40 - 50 g / 100g', toxicity: 'Moderate (Cobalt)',
+        partSize: '0.5 - 1.5 μm', partMorph: 'Sintered Spheroidal Crystals',
+        mullBehavior: 'အလယ်အလတ် မာကျောမှုရှိသည်။ ဆီဆေးတွင် အလွန်မြန်စွာ အခြောက်ခံစေသော ဂုဏ်သတ္တိရှိသည်။'
+      },
+      {
+        name: 'Cerulean Blue (ကောင်းကင်ပြာနု)', code: 'PB35', category: 'SYN_INORGANIC', hex: '#2A52BE', recipeId: '',
+        history: 'Cobalt Stannate ဒြပ်ပေါင်းဖြစ်ပြီး အစိမ်းဘက်သန်းသော မိုးကောင်းကင်ပြာရောင်အဖြစ် ၁၈၆၀ တွင် စတင်ရောင်းချခဲ့သည်။',
+        chemical: 'Cobalt(II) Stannate (CoO·nSnO₂)', astm: 'ASTM I (Excellent)', opacity: 'Opaque', oilRate: '30 - 36 g / 100g', toxicity: 'Moderate',
+        partSize: '1.0 - 3.0 μm', partMorph: 'Rounded Nodular Aggregates',
+        mullBehavior: 'အလွန်သိပ်သည်းပြီး အလင်းပိတ်အား ကောင်းသည်။ ဆီဆေးတွင် အမှုန်အနည်းငယ် ကြမ်းသော ခံစားမှု ပေးသည်။'
+      },
+      {
+        name: 'Prussian Blue (ပရပ်ရှန်ပြာ)', code: 'PB27', category: 'SYN_INORGANIC', hex: '#003153', recipeId: '',
+        history: '၁၇၀၄ ဘာလင်တွင် မတော်တဆ တွေ့ရှိခဲ့သော ပထမဆုံး ခေတ်သစ်ဓာတုဆေးရောင်။ မည်းနက်သော အစိမ်းသန်း အပြာရောင် ဖြစ်သည်။',
+        chemical: 'Ferric Ferrocyanide (Fe₄[Fe(CN)₆]₃)', astm: 'ASTM I (Excellent)', opacity: 'Transparent / High Tint', oilRate: '50 - 60 g / 100g', toxicity: 'Low Toxicity',
+        partSize: '< 0.1 μm (Colloidal Sub-micron)', partMorph: 'Extremely Fine Agglomerates',
+        mullBehavior: 'အမှုန်မိုက်ခရိုအောက်ငယ်သဖြင့် Tinting power အဆမတန်ပြင်းသည်။ Muller ဖြင့် သေချာဖိမကြိတ်ပါက Agglomerate အစက်များ ကျန်တတ်သည်။'
+      },
+      {
+        name: 'Cadmium Red Medium (ကက်ဒမီယမ် အနီစစ်)', code: 'PR108', category: 'SYN_INORGANIC', hex: '#E32619', recipeId: '',
+        history: '၁၉ ရာစုနှောင်းပိုင်းတွင် Vermilion နေရာတွင် အစားထိုးခဲ့သော အလင်းခံနိုင်ရည် အမြင့်ဆုံး သမိုင်းဝင် တောက်ပသည့် အနီရောင်။',
+        chemical: 'Cadmium Sulfoselenide (CdS/CdSe)', astm: 'ASTM I (Excellent)', opacity: 'Dense Opaque', oilRate: '20 - 25 g / 100g', toxicity: 'Hazardous (Cadmium)',
+        partSize: '0.3 - 0.8 μm', partMorph: 'Hexagonal / Cubic Microcrystals',
+        mullBehavior: 'သိပ်သည်းဆမြင့်ပြီး ဆီအနည်းငယ်သာ စုပ်ယူသည်။ Muller ဖြင့် ဖိကြိတ်လျှင် အလွန်ပျစ်ခဲပြေပြစ်သော ဆေးသား ရရှိသည်။'
+      },
+      {
+        name: 'Cadmium Yellow Medium (ကက်ဒမီယမ် အဝါ)', code: 'PY35', category: 'SYN_INORGANIC', hex: '#FFF600', recipeId: '',
+        history: 'နေရောင်ခြည်ကဲ့သို့ တောက်ပသော ရွှေဝါရောင်။ အလင်းပေါက်မှုမရှိဘဲ ဖုံးအုပ်အား (Hiding power) အလွန်ကောင်းသည်။',
+        chemical: 'Cadmium Zinc Sulfide', astm: 'ASTM I (Excellent)', opacity: 'Dense Opaque', oilRate: '22 - 28 g / 100g', toxicity: 'Hazardous (Cadmium)',
+        partSize: '0.2 - 0.6 μm', partMorph: 'Rhombic / Hexagonal',
+        mullBehavior: 'ဆီဆေးတွင် တည်ငြိမ်ပြီး ပျံ့နှံ့လွယ်သည်။ ကြိတ်ရလွယ်ကူသည်။'
+      },
+      {
+        name: 'Cadmium Orange (ကက်ဒမီယမ် လိမ္မော်)', code: 'PO20', category: 'SYN_INORGANIC', hex: '#ED872D', recipeId: '',
+        history: 'လူ့မျက်စိက အနွေးထွေးဆုံးဟု သတ်မှတ်သော စစ်မှန်သည့် Single Pigment PO20 လိမ္မော်ရောင်စစ်စစ် ဖြစ်သည်။',
+        chemical: 'Cadmium Sulfoselenide', astm: 'ASTM I (Excellent)', opacity: 'Opaque', oilRate: '24 - 30 g / 100g', toxicity: 'Hazardous (Cadmium)',
+        partSize: '0.3 - 0.7 μm', partMorph: 'Hexagonal Microcrystals',
+        mullBehavior: 'ဖုံးအုပ်အား အလွန်ကောင်းပြီး အခြားအရောင်များနှင့် စပ်ရာတွင် သန့်စင်သော လိမ္မော်ရောင်ကို ထိန်းသိမ်းပေးသည်။'
+      },
+      {
+        name: 'Chromium Green Oxide (ခရိုမီယမ် အစိမ်းပုပ်)', code: 'PG17', category: 'SYN_INORGANIC', hex: '#556B2F', recipeId: '',
+        history: 'မလှုပ်မယိမ်းသော အလင်းဒဏ်ခံနိုင်ရည်ရှိသည့် သံလွင်စိမ်းရောင်။ Verdaccio အောက်ခံဆေးရေးဆွဲရာတွင် သုံးသည်။',
+        chemical: 'Anhydrous Chromium(III) Oxide (Cr₂O₃)', astm: 'ASTM I (Indestructible)', opacity: 'Very Opaque', oilRate: '15 - 20 g / 100g', toxicity: 'Low Toxicity',
+        partSize: '0.3 - 0.7 μm', partMorph: 'Hexagonal Platelets (ပြားချပ်ချပ်)',
+        mullBehavior: 'အလွန်မာကျောပြီး ဆီစုပ်အား အလွန်နည်းသည်။ ဖန်လက်ရိုက်ဖြင့် ကြိတ်ရာတွင် အနည်းငယ် ပွတ်တိုက်သံ ကြားရတတ်သည်။'
+      },
+      {
+        name: 'Viridian (ဗာရီဒီယမ် ကြည်စိမ်း)', code: 'PG18', category: 'SYN_INORGANIC', hex: '#40826D', recipeId: '',
+        history: '၁၈၅၉ တွင် Guignet မူပိုင်ခွင့်တင်ခဲ့သော အလင်းပေါက် အပြာသန်းသည့် အစိမ်းရောင် Glaze ဆေးရောင်။',
+        chemical: 'Hydrated Chromium Oxide (Cr₂O₃·2H₂O)', astm: 'ASTM I (Excellent)', opacity: 'Transparent Glaze', oilRate: '55 - 65 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.5 - 2.0 μm', partMorph: 'Spheroidal Porous Aggregates',
+        mullBehavior: 'ပေါက်ပေါက်ရှာအမှုန်ဖြစ်၍ ဆီစုပ်အားမြင့်သည်။ အလွန်လှပသော ရေညှိစိမ်း Glaze အလွှာကို ရရှိစေသည်။'
+      },
+      {
+        name: 'Manganese Violet (မန်းဂနိစ် ခရမ်း)', code: 'PV16', category: 'SYN_INORGANIC', hex: '#8B008B', recipeId: '',
+        history: '၁၈၆၈ တွင် တီထွင်ခဲ့သော အဆိပ်အတောက်ကင်းသည့် သတ္တုခရမ်းရောင်။ အဖြူစပ်ပါက နူးညံ့သော လာဗင်ဒါရောင် ရရှိသည်။',
+        chemical: 'Ammonium Manganese(III) Pyrophosphate', astm: 'ASTM I (Excellent)', opacity: 'Semi-Transparent', oilRate: '35 - 45 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '1.0 - 4.0 μm', partMorph: 'Prismatic Crystals (ပရစ်ဇမ် ပုံစံ)',
+        mullBehavior: 'အလယ်အလတ် ခိုင်မာမှုရှိပြီး အဖြူနှင့် စပ်ရာတွင် အရောင်ပြယ်လွယ်သဖြင့် အချိုးအစား ချိန်ဆရန် လိုအပ်သည်။'
+      },
+      {
+        name: 'Blue & Green Verditer (ဗာဒီတာ)', code: 'PB30 / PG39', category: 'SYN_INORGANIC', hex: '#257D77', recipeId: 'rec-verditer',
+        history: '၁၆ မှ ၁၈ ရာစုတွင် ငွေသန့်စင်မှု၏ ဘေးထွက်ပစ္စည်း ကြေးနီနိုက်ထရိတ်ရည်ကို မြေဖြူခဲဖြင့် အနည်ချခဲ့သော ရှေးဟောင်းဆေးရောင်။',
+        chemical: 'Precipitated Basic Copper Carbonate', astm: 'ASTM II (Good)', opacity: 'Semi-Opaque (Distemper)', oilRate: '35 g / 100g', toxicity: 'Moderate',
+        partSize: '1.0 - 5.0 μm', partMorph: 'Soft Spherical Agglomerates',
+        mullBehavior: 'အပူချိန်အလိုက် အပြာ (အအေးခန်း) သို့မဟုတ် အစိမ်း (ဆူပွက်ခန်း) သို့ ကူးပြောင်းနိုင်သည်။ နူးညံ့စွာ ကြိတ်ရသည်။'
+      },
+      {
+        name: 'Verdigris (ကြေးညှိစိမ်း)', code: 'PG20', category: 'SYN_INORGANIC', hex: '#1B8A5A', recipeId: 'rec-verdigris',
+        history: 'ဂရိနှင့် ရောမခေတ်မှစ၍ ကြေးနီပြားများကို ရှာလကာရည်ငွေ့ဖြင့် တိုက်စားစေခဲ့သော သမိုင်းဝင် အစိမ်းရောင်။',
+        chemical: 'Copper(II) Acetate Complex', astm: 'ASTM III (Fugitive in oil)', opacity: 'Transparent Glaze', oilRate: '40 g / 100g', toxicity: 'High Toxicity',
+        partSize: '2.0 - 10.0 μm', partMorph: 'Monoclinic Crystals (သလင်းခဲချွန်း)',
+        mullBehavior: 'ဓာတ်ပြုလွယ်သဖြင့် ဆီဆေးထဲတွင် အညိုရောင်ပြောင်းတတ်သည်။ သစ်စေး (Resin/Varnish) ဖြင့်သာ ရောစပ်လေ့ရှိသည်။'
+      },
+      {
+        name: 'Lead White / Flake White (ခဲဖြူဆေးစစ်)', code: 'PW1', category: 'SYN_INORGANIC', hex: '#FDFBF7', recipeId: '',
+        history: 'ရှေးဂရိခေတ်မှစ၍ အသုံးပြုခဲ့သော အခိုင်မာဆုံး သမိုင်းဝင် အဖြူရောင်။ ရီနေဆန်းပန်းချီကားတိုင်း၏ အသက်သွေးကြော ဖြစ်သည်။',
+        chemical: 'Basic Lead Carbonate (2PbCO₃·Pb(OH)₂)', astm: 'ASTM I (Excellent)', opacity: 'Dense Semi-Opaque', oilRate: '10 - 15 g / 100g', toxicity: 'High Toxicity (Lead)',
+        partSize: '1.0 - 5.0 μm', partMorph: 'Lamellar / Hexagonal Platelets (အကြေးခွံပြား)',
+        mullBehavior: '👑 အကြေးခွံသဏ္ဌာန်ဖြစ်ပြီး နှမ်းကြတ်ဆီနှင့် ဓာတ်ပြုကာ ကြိုးမျှင်ကဲ့သို့ ပြောင်းလွယ်ပြင်လွယ်သော Lead Soap Film ဖြစ်စေသဖြင့် ကင်းဗတ်မအက်ကွဲအောင် ကာကွယ်ပေးသည်။ ဆီအလွန်နည်းစွာ စုပ်ယူသည်။'
+      },
+      {
+        name: 'Titanium White (တိုက်တေနီယမ် အဖြူ)', code: 'PW6', category: 'SYN_INORGANIC', hex: '#FFFFFF', recipeId: '',
+        history: '၁၉၂၁ တွင် စတင်ထုတ်လုပ်ခဲ့သော အလင်းပြန်အား အမြင့်ဆုံး ခေတ်သစ် အဖြူရောင်စံပြ ဖြစ်သည်။',
+        chemical: 'Rutile Titanium Dioxide (TiO₂)', astm: 'ASTM I (Excellent)', opacity: 'Maximum Opaque', oilRate: '20 - 25 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.2 - 0.3 μm (Optically Tuned)', partMorph: 'Uniform Spherical (အလင်းယိုင် အလုံးညီ)',
+        mullBehavior: 'အလင်းလှိုင်း အလျားဝက်အရွယ်အစားဖြင့် စက်ရုံထုတ်ထားသဖြင့် အလင်းရောင်ပြန်အား အမြင့်ဆုံးဖြစ်ပြီး အခြားအရောင်များကို ချက်ချင်း ဖုံးအုပ်ပစ်နိုင်သည်။'
+      },
+
+      // MODERN SYNTHETIC ORGANIC PIGMENTS
+      {
+        name: 'Phthalo Blue (သလိုပြာ)', code: 'PB15', category: 'SYN_ORGANIC', hex: '#000F89', recipeId: '',
+        history: '၁၉၃၅ တွင် ICI မှ မိတ်ဆက်ခဲ့သော ခေတ်သစ် အင်အားအကြီးဆုံး စိမ်းပြာရောင်ခြယ် ဖြစ်သည်။',
+        chemical: 'Copper Phthalocyanine', astm: 'ASTM I (Excellent)', opacity: 'Transparent / Mega-Tint', oilRate: '45 - 55 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.05 - 0.15 μm (Nanoscale)', partMorph: 'Acicular Needles / Prismatic',
+        mullBehavior: 'အမှုန်အဆမတန် နုငယ်သဖြင့် စုတ်တံနှင့် ပတ္တူကို ချက်ချင်း စွဲကပ်သွားစေသည်။ ဖန်လက်ရိုက်ဖြင့် ဖိကြိတ်လျှင် အလွန်ပျံ့နှံ့လွယ်သည်။'
+      },
+      {
+        name: 'Phthalo Green (သလိုစိမ်း)', code: 'PG7', category: 'SYN_ORGANIC', hex: '#005F41', recipeId: '',
+        history: 'Phthalo Blue ကို ကလိုရင်းဓာတ်ပေါင်းထည့်၍ ထုတ်လုပ်ထားသော အလွန်တောက်ပစူးရှသည့် မြစိမ်းရောင်။',
+        chemical: 'Chlorinated Copper Phthalocyanine', astm: 'ASTM I (Excellent)', opacity: 'Transparent', oilRate: '45 - 55 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.05 - 0.2 μm', partMorph: 'Ultra-fine Prismatic Crystals',
+        mullBehavior: 'အရောင်စွဲအား အလွန်ပြင်းထန်သဖြင့် ဆေးစပ်ရာတွင် တစ်စက်မျှသာ ထည့်သုံးရသည်။'
+      },
+      {
+        name: 'Quinacridone Magenta (ကွီနာခရီဒုန်း မဂျင်တာ)', code: 'PR122', category: 'SYN_ORGANIC', hex: '#960018', recipeId: '',
+        history: '၁၉၅၈ တွင် DuPont မှ စတင်ထုတ်လုပ်ခဲ့သော ခေတ်သစ် အပြာသန်းသည့် ပန်းခရမ်းရောင်။ စင်ကြယ်သော ခရမ်းရောင်စပ်ရန် သုံးသည်။',
+        chemical: 'Dimethyl Quinacridone', astm: 'ASTM I (Excellent)', opacity: 'Transparent Glaze', oilRate: '60 - 75 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.05 - 0.2 μm', partMorph: 'Fine Needles / Flat Plates',
+        mullBehavior: 'ဆီစုပ်ယူမှု မြင့်မားပြီး အလွန်အလင်းပေါက်သော Glazing အလွှာကို ရရှိစေသည်။'
+      },
+      {
+        name: 'Pyrrole Red (ပီရိုးနီ / Ferrari Red)', code: 'PR254', category: 'SYN_ORGANIC', hex: '#D11D27', recipeId: '',
+        history: '၁၉၈၀ ပြည့်လွန်နှစ်များတွင် စတင်ပေါ်ပေါက်ခဲ့ပြီး Cadmium Red နေရာတွင် အစားထိုးနိုင်သော အဆိပ်ကင်း အနီရောင်စင်စစ် ဖြစ်သည်။',
+        chemical: 'Diketopyrrolopyrrole (DPP)', astm: 'ASTM I (Excellent)', opacity: 'Semi-Opaque', oilRate: '35 - 45 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.1 - 0.4 μm', partMorph: 'Rhombic Prisms',
+        mullBehavior: 'ချောမွေ့ပြေပြစ်ပြီး အလင်းဒဏ်ခံနိုင်ရည် အထူးကောင်းမွန်သည်။'
+      },
+      {
+        name: 'Lemon Yellow / Hansa (ဟန်ဆာ အဝါနု)', code: 'PY3', category: 'SYN_ORGANIC', hex: '#FFF44F', recipeId: '',
+        history: '၁၉၀၉ တွင် Hoechst မှ စတင်ထုတ်လုပ်ခဲ့သော အေးမြသည့် အစိမ်းသန်း အဝါရောင်ခြယ် ဖြစ်သည်။',
+        chemical: 'Monoazo Arylide Yellow', astm: 'ASTM II (Fair/Good)', opacity: 'Semi-Transparent', oilRate: '40 - 50 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.2 - 0.6 μm', partMorph: 'Platelet / Flakes',
+        mullBehavior: 'သလိုပြာနှင့် ရောစပ်လိုက်ပါက လျှပ်စစ်မီးသီးကဲ့သို့ စူးရှတောက်ပသော မြက်ခင်းစိမ်းရောင်ကို ရရှိစေသည်။'
+      },
+      {
+        name: 'Indian Yellow (အင်ဒီးယန်း ရွှေဝါ)', code: 'PY110', category: 'SYN_ORGANIC', hex: '#E3A857', recipeId: '',
+        history: 'မူလ ရှေးဟောင်း နွားကျင်ငယ်ရည်ထုတ်ဆေးနေရာတွင် အစားထိုးခဲ့သော အလွန်အမင်း အလင်းခံသည့် ခေတ်သစ် ရွှေဝါရောင် ဖြစ်သည်။',
+        chemical: 'Tetrachloroisoindolinone', astm: 'ASTM I (Archival)', opacity: 'Transparent Glaze', oilRate: '50 - 60 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '0.1 - 0.3 μm', partMorph: 'Fine Crystalline Needles',
+        mullBehavior: 'ဆီဆေးတွင် နွေးထွေးရွှန်းစိုသော ရွှေရောင်ဆည်းဆာ Glaze ကို ဖန်တီးပေးနိုင်သည်။'
+      },
+      {
+        name: 'Dioxazine Purple (ဒိုင်အောက်ဆာဇင်း ခရမ်းနက်)', code: 'PV23', category: 'SYN_ORGANIC', hex: '#4B0082', recipeId: '',
+        history: 'Mass tone တွင် ကတ္တရာစေးကဲ့သို့ မည်းနက်နေသော်လည်း အဖြူစပ်လိုက်ပါက လျှပ်စစ်ခရမ်းရောင် ဖျာထွက်လာသော ဆေးရောင်ခြယ်။',
+        chemical: 'Carbazole Dioxazine', astm: 'ASTM II (Glaze)', opacity: 'Transparent / Mega-Tint', oilRate: '60 - 70 g / 100g', toxicity: 'Non-Toxic',
+        partSize: '< 0.1 μm', partMorph: 'Sub-micron Aggregates',
+        mullBehavior: 'ဆီစုပ်အားမြင့်ပြီး အလွန်နက်ရှိုင်းသော အရိပ်များတွင် အမည်းရောင်အစား သုံးနိုင်သည်။'
+      },
+      // ===== Added: book's remaining catalog + modern pigments =====
+      {"name": "Bone Black (အရိုးမည်း)", "code": "PBk9", "category": "SYN_INORGANIC", "hex": "#1D1D20", "recipeId": "", "history": "တိရစ္ဆာန် အရိုးနှင့် ဆင်စွယ် အကြွင်းအကျန်များကို လေမဝင် မီးခံအိုးထဲတွင် မီးရှို့ (charring) ၍ ရသော အသက်အရှည်ဆုံး အမည်းများထဲမှ တစ်ခု။ အီဂျစ်၊ ဂရိ၊ ရောမ ခေတ်မှသည် Renaissance အထိ သုံးစွဲခဲ့ပြီး ယနေ့ထိ သုံးဆဲ ဖြစ်သည်။", "chemical": "Ca₃(PO₄)₂ + CaCO₃ + C", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "40 - 55 g / 100g", "toxicity": "Non-Toxic", "partSize": "1 - 5 μm (Coarse Carbon)", "partMorph": "Granular / Porous", "mullBehavior": "Carbon 10% ခန့်သာ ပါသော်လည်း Calcium Phosphate ကြောင့် အပြာသွေး နက်ရှိုင်းသော အမည်း ရသည်။ ဆီတွင် ခြောက်နှေး၍ ပျစ်ခဲတတ်သည်။ Rembrandt သည် သူ၏ အနက်ဆုံး အရိပ်များတွင် စင်ကြယ်သော Bone Black ကို သုံးခဲ့သည်။"},
+      {"name": "Carbon Black (ကာဗွန် အမည်း)", "code": "PBk6", "category": "SYN_INORGANIC", "hex": "#0D0D0D", "recipeId": "", "history": "အော်ဂဲနစ် ပစ္စည်းများကို မီးရှို့ရာမှ ရသော အမည်း — Vine Black (စပျစ်နွယ်ခြောက်) နှင့် Lamp Black (ဆီမီးခွက် အခိုး) တို့ ဖြစ်သည်။ ခေတ်တိုင်း ပန်းချီဆရာများ မီးသွေး ပုံကြမ်း ရေးဆွဲရန် သုံးခဲ့ကြသည်။ \"Carbon\" မှာ လက်တင် carbo (မီးသွေး) မှ ဆင်းသက်လာသည်။", "chemical": "Amorphous Carbon (C)", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "70 - 110 g / 100g", "toxicity": "Non-Toxic", "partSize": "0.01 - 0.1 μm (Ultrafine)", "partMorph": "Spherical / Chain Aggregates", "mullBehavior": "အမှုန် အလွန်နု၍ ဆီစုပ်အား အလွန်မြင့်ပြီး ကြိတ်စဉ် ပျံ့လွယ်သဖြင့် ဖြည်းဖြည်း ချင်း ထည့်ရမည်။ အလင်းကို အလွန် စုပ်ယူသောကြောင့် Infrared စစ်ဆေးမှုတွင် ပန်းချီကားအောက်မှ မီးသွေး ပုံကြမ်းကို ဖော်ထုတ်နိုင်သည်။"},
+      {"name": "Carmine (ကာမိုင်း)", "code": "NR4", "category": "BOTANICAL", "hex": "#8A1538", "recipeId": "rec-slp", "history": "Cochineal ပိုးကောင်မှ ထုတ်သော အနီစင် Lake။ Aztec များ သုံးစွဲခဲ့ပြီး ၁၆ ရာစုတွင် စပိန်မှတစ်ဆင့် ဥရောပသို့ ရောက်လာကာ အနီအကောင်းဆုံးအဖြစ် နာမည်ကြီးခဲ့သည်။ Kermes မှာ ရှေးအီဂျစ်ခေတ်ကပင် သုံးခဲ့သော အမျိုးအစား ဖြစ်သည်။ \"Crimson\" ဟူသော စကားလုံးပင် Kermes မှ ဆင်းသက်လာသည်။", "chemical": "Carminic Acid, C₂₂H₂₀O₁₃ (C.I. 75470)", "astm": "ASTM III (Fugitive)", "opacity": "Transparent", "oilRate": "45 - 70 g / 100g", "toxicity": "Non-Toxic (Food Grade)", "partSize": "0.5 - 3 μm", "partMorph": "Amorphous Lake Particles", "mullBehavior": "Glaze အတွက် အကောင်းဆုံး အနီစင်။ အလင်းတွင် မှိန်လွယ်ပြီး အညိုသွေး ဖြစ်သွားတတ်သည် — ရေဆေးတွင် အထူးမြန်သည်။ UV ကာကွယ်ထားသော Varnish သို့မဟုတ် ဖန်အောက်တွင် ထိန်းသိမ်းရန် လိုသည်။"},
+      {"name": "Indigo (မဲနယ်)", "code": "NB1", "category": "BOTANICAL", "hex": "#28355E", "recipeId": "", "history": "Woad နှင့် Indigofera အရွက်များကို အချဉ်ဖောက်၍ ရသော နက်ရှိုင်းသည့် အပြာ ဆိုးဆေး။ အိန္ဒိယမှ ဆင်းသက်လာပြီး Marco Polo က ၎င်း၏ ပြင်ဆင်ပုံကို ပထမဆုံး မှတ်တမ်းတင်ခဲ့သည်။ Denim ဂျင်းဘောင်းဘီ၏ \"အပြာ\" မှာ Indigo ပင် ဖြစ်သည်။", "chemical": "Indigotin, C₁₆H₁₀N₂O₂ (C.I. 73000)", "astm": "ASTM III (Poor in light)", "opacity": "Semi-Transparent", "oilRate": "45 - 65 g / 100g", "toxicity": "Non-Toxic", "partSize": "0.5 - 3 μm", "partMorph": "Fine Granular (Cake Powder)", "mullBehavior": "Pigment အဖြစ် သုံးရန် ဆိုးဆေးကို အဖြူအခြေခံပေါ် Laking လုပ်ရသည်။ နေရောင် ပြင်းပြင်းတွင် လျင်မြန်စွာ လွင့်နိုင်သဖြင့် အစွမ်းအပြည့် သုံး၍ UV ကာကွယ်မှု ပေးရန် လိုသည်။ Tempera ထဲတွင် တည်ငြိမ်မှု ပိုကောင်းသည်။"},
+      {"name": "Van Dyke Brown (ဗန်ဒိုက် အညို)", "code": "PBr8", "category": "EARTH", "hex": "#463227", "recipeId": "", "history": "အော်ဂဲနစ် ပစ္စည်း ၉၀% ကျော် ပါဝင်သော သဘာဝ မြေညို — Cassel Earth / Cologne Earth ဟုလည်း ခေါ်သည်။ ၁၇ ရာစုမှစ၍ တွေ့ရှိရပြီး Flemish ပန်းချီဆရာ Van Dyck ၏ အမည်ကို မှည့်ထားသည်။ Rubens သည် ရွှေရောင် Ochre နှင့် ရော၍ ပူပြင်းပြီး အလင်းပေါက်သော အညို အဖြစ် သုံးခဲ့သည်။", "chemical": "Fe₂O₃ + MnO₂ + Humic Acids", "astm": "ASTM II (Good)", "opacity": "Transparent", "oilRate": "45 - 65 g / 100g", "toxicity": "Non-Toxic (Mn content moderate)", "partSize": "0.5 - 5 μm", "partMorph": "Amorphous Organic Earth", "mullBehavior": "Glaze အညို အဖြစ် အလွန် ကောင်းသည်။ ဆီထဲတွင် မာခဲမသွားဘဲ ပြင်းထန်သော အလင်းနှင့် ထိတွေ့ပါက လွင့်၍ အေးသော မီးခိုးသွေး ရလာတတ်သည်။ ရေဆေးထက် ဆီဆေးတွင် ပိုမို တည်မြဲသည်။"},
+      {"name": "Chrome Orange (ခရုမ်း လိမ္မော်)", "code": "PO21", "category": "SYN_INORGANIC", "hex": "#E8791E", "recipeId": "", "history": "Basic Lead Chromate — ၁၈၀၉ ခုနှစ်တွင် မိတ်ဆက်ခဲ့ပြီး အဆိပ်ပြင်း Realgar နောက်ပိုင်း ပထမဆုံး စင်ကြယ်သော လိမ္မော် Pigment ဖြစ်လာခဲ့သည်။ ယခုအခါ ကမ္ဘာလုံးဆိုင်ရာ ထုတ်လုပ်မှု ရပ်ဆိုင်းသွားပြီ ဖြစ်သည်။ Renoir ၏ The Seine at Asnières (၁၈၇၅) တွင် Cobalt Blue ရေပြင်နှင့် ဆန့်ကျင်ဘက် ထားသော လှေငယ်မှာ Chrome Orange ဖြစ်သည်။", "chemical": "Basic Lead(II) Chromate, PbCrO₄·Pb(OH)₂", "astm": "ASTM III (Poor)", "opacity": "Opaque", "oilRate": "15 - 25 g / 100g", "toxicity": "Toxic (Lead + Chromate)", "partSize": "0.5 - 2 μm", "partMorph": "Prismatic", "mullBehavior": "ဖုံးအုပ်နိုင်စွမ်း အလွန်ကောင်းသော်လည်း အလင်းဒဏ်ခံနိုင်မှု ညံ့ပြီး မှောင်သွားတတ်သည်။ ခဲဆားရည်များကို Alkaline Chromate ရည်ဖြင့် အပူချိန်မြင့်မြင့် အနှစ်ချခြင်းဖြင့် ပြုလုပ်သည်။"},
+      {"name": "Chrome Yellow (ခရုမ်း အဝါ)", "code": "PY34", "category": "SYN_INORGANIC", "hex": "#F2B705", "recipeId": "", "history": "Lead Chromate — Vauquelin က ၁၈၀၉ ခုနှစ်တွင် ပြင်ဆင်နည်းကို ထုတ်ပြန်ခဲ့ပြီး ၁၈၁၆ ခုနှစ်မှ အကန့်အသတ်ဖြင့် သုံးစွဲလာခဲ့သည်။ စျေးသက်သာ၍ ဖုံးအုပ်အား မြင့်သော်လည်း လေနှင့် ထိတွေ့သောအခါ ဓာတ်ပြု မှောင်သွားတတ်သဖြင့် Cadmium Yellow ဖြင့် အစားထိုး ခံခဲ့ရသည်။", "chemical": "Lead(II) Chromate, PbCrO₄", "astm": "ASTM III (Poor)", "opacity": "Opaque", "oilRate": "15 - 30 g / 100g", "toxicity": "Toxic (Lead)", "partSize": "0.3 - 1.5 μm", "partMorph": "Needle / Prismatic", "mullBehavior": "နေရောင်တွင် လွင့်တတ်ပြီး အရင့် အဆင်းများသည် အချိန်ကြာသော် အညိုရောင် ဖြစ်သွားတတ်သည်။ ကန့် ပါဝင်သော လေကြောင့် Chrome အရောင် အားလုံး အမည်း ဖြစ်တတ်သည်။ Van Gogh ၏ နေကြာပန်းများ မှောင်သွားခြင်းမှာ ဤဓာတ်ပြုမှုပင် ဖြစ်သည်။"},
+      {"name": "Cobalt Green (ကိုဘော့ အစိမ်း)", "code": "PG19", "category": "SYN_INORGANIC", "hex": "#2E8B6E", "recipeId": "", "history": "Rinmann's Green ဟုလည်း ခေါ်သော Cobalt–Zinc Oxide — ဆွီဒင် ဓာတုဗေဒပညာရှင် Rinmann က ၁၇၈၀ ခုနှစ်တွင် တီထွင်ခဲ့သည်။ Zinc Oxide ပြင်ဆင်နိုင်ခဲ့ခြင်းကြောင့်သာ ဖြစ်နိုင်လာခဲ့သော အပြာသွေး အစိမ်း ဖြစ်သည်။", "chemical": "CoO · ZnO (Cobalt Zinc Oxide)", "astm": "ASTM I-II (Good)", "opacity": "Semi-Transparent", "oilRate": "25 - 35 g / 100g", "toxicity": "Low (classed Non-Toxic)", "partSize": "0.5 - 2 μm", "partMorph": "Granular", "mullBehavior": "အရောင်ခြယ်နိုင်စွမ်း (Tinting Strength) အားနည်းပြီး စျေးကြီးသောကြောင့် အသုံးနည်းခဲ့သည်။ အပူပေးထုတ်လုပ်သော Pigment များ၏ ထုံးစံအတိုင်း လုံးဝနီးပါး တည်မြဲသည်ဟု သတ်မှတ်ကြသည်။"},
+      {"name": "Cobalt Violet (ကိုဘော့ ခရမ်း)", "code": "PV48", "category": "SYN_INORGANIC", "hex": "#6C4AB0", "recipeId": "", "history": "၁၈၅၉ ခုနှစ်တွင် Salvètat ပြင်ဆင်ခဲ့သော ပထမဆုံး စစ်မှန်သည့် Violet Pigment။ ဓာတုဗေဒအရ တည်ငြိမ်သော်လည်း စျေးကြီးပြီး Tinting Strength အားနည်းသောကြောင့် ပိုမို ပြင်းထန်သော Manganese Violet (PV16) ဖြင့် အစားထိုး ခံခဲ့ရသည်။", "chemical": "Co₃(PO₄)₂ (Cobalt Phosphate)", "astm": "ASTM I (Excellent)", "opacity": "Semi-Transparent", "oilRate": "30 - 45 g / 100g", "toxicity": "Low (Arsenate type: Toxic)", "partSize": "0.5 - 2.5 μm", "partMorph": "Granular", "mullBehavior": "အရင့် အမျိုးအစားမှာ Cobalt Phosphate၊ အနု အမျိုးအစားမှာ Cobalt Arsenate ဖြစ်ပြီး နောက်တစ်ခုမှာ အာဆင်းနစ် ပါဝင်သောကြောင့် အထူးသဖြင့် အဆိပ်ပြင်းသည်။ နှစ်မျိုးလုံးကို အလွန် တည်မြဲသည်ဟု သတ်မှတ်ခဲ့ကြသည်။"},
+      {"name": "Cobalt Yellow / Aureolin (ကိုဘော့ အဝါ)", "code": "PY40", "category": "SYN_INORGANIC", "hex": "#E3A81C", "recipeId": "", "history": "Potassium Cobaltinitrite — N. W. Fischer က ၁၈၄၈ ခုနှစ်တွင် တွေ့ရှိခဲ့ပြီး ၁၈၅၂ ခုနှစ်တွင် Paris မှ Saint-Evre က ပန်းချီဆရာသုံး Pigment အဖြစ် ပထမဆုံး မိတ်ဆက်ခဲ့သည်။ အာရှ အဝါအစေး Gamboge ကို အစားထိုးခဲ့သော်လည်း ၁၉ ရာစု နှောင်းပိုင်းတွင် Cadmium များ ပေါ်လာသောအခါ ခေတ်ကုန်သွားခဲ့သည်။", "chemical": "K₃[Co(NO₂)₆]·H₂O", "astm": "ASTM I (Excellent in oil)", "opacity": "Semi-Transparent", "oilRate": "35 - 50 g / 100g", "toxicity": "Harmful if inhaled / ingested", "partSize": "0.3 - 1.5 μm", "partMorph": "Fine Granular", "mullBehavior": "အလွန်စင်ကြယ်သော အဝါ။ ဆီဆေးတွင် တည်မြဲသည်ဟု သတ်မှတ်သော်လည်း ရေဆေးတွင် အလွယ်တကူ မှောင်ပြီး လွင့်တတ်သည်။ သေချာစွာ မထုတ်လုပ်ပါက ဆီထဲတွင် အညိုရောင် ဖြစ်သွားနိုင်သည်။"},
+      {"name": "Copper Resinate (ကြေးနီ ရက်ဆင်းနိတ်)", "code": "No C.I.", "category": "SYN_INORGANIC", "hex": "#1F6F43", "recipeId": "", "history": "ကြေးနီဆားများကို Venice Turpentine ထဲတွင် ပျော်ဝင်စေခြင်းဖြင့် ရရှိသော အလင်းပေါက်သည့် Jade-Green Glaze။ ၁၅ နှင့် ၁၇ ရာစု အီတလီ ဆီဆေးများတွင် နက်ရှိုင်းပြီး စိုပြေသော အစိမ်းကို ရရန် Verdigris အပေါ်တွင် Copper Resinate အလွှာ ထပ်တင်ခဲ့ကြသည်။", "chemical": "Copper Resinate, Cu(C₁₉H₂₉COO)₂", "astm": "ASTM III (Poor — darkens)", "opacity": "Transparent (Glaze)", "oilRate": "N/A (oil/resin medium)", "toxicity": "Moderate", "partSize": "Amorphous (resin solution)", "partMorph": "Glassy / Amorphous", "mullBehavior": "Turpentine၊ ဖယောင်းနှင့် Verdigris အပိုင်းအစများကို အတူ ကျိုချက်၍ ပြုလုပ်သည်။ အလင်းဒဏ်ခံနိုင်မှု ညံ့ပြီး အချိန်ကြာသော် အမည်း ဖြစ်သွားတတ်သည်။ De Mayerne လက်ရေးစာမူတွင် အစောဆုံး Recipe များ ပါဝင်သည်။"},
+      {"name": "Egyptian Blue (အီဂျစ် အပြာ)", "code": "PB31", "category": "SYN_INORGANIC", "hex": "#3070B0", "recipeId": "", "history": "သမိုင်းတွင် ပထမဆုံး ဓာတု (လူလုပ်) Pigment — အီဂျစ် အစောပိုင်း မင်းဆက်များမှ ရောမခေတ် အဆုံးအထိ သုံးစွဲခဲ့ပြီး နှစ်ပေါင်း ၃၀၀၀ ကျော် သက်တမ်းရှိ နမူနာများပင် များစွာ မပြောင်းလဲဘဲ ရှိနေသည်။ ရောမတို့က Caeruleum ဟု ခေါ်ခဲ့ပြီး Vitruvius က ၎င်း၏ ထုတ်လုပ်ပုံကို မှတ်တမ်းတင်ခဲ့သည်။", "chemical": "Calcium Copper Silicate, CaCuSi₄O₁₀", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque", "oilRate": "25 - 40 g / 100g", "toxicity": "Moderate (Copper)", "partSize": "5 - 30 μm (Coarse Frit)", "partMorph": "Angular Glassy Shards", "mullBehavior": "သဲ၊ ကြေးနီ၊ Natron နှင့် ထုံး တို့ကို 4 SiO₂ : 1 CaO : 1 CuO အချိုးဖြင့် Flux သုံးကာ ၉၀၀°C ခန့် အပူပေးပြီး ၈၀၀°C တွင် ၁၀–၁၀၀ နာရီ ထိန်းထား၍ ပြုလုပ်သည်။ ဖန်သားဆန်၍ အမှုန်ကြီးမှ အရောင် ပြင်းသည်။ Infrared ထုတ်လွှတ်မှု အလွန်ပြင်းသောကြောင့် ခေတ်သစ် Biomedical/Laser နယ်ပယ်များတွင်ပါ ပြန်လည် စိတ်ဝင်စားခြင်း ခံနေရသည်။"},
+      {"name": "Emerald Green (မြ အစိမ်း)", "code": "PG21", "category": "SYN_INORGANIC", "hex": "#319B6A", "recipeId": "", "history": "Copper Acetoarsenite — ၁၈၀၈ ခုနှစ်တွင် တီထွင်ခဲ့ပြီး ၁၈၁၄ ခုနှစ်မှ Schweinfurt ရှိ Sattler ကုမ္ပဏီက စီးပွားဖြစ် ထုတ်လုပ်ခဲ့သော တစ်ချိန်က အကောင်းဆုံး အစိမ်း။ Paris Green ဟုလည်း ခေါ်သည်။ စျေးသက်သာသောကြောင့် နံရံကပ်စက္ကူများတွင် ကျယ်ကျယ်ပြန့်ပြန့် သုံးခဲ့ရာ အာဆင်းနစ် အငွေ့များကြောင့် ကလေးငယ်များ သေဆုံးမှုများပင် ဖြစ်ခဲ့ပြီး St Helena တွင် Napoleon ၏ သေဆုံးမှုသည်လည်း ထိုနည်းဖြင့် မြန်ဆန်ခဲ့သည်ဟု ယုံကြည်ကြသည်။", "chemical": "Copper(II) Acetoarsenite, Cu(CH₃COO)₂·3Cu(AsO₂)₂", "astm": "ASTM II (Good lightfastness)", "opacity": "Semi-Opaque", "oilRate": "25 - 40 g / 100g", "toxicity": "EXTREMELY TOXIC (Arsenic)", "partSize": "0.5 - 2 μm", "partMorph": "Spherical / Rounded", "mullBehavior": "ကန့် ပါဝင်သော လေနှင့် ထိတွေ့သောအခါ အမည်း ဖြစ်သွားတတ်ပြီး Cadmium Yellow, Vermilion, Ultramarine ကဲ့သို့ ကန့်ပါ အရောင်များနှင့် ရောစပ်၍ မရပေ။ စိုထိုင်းမှုနှင့် ထိတွေ့ပါက အဆိပ်ဓာတ်ငွေ့ Arsine အဖြစ် ပြိုကွဲနိုင်သည်။ ယခုအခါ စီးပွားဖြစ် မရရှိနိုင်တော့ပါ။"},
+      {"name": "Malachite (မလာခိုက်)", "code": "PG39 (Nat)", "category": "MINERAL", "hex": "#2F9E63", "recipeId": "rec-azurite", "history": "သိရှိသမျှ အသက်အကြီးဆုံး အစိမ်း Pigment ဖြစ်နိုင်သော သဘာဝ Basic Copper Carbonate တွင်းထွက်။ စတုတ္ထ မင်းဆက်မှစ၍ အီဂျစ် သင်္ချိုင်း ပန်းချီများတွင် တွေ့ရပြီး ဥရောပ ပန်းချီများတွင် ၁၅–၁၆ ရာစုများ၌ အဓိက အရေးပါခဲ့သည်။ အမည်မှာ ဂရိ malache (mallow ရွက်) မှ ဆင်းသက်လာသည်။", "chemical": "Basic Copper(II) Carbonate, 2CuCO₃·Cu(OH)₂", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque", "oilRate": "30 - 45 g / 100g", "toxicity": "Moderate (Copper)", "partSize": "5 - 50 μm (keep coarse)", "partMorph": "Angular Crushed Mineral", "mullBehavior": "Azurite ကဲ့သို့ပင် အမှုန်ကြီးမှ အရောင် နက်ရှိုင်းပြီး အနုလွန်လျှင် ဖျော့သွားသည်။ အက်ဆစ်နှင့် အပူကို မခံနိုင်ပေ။ လူလုပ်အမျိုးအစားကို အလယ်ခေတ် ဥရောပတွင် ကြေးနီဆားရည်ထဲသို့ Potash, Lime, Sal Ammoniac ထည့်၍ ပြင်ဆင်ခဲ့ကြသည်။"},
+      {"name": "Smalt (စမော့)", "code": "PB32", "category": "SYN_INORGANIC", "hex": "#415C96", "recipeId": "", "history": "Cobalt ပါဝင်သော ကြိတ်ထားသည့် အပြာ Potassium ဖန် — ၁၅ ရာစုမှ ၁၈ ရာစုအထိ ဥရောပတွင် သုံးစွဲခဲ့ပြီး ၎င်း၏ ထုတ်လုပ်မှုသည် ၁၇ ရာစုတွင် ဒတ်ချ်နှင့် ဖလန်းဒါး အထူးပြု လုပ်ငန်း ဖြစ်လာခဲ့သည်။ စျေးသက်သာသောကြောင့် လူကြိုက်များခဲ့ပြီး Delft ကြွေပြားများ၏ အပြာမှာလည်း Smalt ပင် ဖြစ်သည်။", "chemical": "Potassium Glass with Cobalt (PB32)", "astm": "ASTM I-II (glass stable)", "opacity": "Semi-Transparent", "oilRate": "20 - 35 g / 100g", "toxicity": "Moderate (Cobalt)", "partSize": "5 - 50 μm (must stay coarse)", "partMorph": "Angular Glass Shards", "mullBehavior": "အမှုန်များ ကြီးမားရမည် — အလွန် အနုစိတ် ကြိတ်ပါက အရောင် ပျောက်သွားသည်။ ဆီထဲတွင် Cobalt သည် ဖန်ထဲမှ ရွှေ့ပြောင်းထွက်သွားပြီး Olive-အစိမ်းမှ အစက်အပြောက် မီးခိုးရောင် အဖြစ် ယိုယွင်းတတ်သည် — ရှေးပန်းချီများ၏ ကောင်းကင်များ မှိုင်းသွားခြင်း၏ အကြောင်းရင်း တစ်ခု ဖြစ်သည်။"},
+      {"name": "Green Earth (မြေစိမ်း)", "code": "PG23", "category": "EARTH", "hex": "#6B7A52", "recipeId": "", "history": "Celadonite နှင့် Glauconite တွင်းထွက်များမှ ရသော သဘာဝ အစိမ်း — Terre Verte / Verona Green ဟုလည်း ခေါ်သည်။ ရှေးဟောင်းခေတ်ကတည်းက သုံးစွဲခဲ့ပြီး အလယ်ခေတ် အီတလီ ပန်းချီဆရာများသည် အသားအရောင်၏ အောက်ခံအရောင် (Verdaccio) အဖြစ် သုံးစွဲခဲ့ကြသည်။ နာမည်ကျော် အထွက်ကုန်မှာ Verona အနီးမှ ဖြစ်ပြီး ထိုမိုင်းသည် ဒုတိယ ကမ္ဘာစစ်အထိ လည်ပတ်ခဲ့သည်။", "chemical": "Complex Aluminosilicate (Celadonite / Glauconite)", "astm": "ASTM I (Excellent)", "opacity": "Semi-Transparent", "oilRate": "30 - 45 g / 100g", "toxicity": "Non-Toxic", "partSize": "1 - 10 μm", "partMorph": "Micaceous Flakes", "mullBehavior": "ဖုံးအုပ်နိုင်စွမ်း နိမ့်သော်လည်း အလင်း သို့မဟုတ် ဓာတုပစ္စည်းများ၏ ဒဏ်ကို မခံရဘဲ အတည်မြဲဆုံး အရောင်များအဖြစ် ဖော်ပြလေ့ ရှိကြသည်။ Duccio ၏ The Annunciation (၁၃၁၁) တွင် အသားရောင် အောက်ခံအဖြစ် သုံးခဲ့သည် — အပေါ်လွှာ အနီများ လွင့်သွားသောအခါ အစိမ်းသွေး ကျန်ရစ်တတ်သည်။"},
+      {"name": "Lime White (ထုံး အဖြူ)", "code": "PW18", "category": "EARTH", "hex": "#F2EFE6", "recipeId": "", "history": "Chalk (မြေဖြူ) နှင့် Bianco San Giovanni ဟူသော အထူး ထုံးဖြူ နှစ်မျိုး ပါဝင်သည်။ Bianco San Giovanni ပြင်ဆင်နည်းကို Cennino Cennini က Il Libro dell'Arte တွင် ပထမဆုံး ဖော်ပြခဲ့သည် — အခြောက်ခံထားသော ထုံးကို အမှုန့်ခြေပြီး ရေထဲတွင် ရှစ်ရက်ကြာ စိမ်ထား (နေ့တိုင်း ရေလဲပေး) ကာ ကိတ်ငယ်များ ပုံသွင်း၍ နေပူလှန်း အခြောက်ခံထားခြင်း ဖြစ်သည်။", "chemical": "Calcium Carbonate, CaCO₃ (+ Ca(OH)₂)", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque (Low covering)", "oilRate": "25 - 40 g / 100g", "toxicity": "Non-Toxic (alkaline irritant)", "partSize": "1 - 10 μm", "partMorph": "Fine Rounded", "mullBehavior": "Fresco ပန်းချီအတွက် အကောင်းဆုံး အဖြူ Pigment ဟု သတ်မှတ်ကြပြီး Tempera နှင့် အောက်ခံမြေများတွင်လည်း သုံးသည်။ အစို Intonaco အလွှာပေါ်တွင် တိုက်ရိုက် ခြယ်သရသော Fresco နည်းတွင် Binder ကိုယ်တိုင် ထုံးပင် ဖြစ်သည်။ ဆီဆေးနှင့် Encaustic တွင်မူ မသုံးရန် အကြံပြုသည်။"},
+      {"name": "Zinc White (သွပ် အဖြူ)", "code": "PW4", "category": "SYN_INORGANIC", "hex": "#FBFBF8", "recipeId": "", "history": "Zinc Oxide — Chinese White ဟုလည်း ခေါ်သည်။ ၁၇၈၂ ခုနှစ်တွင် Guyton de Morveau က ခဲဖြူ၏ အစားထိုးအဖြစ် အကြံပြုခဲ့ပြီး ၁၈၃၄ ခုနှစ်တွင် Winsor & Newton (London) က Chinese White အမည်ဖြင့် မိတ်ဆက်ခဲ့သည်။ ကန့် ပါသော လေကြောင့် ခဲကဲ့သို့ အမည်း မဖြစ်ဘဲ အဆိပ်မရှိသော်လည်း ခဲဖြူလောက် အလင်းမပိတ်ပေ။", "chemical": "Zinc(II) Oxide, ZnO", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque", "oilRate": "20 - 35 g / 100g", "toxicity": "Non-Toxic", "partSize": "0.2 - 1 μm", "partMorph": "Nodular / Acicular", "mullBehavior": "Lead White သို့မဟုတ် Titanium White ထက် ပိုမို အေးပြီး သန့်ရှင်း ဖြူစင်သော Masstone ရှိသည်။ ခြောက်သွေ့မှု နှေးပြီး ကြွပ်ဆတ်သော ခြောက်သွေ့သည့် ဆေးအလွှာ ဖြစ်ပေါ်စေရာ နှစ်အနည်းငယ်ကြာပြီးနောက် အက်ကွဲနိုင်သည် — ၁၉၀၀ ပြည့်လွန်နှစ် အစောပိုင်း ပန်းချီများတွင် Zinc White အောက်ခံမြေကြောင့် အက်ကွဲကြောင်းများ ဖြစ်ပေါ်ခဲ့သည်။"},
+      {"name": "Lead-Tin Yellow (ခဲ-သံဖြူ အဝါ)", "code": "C.I. 77629", "category": "SYN_INORGANIC", "hex": "#E7C33C", "recipeId": "", "history": "၁၃ ရာစုတွင် တွေ့ရှိခဲ့ပြီး ၁၈ ရာစုအထိ သုံးစွဲခဲ့သော — အထူးသဖြင့် ၁၅ ရာစုမှ ၁၇ ရာစုအထိ အသုံးအများဆုံး ဖြစ်ခဲ့သော အလင်းပိတ် အဝါ။ အစိမ်းနှင့် မြေသား Pigment များနှင့်အတူ သစ်ရွက်များ ရေးဆွဲရာတွင် အသုံးများခဲ့သည်။ အမျိုးအစား နှစ်မျိုးရှိပြီး Type I (Lead-Tin Oxide) မှာ ရှေးဟောင်း ပန်းချီများတွင် အတွေ့ရအများဆုံး ဖြစ်သည်။", "chemical": "Pb₂SnO₄ (Type I) / Pb(Sn,Si)O₃ (Type II)", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "20 - 30 g / 100g", "toxicity": "EXTREMELY TOXIC (Lead)", "partSize": "0.5 - 2 μm", "partMorph": "Granular", "mullBehavior": "ခဲ အောက်ဆိုဒ် သုံးပုံနှင့် သံဖြူ အောက်ဆိုဒ် တစ်ပုံကို ၆၅၀–၈၀၀°C ကြားတွင် အပူပေးခြင်း ဖြစ်သည် — အပူချိန် နိမ့်လျှင် လိမ္မော်သွေး ပိုမို ရပြီး မြင့်လျှင် သံပုရာသွေး ပိုမို ရသည်။ Rembrandt ၏ Belshazzar's Feast (၁၆၃၆/၃၈) တွင် နံရံပေါ် ပေါ်လာသော နတ်စာလုံးများကို Lead-Tin Yellow ဖြင့် ရေးဆွဲထားသည်။"},
+      {"name": "Lemon Yellow (Barium) (သံပုရာ အဝါ)", "code": "PY31", "category": "SYN_INORGANIC", "hex": "#DFD35A", "recipeId": "", "history": "Barium Chromate — Yellow Ultramarine / Steinbühl Yellow ဟုလည်း ခေါ်သည်။ ပြင်ဆင်နည်းကို Vauquelin က ၁၈၀၉ ခုနှစ်တွင် ဖော်ပြခဲ့ပြီး ၁၈၃၀ ခန့်တွင် ပန်းချီဆရာများ၏ ဆေးစပ်ပြားသို့ ရောက်ရှိခဲ့သည်။ \"Lemon Yellow\" ဟူသော အမည်ကို ၁၉ ရာစုအတွင်း Barium, Strontium နှင့် Lead Chromate သုံးမျိုးလုံးအတွက် သုံးစွဲခဲ့ကြသည်။", "chemical": "Barium Chromate, BaCrO₄", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque (Low covering)", "oilRate": "20 - 35 g / 100g", "toxicity": "Moderate (Chromate)", "partSize": "0.3 - 1.5 μm", "partMorph": "Fine Prismatic", "mullBehavior": "အလွန် တည်ငြိမ်သော်လည်း Chrome အရောင်များအားလုံးကဲ့သို့ ဆီထဲတွင် အစိမ်းသွေး ဖြစ်သွားတတ်သည်။ Barium Chloride ရည်ကို Potassium Chromate ရည်ဖြင့် အနှစ်ချခြင်းဖြင့် ပြုလုပ်သည်။ Gauguin ၏ Breton Woman in Prayer (၁၈၉၄) တွင် အမျိုးသမီး၏ သံပုရာ အဝါရောင် ဝတ်စုံ ဖြစ်သည်။ ဤကတ်မှာ Hansa Lemon (PY3) နှင့် မတူသော Pigment ဖြစ်သည်။"},
+      {"name": "Naples Yellow (နေပယ် အဝါ)", "code": "PY41", "category": "SYN_INORGANIC", "hex": "#E4BC62", "recipeId": "rec-calcination", "history": "Lead Antimonate — အသက်အကြီးဆုံး ဓာတု Pigment များအနက် တစ်ခုဖြစ်ပြီး နှစ်ပေါင်း ၂၅၀၀ အနည်းဆုံး သက်တမ်းရှိသော Babylon အုတ်များနှင့် အီဂျစ် ၁၉ ခုမြောက် မင်းဆက်၏ ဖန်ထည်များပေါ်တွင် တွေ့ရှိရသည်။ Enamel များတွင် သုံးခဲ့သော်လည်း ပန်းချီများတွင်မူ Renaissance မှသာ သုံးစွဲခဲ့သည်။", "chemical": "Lead(II) Antimonate, Pb(SbO₃)₂", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "18 - 28 g / 100g", "toxicity": "EXTREMELY TOXIC (Lead)", "partSize": "0.3 - 1.5 μm", "partMorph": "Fine Granular", "mullBehavior": "ခဲ ဒြပ်ပေါင်းကို Antimony ဒြပ်ပေါင်းနှင့် အတူ အပူပေးခြင်း (Calcination) ဖြစ်သည်။ ဖုံးအုပ်နိုင်စွမ်း၊ ဆေးစွမ်းအားနှင့် ခြောက်သွေ့မှု အလွန်ကောင်းသော်လည်း အခြား ခဲ ဒြပ်ပေါင်းများကဲ့သို့ Hydrogen Sulfide ပါသော လေကြောင့် မှောင်သွားနိုင်သည်။ ရေဆေးတွင်မူ ကန့် ဒြပ်ပေါင်း အနည်းငယ်မျှ ရှိနေလျှင်ပင် လျင်မြန်စွာ အမည်း ဖြစ်သွားသောကြောင့် လုံးဝ မသင့်လျော်ပေ။"},
+      {"name": "Orpiment (အော်ပီမင့်)", "code": "PY39", "category": "MINERAL", "hex": "#E8A812", "recipeId": "", "history": "Arsenic Sulfide တွင်းထွက် — King's Yellow ဟုလည်း ခေါ်ပြီး အမည်မှာ လက်တင် auripigmentum (ရွှေအဆင်း) မှ ဆင်းသက်လာသည်။ ဂရိတို့က arsenikon ဟု သိရှိခဲ့ကြပြီး Pliny နှင့် Vitruvius တို့ ဖော်ပြခဲ့ကြသည်။ Renaissance ကာလတွင် အာရှမိုင်းနာမှ Venice သို့ တင်သွင်းခဲ့သည်။", "chemical": "Arsenic Sulfide, As₂S₃", "astm": "ASTM II (Good)", "opacity": "Semi-Opaque", "oilRate": "30 - 45 g / 100g", "toxicity": "EXTREMELY TOXIC (Arsenic)", "partSize": "2 - 20 μm (difficult to grind)", "partMorph": "Foliated / Lamellar", "mullBehavior": "တွင်းထွက်ကို တူးဖော်၊ ကြိတ်၍ ဆေးကြောသည် — Pigment အဖြစ် ကြိတ်ရန် အထူးသဖြင့် ခက်ခဲသည်။ ခဲနှင့် ကြေးနီ Pigment များ (Lead White, Lead-Tin Yellow, Verdigris) နှင့် မကိုက်ညီဘဲ ၎င်းတို့ကို မှောင်စေမည်။ အဆိပ်အလွန်ပြင်းသောကြောင့် ဓာတ်ခွဲခန်းတွင် ပြင်ဆင်ရန် မကြိုးစားသင့်ပေ။"},
+      {"name": "Realgar (ရီရယ်ဂါ)", "code": "C.I. 77087", "category": "MINERAL", "hex": "#E4571D", "recipeId": "", "history": "အနီ-လိမ္မော် Arsenic Sulfide တွင်းထွက် — အဝါ Orpiment နှင့် နီးစပ်စွာ ဆက်စပ်နေပြီး ထိုတွင်းထွက် နှစ်မျိုးသည် မကြာခဏ အတူတူ တွေ့ရသည်။ ခေတ်သစ် Chrome Orange မတိုင်မီ တစ်ခုတည်းသော စင်ကြယ်သည့် လိမ္မော် Pigment ဖြစ်ခဲ့သည်။ အမည်မှာ အာရဗီ rahj al ghar (မိုင်း၏ အမှုန့်) မှ ဆင်းသက်လာသည်။", "chemical": "Arsenic Sulfide, As₄S₄", "astm": "ASTM III (Changes in light)", "opacity": "Semi-Opaque", "oilRate": "30 - 45 g / 100g", "toxicity": "EXTREMELY TOXIC (Arsenic)", "partSize": "2 - 20 μm", "partMorph": "Prismatic Crystals", "mullBehavior": "သဘာဝ တွင်းထွက်ကို ကြိတ်၍ သုံးသည် — ရေနွေးထွက်နေရာများနှင့် မီးတောင် အငွေ့ထွက်မှုများတွင် တွေ့ရသည်။ အလင်းနှင့် ထိတွေ့သောအခါ အဝါရောင် Pararealgar အဖြစ် ပြောင်းလဲသွားသည် — ၁၃ ရာစု Byzantine Syriac Gospel စာမူတွင် Raman Microscopy ဖြင့် ထိုပြောင်းလဲမှုကို တွေ့ရှိခဲ့ရသည်။"},
+      {"name": "Red Lead / Minium (အနီ ခဲ)", "code": "PR105", "category": "SYN_INORGANIC", "hex": "#CE4419", "recipeId": "", "history": "လူလုပ်နည်း ပြင်ဆင်ခဲ့သော အစောဆုံး Pigment များအနက် တစ်ခု။ Byzantine နှင့် Persian လက်ရေးစာမူ ပန်းချီဆရာများ၏ အကြိုက် ဖြစ်ခဲ့ပြီး \"Minium\" သည် လက်ရေးစာမူ ပန်းချီအတွက် သုံးသော အနီ Pigment များ၏ လက်တင် အမည်ဖြစ်ကာ ၎င်းမှ ကြိယာ miniare နှင့် \"miniature\" ဟူသော စကားလုံး ဆင်းသက်လာခဲ့သည်။", "chemical": "Lead(II,IV) Oxide, Pb₃O₄", "astm": "ASTM III (Poor)", "opacity": "Opaque", "oilRate": "15 - 25 g / 100g", "toxicity": "EXTREMELY TOXIC (Lead)", "partSize": "0.3 - 1.5 μm", "partMorph": "Fine Granular", "mullBehavior": "Litharge (PbO) ကို လေထဲတွင် အပူပေးခြင်း သို့မဟုတ် အရည်ပျော်နေသော ခဲကို အပူချိန်မြင့်မြင့် ဓာတ်ပြုစေခြင်း ဖြစ်သည်။ Hydrogen Sulfide ကဲ့သို့ လေ ညစ်ညမ်းပစ္စည်းများကြောင့် အရောင် ပြောင်းနိုင်ပြီး စိုထိုင်းမှုနှင့် အလင်းနှင့် ထိတွေ့သော ရေဆေးတွင် မှောင်သွားသည်။ အဆိပ်ရှိသော သဘောနှင့် အရောင် ပြောင်းလဲမှုကြောင့် ပန်းချီဆရာများအတွက် မထုတ်လုပ်တော့ပေ။"},
+      {"name": "Vermilion (ဗာမီလီယွန်)", "code": "PR106", "category": "SYN_INORGANIC", "hex": "#DE3A1C", "recipeId": "", "history": "Mercury Sulfide (Cinnabar) — တရုတ်နိုင်ငံတွင် ဘီစီ ဒုတိယ ထောင်စုနှစ်ကတည်းက သုံးစွဲခဲ့ပြီး ၈ ရာစုမှစ၍ လူလုပ်နည်း ပြုလုပ်လာခဲ့သည်။ ၎င်း၏ ဓာတု ညီမျှပစ္စည်း Cadmium Red မထုတ်လုပ်မီအထိ ပန်းချီတွင် အဓိက အနီ ဖြစ်ခဲ့သည်။ သဘာဝ အဓိက ရင်းမြစ်မှာ စပိန်နိုင်ငံ Almadén ဖြစ်သည်။", "chemical": "Mercuric Sulfide, HgS", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "12 - 20 g / 100g", "toxicity": "Moderate-High (Mercury)", "partSize": "0.5 - 3 μm", "partMorph": "Granular Crystals", "mullBehavior": "ပြဒါးကို အရည်ပျော်နေသော ကန့်နှင့် အလေးချိန် ငါးပုံတစ်ပုံ အချိုးဖြင့် ပေါင်းစပ်သော် အမည်း HgS ဖြစ်ပေါ်လာပြီး ၎င်းကို Sublime ဖြစ်စေသောအခါ အနီရောင် ပုံဆောင်ခဲများအဖြစ် ပြန်လည် ဖွဲ့စည်းသည်။ ဖုံးအုပ်နိုင်စွမ်းမှာ Cadmium Red ထက် ပိုမို ပြင်းထန်သည်။ Hydrogen Sulfides နှင့် နေရောင် ရှိနေသောအခါ အမည်း အဖြစ် မှောင်သွားနိုင်သော်လည်း အလွန် မတက်ကြွသောကြောင့် Lead White နှင့် ရောသောအခါ မမှောင်စေဘဲ အသားအရောင် အဆင်းများအတွက် မကြာခဏ အတူ ရောစပ်ခဲ့ကြသည်။ Titian ၏ Assunta (၁၅၁၆–၁၈) တွင် သုံးခဲ့သည်။"},
+      {"name": "YInMn Blue (ရင်မန် အပြာ) ★ Modern", "code": "PB86", "category": "SYN_INORGANIC", "hex": "#2B4F9E", "recipeId": "", "history": "၂၀၀၉ ခုနှစ်တွင် Oregon State University မှ Prof. Mas Subramanian နှင့် ကျောင်းသား Andrew Smith တို့ အီလက်ထရွန်းနစ် ပစ္စည်း စမ်းသပ်ရင်း 1200°C မီးဖိုထဲမှ မတော်တဆ တွေ့ရှိခဲ့သော — Cobalt Blue (၁၈၀၂) နောက်ပိုင်း နှစ် ၂၀၀ အတွင်း ပထမဆုံး Inorganic အပြာသစ်။ အမည်မှာ ပါဝင်ဒြပ်စင်များ Yttrium, Indium, Manganese တို့၏ အတိုကောက် ဖြစ်သည်။", "chemical": "YIn₁₋ₓMnₓO₃ (Yttrium Indium Manganese Oxide)", "astm": "ASTM I (Excellent, 8/8)", "opacity": "Semi-Opaque", "oilRate": "30 - 45 g / 100g (approx.)", "toxicity": "Non-Toxic", "partSize": "Sub-micron - 2 μm", "partMorph": "Crystalline (Trigonal Bipyramidal)", "mullBehavior": "အလွန် တည်ငြိမ်ပြီး အပူ၊ ရေ၊ အက်ဆစ်တို့ကို ခံနိုင်သည်။ Infrared ရောင်ပြန်ဟပ်မှု မြင့်သောကြောင့် အဆောက်အအုံ အအေးခံ ဆေးများတွင်ပါ အလားအလာ ရှိသည်။ ရေဆေးတွင် Granulation ရှိသော ကြည်လင်သည့် အပြာ ဖြစ်သည်။ Indium စျေးကြီးသောကြောင့် Lapis Lazuli ထက်ပင် စျေးပိုကြီးနိုင်သည်။ စီးပွားဖြစ် ထုတ်လုပ်မှုကို Shepherd Color က လိုင်စင်ယူထားသည်။"},
+      {"name": "Bismuth Vanadate Yellow (ဘစ်စမတ် အဝါ) ★ Modern", "code": "PY184", "category": "SYN_INORGANIC", "hex": "#EDBE00", "recipeId": "", "history": "၁၉၈၀ ပြည့်လွန်နှစ်များမှ စီးပွားဖြစ် ရရှိလာသော ခေတ်သစ် အဝါ — အဆိပ်ပြင်း Chrome Yellow နှင့် Cadmium Yellow တို့၏ ဘေးကင်းသော အစားထိုး အဖြစ် စက်မှုဆေးများမှ ပန်းချီဆေးအဖြစ် ပြောင်းလဲ သုံးစွဲလာခဲ့သည်။", "chemical": "Bismuth Vanadate, BiVO₄", "astm": "ASTM I (Excellent)", "opacity": "Opaque", "oilRate": "25 - 40 g / 100g", "toxicity": "Low", "partSize": "0.3 - 1.5 μm", "partMorph": "Granular", "mullBehavior": "တောက်ပသော သံပုရာသွေး အဝါ ဖြစ်ပြီး ဖုံးအုပ်အား ကောင်းကာ အလင်းဒဏ် အလွန်ခံသည်။ ခေတ်သစ် ဆေးစပ်ပြားများတွင် Lemon Yellow နေရာ၌ အစားထိုး သုံးလေ့ ရှိသည်။"},
+      {"name": "Cobalt Teal (ကိုဘော့ စိမ်းပြာ) ★ Modern", "code": "PG50", "category": "SYN_INORGANIC", "hex": "#1F9E93", "recipeId": "", "history": "Cobalt Titanate Spinel — ၂၀ ရာစု ခေတ်သစ် Pigment။ Phthalo Green ထက် ပိုမို အလင်းပိတ်ပြီး မီးခိုးသွေး မပါသော စိမ်းပြာ (Teal) စင်စင် ရရှိစေသည်။", "chemical": "Cobalt Titanate, Co₂TiO₄", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque", "oilRate": "25 - 35 g / 100g", "toxicity": "Moderate (Cobalt)", "partSize": "0.5 - 2 μm", "partMorph": "Granular (Spinel)", "mullBehavior": "အလွန် တည်မြဲသည်။ ရေဆေးတွင် Granulation အသင့်အတင့် ရှိပြီး အနည်ထိုင် အက်ကွဲပုံစံ လှပသည်။ ကောင်းကင်နှင့် ပင်လယ်ရေ အဆင်းများအတွက် လူကြိုက်များသည်။"},
+      {"name": "Perylene Maroon (ပယ်ရီလင်း အနီညို) ★ Modern", "code": "PR179", "category": "SYN_ORGANIC", "hex": "#7A1F2B", "recipeId": "", "history": "မော်တော်ကား ဆေးများအတွက် တီထွင်ခဲ့သော Perylene မိသားစုဝင် — နက်ရှိုင်းသည့် အညိုသွေး အနီ။ Alizarin Crimson (PR83) ၏ မှိန်ခြင်း ပြဿနာကို ဖြေရှင်းပေးသော တည်မြဲသည့် အစားထိုး အဖြစ် ပန်းချီဆရာများ လက်ခံလာခဲ့သည်။", "chemical": "Perylene Dianhydride (Me-PTCDI)", "astm": "ASTM I (Excellent)", "opacity": "Semi-Transparent", "oilRate": "40 - 60 g / 100g", "toxicity": "Low", "partSize": "0.05 - 0.5 μm", "partMorph": "Fine Needle Crystals", "mullBehavior": "အလင်းဒဏ် အလွန်ခံပြီး Glaze အဖြစ် တောက်ပသည်။ Burnt Sienna + Alizarin ကဲ့သို့ ရောစပ်မှုများ၏ တည်မြဲသော အစားထိုး အဖြစ် သုံးသည်။"},
+      {"name": "Quinacridone Rose (ကွီနာခရီဒုန်း နှင်းဆီ) ★ Modern", "code": "PV19", "category": "SYN_ORGANIC", "hex": "#9E1B4A", "recipeId": "", "history": "၁၉၅၈ ခုနှစ်မှ စီးပွားဖြစ် ရရှိသော Quinacridone မိသားစု၏ အခြေခံ Pigment — ခေတ်သစ် ပန်းချီ၏ အရေးကြီးဆုံး အနီ-ခရမ်း များထဲမှ တစ်ခု။ ပုံဆောင်ခဲ အဆင့် (Phase) အလိုက် Rose နှင့် Violet အဆင်း ကွဲပြားစွာ ရနိုင်သည်။", "chemical": "Quinacridone (γ-phase)", "astm": "ASTM I (Excellent)", "opacity": "Transparent", "oilRate": "40 - 60 g / 100g", "toxicity": "Low", "partSize": "0.05 - 0.3 μm", "partMorph": "Fine Acicular", "mullBehavior": "Tinting Strength အလွန်မြင့်ပြီး ကြည်လင်သော ရောစပ်မှုများ — အထူးသဖြင့် စင်ကြယ်သော ခရမ်းများ — ရရှိစေသည်။ Alizarin ၏ တည်မြဲသော အစားထိုး ဖြစ်သည်။"},
+      {"name": "Nickel Azo Yellow (နီကယ် အဝါ) ★ Modern", "code": "PY150", "category": "SYN_ORGANIC", "hex": "#C99700", "recipeId": "", "history": "ခေတ်သစ် ကြည်လင်ဆုံး အဝါများထဲမှ တစ်ခု — ရွှေသွေး အလင်းပေါက် အဝါ။ Indian Yellow (PY110) နှင့်အတူ Glaze အဝါများတွင် သုံးလေ့ ရှိသည်။", "chemical": "Nickel Azo Complex", "astm": "ASTM I (Excellent)", "opacity": "Transparent", "oilRate": "45 - 65 g / 100g", "toxicity": "Moderate (bound Nickel complex)", "partSize": "0.05 - 0.4 μm", "partMorph": "Fine Granular", "mullBehavior": "အလင်းပေါက် Glaze အတွက် အထူး ကောင်းပြီး အစိမ်း ရောစပ်ရာတွင် ညစ်ပတ်မှု မရှိသော သန့်ရှင်းသည့် အစိမ်းများ ရရှိစေသည်။ အနည်းငယ်ဖြင့် ပြင်းထန်သော Tinting ရသည်။"},
+      {"name": "Pyrrole Orange (ပီရိုး လိမ္မော်) ★ Modern", "code": "PO73", "category": "SYN_ORGANIC", "hex": "#F06423", "recipeId": "", "history": "၁၉၈၆ ခုနှစ်တွင် Ciba-Geigy မှ မိတ်ဆက်ခဲ့သော Diketopyrrolopyrrole (DPP) မိသားစု — Pyrrole Red (PR254) ၏ မိသားစုဝင် ဖြစ်သည်။ အဆိပ်ပြင်း၍ မတည်မြဲသော Chrome Orange ၏ တည်မြဲသော ခေတ်သစ် အစားထိုး ဖြစ်သည်။", "chemical": "Diketopyrrolopyrrole (DPP)", "astm": "ASTM I (Excellent)", "opacity": "Semi-Opaque", "oilRate": "35 - 55 g / 100g", "toxicity": "Low", "partSize": "0.05 - 0.4 μm", "partMorph": "Fine Granular", "mullBehavior": "တောက်ပပြီး ဖုံးအုပ်အား ကောင်းသော လိမ္မော်။ အလင်းဒဏ်နှင့် ရာသီဒဏ် အလွန်ခံ၍ မော်တော်ကား ဆေးများတွင်ပါ သုံးသည်။"},
+      {"name": "Super Black — Semple Black 2.0 / 3.0 / 4.0 (အနက်ဆုံး အနက်) ★ Modern", "code": "—", "category": "SYN_ORGANIC", "hex": "#050505", "recipeId": "", "history": "ဗြိတိန် ပန်းချီဆရာ Stuart Semple (Culture Hustle) ၏ အနက် စီးရီး — 2016 တွင် Anish Kapoor က Vantablack အနုပညာ သုံးခွင့် တစ်ဦးတည်း ယူလိုက်ခြင်းကို ပြန်တိုက်ရန် ထုတ်ခဲ့သည်။ Black 2.0 (2017) သည် ကမ္ဘာအနှံ့ ပန်းချီဆရာများ၏ အကြံပြုချက်များဖြင့် ပူးတွဲ တီထွင်ခဲ့သော အပြားဆုံး Matte အနက် Acrylic ဖြစ်သည် (Black Cherry အနံ့ပင် ထည့်ထားသေးသည်)။ 3.0 (2019) က အလင်း 98–99% စုပ်ပြီး 4.0 (2023) က 99.8% ခန့်အထိ ရောက်သည်ဟု ဆိုသည်။ စီးရီး တစ်ခုလုံး၏ စည်းကမ်း တစ်ခုတည်း — ကမ္ဘာပေါ်ရှိ ပန်းချီဆရာ အားလုံး သုံးနိုင်သည်၊ Anish Kapoor မှအပ။", "chemical": "Carbon Black + Acrylic Superbase (Transparent Mattifier)", "astm": "— (Artist-grade Acrylic)", "opacity": "Opaque", "oilRate": "— (Acrylic, ready-mixed)", "toxicity": "Low / Non-Toxic", "partSize": "Sub-micron", "partMorph": "Amorphous Carbon", "mullBehavior": "Matte အလွန် ပြင်းသောကြောင့် သုတ်ထားသော အရာဝတ္ထု၏ ပုံသဏ္ဍာန် ကွယ်ပျောက်၍ ပြားချပ်သွားသလို မြင်ရသည်။ Vantablack လို Nanotube Coating မဟုတ်ဘဲ ပုံမှန် ဘရပ်ရှ်ဖြင့် သုတ်နိုင်သော ဆေး ဖြစ်သည်။"},
+      {"name": "Pinkest Pink (အပန်းဆုံး ပန်း) ★ Modern", "code": "—", "category": "SYN_ORGANIC", "hex": "#FF5DA2", "recipeId": "", "history": "Stuart Semple ၏ Vantablack ဒရာမာတွင် ပထမဆုံး ပစ်ခတ်မှု (2016)။ 'ကမ္ဘာ့ အပန်းဆုံး ပန်း' Pigment မှုန့်ကို ပန်းချီဆရာ အားလုံး ဝယ်နိုင်အောင် ဖွင့်ပေးပြီး ဝယ်သူတိုင်းက 'ကျွန်ုပ် Anish Kapoor မဟုတ်ပါ၊ သူ့ကိုယ်စား ဝယ်ခြင်း မဟုတ်ပါ' ဟု အတည်ပြု နှိပ်ရသည်။ Kapoor က မည်သို့ ရသွားသည်ကို မသိရဘဲ 2016 ဒီဇင်ဘာတွင် လက်ခလယ်ကို ဆေးစိမ်၍ Instagram တင်ခဲ့ရာ ဒရာမာ ပိုကြီးသွားခဲ့သည်။", "chemical": "Fluorescent Pink Pigment (proprietary)", "astm": "— (Fluorescent)", "opacity": "Semi-Opaque", "oilRate": "—", "toxicity": "Low", "partSize": "Fine Powder", "partMorph": "—", "mullBehavior": "Fluorescent ဖြစ်၍ သာမန် ပန်းရောင်များထက် အလင်း ပိုမို ထင်ရှားစွာ တောက်သည်။ မှုန့် အဖြစ် ရောင်းပြီး Acrylic Medium နှင့် ရော၍ သုံးရသည်။ Fluorescent ဆေးများ ထုံးစံအတိုင်း နေရောင် တိုက်ရိုက် အောက်၌ အချိန်ကြာလျှင် အရောင် လျော့နိုင်သည်။"},
+      {"name": "White 2.0 — Whitest White (အဖြူဆုံး အဖြူ) ★ Modern", "code": "PW6 အခြေခံ", "category": "SYN_INORGANIC", "hex": "#FAFAF7", "recipeId": "", "history": "Stuart Semple (Culture Hustle) ၏ 'ကမ္ဘာ့ အဖြူဆုံး အဖြူ' Acrylic — သူ၏ 'အဆုံးစွန်း ရောင်များ' (Superlative) အစီအစဉ်၏ တစ်စိတ်တစ်ပိုင်း ဖြစ်သည်။ Titanium White ကို ထူးခြားစွာ များများ ထည့်၍ ဖော်စပ်ထားပြီး သာမန် အဖြူများထက် ပိုမို တောက်ပ ဖုံးအုပ်သည်။ ဒရာမာ စည်းကမ်း အတိုင်းပင် Kapoor မှအပ အားလုံး သုံးနိုင်သည်။", "chemical": "Titanium Dioxide (High-loading Acrylic)", "astm": "ASTM I (TiO₂ အခြေခံ)", "opacity": "Opaque", "oilRate": "— (Acrylic, ready-mixed)", "toxicity": "Non-Toxic", "partSize": "0.2 - 0.3 μm", "partMorph": "Fine Crystalline", "mullBehavior": "ဖုံးအုပ်အား အလွန် ကောင်းပြီး တစ်ထပ်တည်းနှင့် ဖုံးနိုင်သည်။ Super Black နှင့် ယှဉ်ထားပါက အနက်/အဖြူ အဆုံးစွန်း ကွာခြားမှုကို အပြည့် မြင်ရသည်။"},
+      {"name": "Orange — Orangest Orange (အတောက်ဆုံး လိမ္မော်) ★ Modern", "code": "—", "category": "SYN_ORGANIC", "hex": "#FF7518", "recipeId": "", "history": "Semple ၏ 'အဆုံးစွန်း ရောင်' စီးရီးမှ လိမ္မော် — Pinkest Pink၊ Yellowest Yellow တို့နှင့် တစ်ဆက်တည်း ဖြစ်သည်။ ရည်ရွယ်ချက်မှာ ရောင် တစ်ခုချင်းစီကို သူ၏ အတောက်ဆုံး အစင်ဆုံး အခြေအနေအထိ တွန်းပို့ပြီး ပန်းချီဆရာ အားလုံးအတွက် ဖွင့်ပေးရန် ဖြစ်သည် (Kapoor မှအပ)။ Pigment ပါဝင်မှု မြင့်မားစွာ ဖော်စပ်ထားသည်။", "chemical": "High-load Orange Pigment (proprietary)", "astm": "—", "opacity": "Semi-Opaque", "oilRate": "—", "toxicity": "Low", "partSize": "Fine", "partMorph": "—", "mullBehavior": "တောက်ပမှု ပြင်းပြီး Tint လုပ်ပါက သန့်ရှင်းသော လိမ္မော်-ဝါ အဆင်းများ ရသည်။ အခြား Superlative ရောင်များနှင့် တွဲသုံးပါက ပြင်းထန်သော အရောင် အတွဲအစပ်များ ရနိုင်သည်။"},
+      {"name": "Diamond Dust (စိန်မှုန့် Glitter) ★ Modern", "code": "—", "category": "SYN_INORGANIC", "hex": "#C9CED6", "recipeId": "", "history": "Stuart Semple ၏ 'ကမ္ဘာ့ အတောက်ဆုံး Glitter' — ပလတ်စတစ် Glitter မဟုတ်ဘဲ မှန် အစအန အသေးစား လေးများဖြင့် ပြုလုပ်ထားသောကြောင့် အလင်း ပြန်ဟပ်မှု ထူးခြားစွာ ပြင်းသည်။ Kapoor က Pinkest Pink ကို လက်ခလယ် စိမ်ပြီး ပြန်ကြွားခဲ့ပြီးနောက် 'ဒီတစ်ခုကိုတော့ လက်ခလယ် စိမ်လို့ မရဘူး' ဟု နောက်ပြောင် ထုတ်ခဲ့သော ပစ္စည်း ဖြစ်သည်။ Pigment မဟုတ်ဘဲ တောက်ပမှု ပေးသော Material တစ်ခု ဖြစ်သည်။", "chemical": "Glass Flakes (မှန် အစအန)", "astm": "— (Pigment မဟုတ်)", "opacity": "Reflective / Sparkle", "oilRate": "—", "toxicity": "Caution — အစအန ထက်သောကြောင့် လက်/မျက်စိ သတိထား ကိုင်ရန်", "partSize": "Fine Flakes", "partMorph": "Angular Glass Shards", "mullBehavior": "Medium ထဲ ရော၍ သုတ်လျှင် အလင်း ထောင့် အလိုက် စိန်ကဲ့သို့ တောက်ပသည်။ အမှုန့် ပြန့်လွယ်၍ Mask နှင့် လက်အိတ် သုံး၍ ကိုင်တွယ်ရန် သင့်တော်သည်။"}
+    ];
+
+    let archiveCat = 'ALL', archiveQuery = '';
+    function renderArchivePigments(cat = archiveCat) {
+      archiveCat = cat;
+      const container = document.getElementById('archivePigmentsList');
+      let list = cat === 'ALL' ? archiveData : archiveData.filter(a => a.category === cat);
+      if (archiveQuery) {
+        const q = archiveQuery.toLowerCase();
+        list = list.filter(a => a.name.toLowerCase().includes(q) || a.code.toLowerCase().includes(q) || (a.chemical || '').toLowerCase().includes(q));
+      }
+      if (!list.length) {
+        container.innerHTML = '<div class="no-result">ရှာမတွေ့ပါ — အခြား အမည် သို့မဟုတ် C.I. code ဖြင့် စမ်းကြည့်ပါ။</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="pigment-card">
+          <div class="pigment-head">
+            <div class="pigment-swatch" style="background:${item.hex}"></div>
+            <div style="flex:1;">
+              <span class="temp-tag ${item.category === 'EARTH' ? 'temp-warm' : item.category === 'MINERAL' ? 'temp-cool' : 'temp-neutral'}">
+                ${item.category} • ${item.code}
+              </span>
+              <div style="font-size:13px; font-weight:800;">${item.name}</div>
+            </div>
+            ${item.recipeId ? `<button class="btn-action" onclick="jumpToMaking('${item.recipeId}')">ဖော်စပ်နည်း ➔</button>` : ''}
+          </div>
+
+          <button class="details-toggle" onclick="toggleDetails(this)">အသေးစိတ် (သမိုင်း / အမှုန် / ဂုဏ်သတ္တိ) ▾</button>
+          <div class="collapsible">
+          <div style="font-size:12.5px; color:#D1D1D6; line-height:1.9;">
+            <b>သမိုင်းနှင့် သဘောသဘာဝ:</b> ${item.history}
+          </div>
+
+          <!-- Particle Nature & Milling Behavior Callout -->
+          <div class="particle-box">
+            <div class="particle-title">🔬 Particle Physics & Mulling Dynamics (အမှုန်နှင့် ဆေးစပ်မှု)</div>
+            • <b>Size:</b> ${item.partSize} | <b>Shape:</b> ${item.partMorph}<br>
+            • <b>Mulling Behavior:</b> ${item.mullBehavior}
+          </div>
+
+          <!-- Properties Table -->
+          <table class="prop-table">
+            <tr><td>Chemical Formula:</td><td>${item.chemical}</td></tr>
+            <tr><td>Lightfastness (ASTM):</td><td>${item.astm}</td></tr>
+            <tr><td>Opacity / Glaze:</td><td>${item.opacity}</td></tr>
+            <tr><td>Oil Absorption (ဆီစုပ်နှုန်း):</td><td>${item.oilRate}</td></tr>
+            <tr><td>Studio Safety:</td><td>${item.toxicity}</td></tr>
+          </table>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function searchArchive(q) {
+      archiveQuery = q.trim();
+      renderArchivePigments(archiveCat);
+    }
+
+    function filterArchiveCategory(cat, el) {
+      document.querySelectorAll('#tabArchive .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderArchivePigments(cat);
+    }
+
+    // --- TAB 8: EXTRACTOR & 5X LOUPE ---
+    const iCanvas = document.getElementById('imageCanvas');
+    const iCtx = iCanvas.getContext('2d');
+    const loupe = document.getElementById('loupe');
+    const lCanvas = document.getElementById('loupeCanvas');
+    const lCtx = lCanvas.getContext('2d');
+
+    let currentImg = new Image();
+    let imgScale = 1, imgPosX = 0, imgPosY = 0;
+    let startPinchDist = 0, initialPinchScale = 1, isEyedropping = false;
+    let dominantList = ['#E63946', '#F1FAEE', '#A8DADC', '#457B9D', '#1D3557', '#F4A261'];
+
+    currentImg.crossOrigin = 'anonymous';
+    currentImg.src = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&q=80';
+    currentImg.onload = () => { renderImage(); extractDominant(); };
+
+    function renderImage() {
+      const rect = document.getElementById('extViewport').getBoundingClientRect();
+      iCanvas.width = rect.width;
+      iCanvas.height = rect.height;
+      iCtx.clearRect(0, 0, iCanvas.width, iCanvas.height);
+      iCtx.save();
+      iCtx.translate(iCanvas.width / 2 + imgPosX, iCanvas.height / 2 + imgPosY);
+      iCtx.scale(imgScale, imgScale);
+
+      const ratio = Math.min(iCanvas.width / currentImg.width, iCanvas.height / currentImg.height);
+      const w = currentImg.width * ratio;
+      const h = currentImg.height * ratio;
+      iCtx.drawImage(currentImg, -w / 2, -h / 2, w, h);
+      iCtx.restore();
+    }
+
+    function sampleLoupeColor(clientX, clientY) {
+      const rect = iCanvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const p = iCtx.getImageData(x, y, 1, 1).data;
+      if (p[3] === 0) return;
+      const hex = rgbToHex(p[0], p[1], p[2]);
+
+      lCtx.imageSmoothingEnabled = false;
+      lCtx.clearRect(0, 0, 90, 90);
+      lCtx.drawImage(iCanvas, x - 9, y - 9, 18, 18, 0, 0, 90, 90);
+
+      loupe.style.left = x + 'px';
+      loupe.style.top = y + 'px';
+      loupe.style.borderColor = hex;
+      loupe.style.display = 'block';
+
+      updateActiveExtracted(hex);
+    }
+
+    function extractDominant() {
+      const off = document.createElement('canvas');
+      off.width = 40; off.height = 40;
+      const oCtx = off.getContext('2d');
+      oCtx.drawImage(currentImg, 0, 0, 40, 40);
+      const data = oCtx.getImageData(0, 0, 40, 40).data;
+      const list = [];
+      for (let i = 0; i < data.length; i += 24) {
+        if (data[i + 3] < 128) continue;
+        const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
+        if (!list.includes(hex)) list.push(hex);
+        if (list.length >= 6) break;
+      }
+      dominantList = list;
+      renderPaletteRow(list[0]);
+    }
+
+    function renderPaletteRow(activeHex) {
+      document.getElementById('paletteRow').innerHTML = dominantList.map(c => `
+        <div class="circle-swatch ${c === activeHex ? 'active' : ''}" style="background:${c}" onclick="selectPaletteHex('${c}')"></div>
+      `).join('');
+      updateActiveExtracted(activeHex);
+    }
+
+    function selectPaletteHex(hex) {
+      loupe.style.display = 'none';
+      renderPaletteRow(hex);
+    }
+
+    function updateActiveExtracted(hex) {
+      const rgb = hexToRgb(hex);
+      document.getElementById('extSelectedBox').style.backgroundColor = hex;
+      document.getElementById('extHexText').innerText = hex;
+      document.getElementById('extRgbText').innerText = `RGB: (${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    }
+
+    function handleRealImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = evt => {
+        currentImg = new Image();
+        currentImg.onload = () => {
+          imgScale = 1; imgPosX = 0; imgPosY = 0;
+          renderImage();
+          extractDominant();
+        };
+        currentImg.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    const view = document.getElementById('extViewport');
+    view.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        isEyedropping = true;
+        sampleLoupeColor(e.touches[0].clientX, e.touches[0].clientY);
+      } else if (e.touches.length === 2) {
+        loupe.style.display = 'none';
+        isEyedropping = false;
+        startPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        initialPinchScale = imgScale;
+      }
+    });
+
+    view.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (e.touches.length === 1 && isEyedropping) {
+        sampleLoupeColor(e.touches[0].clientX, e.touches[0].clientY);
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        imgScale = Math.min(4, Math.max(0.7, initialPinchScale * (dist / startPinchDist)));
+        renderImage();
+      }
+    }, { passive: false });
+
+    view.addEventListener('touchend', () => {
+      loupe.style.display = 'none';
+      isEyedropping = false;
+    });
+
+    // --- INITIALIZATIONS ---
+    drawWheel();
+    renderPigmentsList('ALL');
+    renderSplitMix();
+    setLightMode('WARM');
+    renderArchivePigments('ALL');
+
+    if ('serviceWorker' in navigator) {
+      const sw = `
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+      `;
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], { type: 'text/javascript' }))).catch(() => {});
+    }
+  </script>
+  <script>
+    // Offline support (cleanup pass) — registers only on https or localhost
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
